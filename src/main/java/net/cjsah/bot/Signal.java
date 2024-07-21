@@ -1,19 +1,29 @@
 package net.cjsah.bot;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.cjsah.bot.event.Event;
 import net.cjsah.bot.event.events.AppStopEvent;
 
 public class Signal {
+    @Getter
+    @Setter
     private static boolean Stop = false;
+    @Getter
+    @Setter
     public static boolean AppInit = false;
+    @Setter
+    @Getter
     public static boolean AppEnable = false;
+    @Setter
+    @Getter
     public static boolean AppGood = false;
+    @Setter
+    @Getter
     public static boolean Online = false;
+    @Setter
+    @Getter
     public static boolean Good = false;
-
-    public static boolean isStop() {
-        return Stop;
-    }
 
     public static void stop() {
         AppStopEvent event = new AppStopEvent();
@@ -23,43 +33,4 @@ public class Signal {
         }
     }
 
-    public static boolean isAppInit() {
-        return AppInit;
-    }
-
-    public static void setAppInit(boolean appInit) {
-        AppInit = appInit;
-    }
-
-    public static boolean isAppEnable() {
-        return AppEnable;
-    }
-
-    public static void setAppEnable(boolean appEnable) {
-        AppEnable = appEnable;
-    }
-
-    public static boolean isAppGood() {
-        return AppGood;
-    }
-
-    public static void setAppGood(boolean appGood) {
-        AppGood = appGood;
-    }
-
-    public static boolean isOnline() {
-        return Online;
-    }
-
-    public static void setOnline(boolean online) {
-        Online = online;
-    }
-
-    public static boolean isGood() {
-        return Good;
-    }
-
-    public static void setGood(boolean good) {
-        Good = good;
-    }
 }

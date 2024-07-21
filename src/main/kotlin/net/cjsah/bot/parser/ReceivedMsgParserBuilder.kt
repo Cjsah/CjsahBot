@@ -4,20 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import net.cjsah.bot.event.Event
 import net.cjsah.bot.event.events.AppHeartBeatEvent
-import net.cjsah.bot.event.events.GroupAdminChangeEvent
 import net.cjsah.bot.event.events.GroupAdminChangeEvent.GroupAdminSetEvent
 import net.cjsah.bot.event.events.GroupAdminChangeEvent.GroupAdminUnsetEvent
 import net.cjsah.bot.event.events.GroupFileUploadEvent
-import net.cjsah.bot.event.events.GroupMuteEvent
 import net.cjsah.bot.event.events.GroupMuteEvent.GroupMuteAppendEvent
 import net.cjsah.bot.event.events.GroupMuteEvent.GroupMuteRemoveEvent
-import net.cjsah.bot.event.events.GroupUserJoinEvent
 import net.cjsah.bot.event.events.GroupUserJoinEvent.GroupUserApproveJoinEvent
 import net.cjsah.bot.event.events.GroupUserJoinEvent.GroupUserInviteJoinEvent
-import net.cjsah.bot.event.events.GroupUserLeaveEvent
-import net.cjsah.bot.event.events.GroupUserLeaveEvent.GroupUserKickEvent
-import net.cjsah.bot.event.events.GroupUserLeaveEvent.GroupUserKickMeEvent
-import net.cjsah.bot.event.events.GroupUserLeaveEvent.GroupUserSelfLeaveEvent
+import net.cjsah.bot.event.events.GroupUserLeaveEvent.*
 
 class ReceivedMsgParserBuilder(
     private val node: ReceivedMsgParser

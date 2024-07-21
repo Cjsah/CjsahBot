@@ -1,6 +1,5 @@
 package net.cjsah.bot.event.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.notice.GroupLuckyKing;
 import net.cjsah.bot.event.IEvent;
@@ -15,9 +14,5 @@ public class GroupRedpackLuckyEvent implements IEvent {
         this.groupId = data.getGroupId();
         this.userId = data.getUserId();
         this.targetId = data.getTargetId();
-    }
-
-    public static void parse(JsonNode json) {
-
     }
 }
