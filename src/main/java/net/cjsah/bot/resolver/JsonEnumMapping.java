@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @JsonSerialize(using = EnumSerializer.class)
 @JsonDeserialize(using = EnumDeserializer.class)
 public @interface JsonEnumMapping {
-    String value();
+    String value() default "name";
 }

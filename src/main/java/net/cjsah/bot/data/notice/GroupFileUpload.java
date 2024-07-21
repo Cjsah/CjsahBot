@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.cjsah.bot.data.BaseData;
-import net.cjsah.bot.data.vo.InnerFile;
 
 @Data
 @ToString(callSuper = true)
@@ -13,4 +12,12 @@ public class GroupFileUpload extends BaseData {
     private long groupId;
     private long userId;
     private InnerFile file;
+
+    @Data
+    public static class InnerFile {
+        private String id;
+        private String name;
+        private long size;
+        private long busid;
+    }
 }
