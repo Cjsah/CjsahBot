@@ -2,9 +2,9 @@ package net.cjsah.bot.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonUtil {
@@ -22,7 +22,7 @@ public class JsonUtil {
         return ObjectMapper.readValue(str, ObjectNode.class);
     }
 
-    public static <T> T convert(ObjectNode json, Class<T> clazz) {
+    public static <T> T convert(JsonNode json, Class<T> clazz) {
         return ObjectMapper.convertValue(json, clazz);
     }
 

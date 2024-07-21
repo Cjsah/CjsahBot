@@ -29,10 +29,14 @@ public class EnumDeserializer<T extends Enum<T>> extends JsonDeserializer<T> imp
         if (this.clazz == null || this.name == null || this.key == null) return null;
         JsonNode node = parser.getCodec().readTree(parser);
         String text = node.asText();
-        T[] values = this.clazz.getEnumConstants();
+        return deserialize(this.clazz, text, this.key);
+    }
+
+    public static <T extends Enum<T>> T deserialize(Class<T> clazz, String text, String key) {
+        T[] values = clazz.getEnumConstants();
         if (text == null) return values[0];
         return Arrays.stream(values)
-                .filter(it -> EnumUtil.getFromKey(it, this.key).equals(text))
+                .filter(it -> EnumUtil.getFromKey(it, key).equals(text))
                 .findFirst()
                 .orElse(values[0]);
     }

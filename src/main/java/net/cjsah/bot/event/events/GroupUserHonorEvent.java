@@ -1,5 +1,6 @@
 package net.cjsah.bot.event.events;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.HonorType;
 import net.cjsah.bot.data.notice.GroupUserHonor;
@@ -15,6 +16,10 @@ public class GroupUserHonorEvent implements IEvent {
         this.groupId = data.getGroupId();
         this.userId = data.getUserId();
         this.type = type;
+    }
+
+    public static void parse(JsonNode json) {
+
     }
 
     public static class GroupUserDragonHonorEvent extends GroupUserHonorEvent {

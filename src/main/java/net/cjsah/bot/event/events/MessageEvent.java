@@ -1,5 +1,6 @@
 package net.cjsah.bot.event.events;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageSourceType;
 import net.cjsah.bot.data.enums.MessageType;
@@ -36,6 +37,10 @@ public class MessageEvent implements IEvent {
             this.sourceType = sourceType;
         }
 
+        public static void parse(JsonNode json) {
+
+        }
+
         public static class FriendNormalMessageEvent extends FriendMessageEvent {
             public FriendNormalMessageEvent(BaseMessage data) {
                 super(data, MessageSourceType.NORMAL);
@@ -66,6 +71,10 @@ public class MessageEvent implements IEvent {
             this.groupId = data.getGroupId();
             this.anonymous = data.getAnonymous();
             this.sourceType = sourceType;
+        }
+
+        public static void parse(JsonNode json) {
+
         }
 
         public static class GroupNormalMessageEvent extends GroupMessageEvent {

@@ -1,5 +1,7 @@
 package net.cjsah.bot.event;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +17,8 @@ public class Event {
         handlers.add((Consumer<IEvent>) handler);
     }
 
-    public static <T extends IEvent> void broadcast(T event) {
+    public static <T extends IEvent> void broadcast(@Nullable T event) {
+        if (event == null) return;
         List<Consumer<IEvent>> handlers = events.get(event.getClass());
         if (handlers != null) {
             for (Consumer<IEvent> handler : handlers) {

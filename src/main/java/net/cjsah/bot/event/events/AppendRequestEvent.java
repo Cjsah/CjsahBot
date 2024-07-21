@@ -1,5 +1,6 @@
 package net.cjsah.bot.event.events;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.data.request.BaseAppendRequest;
@@ -18,6 +19,10 @@ public class AppendRequestEvent implements IEvent {
         this.comment = data.getComment();
         this.flag = data.getFlag();
         this.type = type;
+    }
+
+    public static void parse(JsonNode json) {
+
     }
 
     public static class FriendAppendRequestEvent extends AppendRequestEvent {

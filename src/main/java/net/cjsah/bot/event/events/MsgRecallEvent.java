@@ -1,5 +1,6 @@
 package net.cjsah.bot.event.events;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.data.notice.GroupMsgRecall;
@@ -16,6 +17,10 @@ public class MsgRecallEvent implements IEvent {
         this.userId = data.getUserId();
         this.messageId = data.getMessageId();
         this.type = type;
+    }
+
+    public static void parse(JsonNode json) {
+
     }
 
     public static class FriendMsgRecallEvent extends MsgRecallEvent {
