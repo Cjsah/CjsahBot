@@ -5,25 +5,27 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.cjsah.bot.data.BaseData;
 import net.cjsah.bot.data.enums.GroupRole;
+import net.cjsah.bot.data.enums.Sex;
 import net.cjsah.bot.resolver.JsonEnumMapping;
 
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class GroupMsg extends BaseData {
+public class BaseMessage extends BaseData {
     private int messageId;
-    private long groupId;
     private long userId;
-    private Anonymous anonymous;
     private Object message;
     private String rawMessage;
     private int font;
     private Sender sender;
 
     @Data
-    @ToString(callSuper = true)
-    @EqualsAndHashCode(callSuper = true)
-    public static class Sender extends FriendMsg.Sender {
+    public static class Sender {
+        private long userId;
+        private String nickname;
+        @JsonEnumMapping
+        private Sex sex;
+        private int age;
         private String card;
         private String area;
         private String level;
@@ -32,10 +34,4 @@ public class GroupMsg extends BaseData {
         private String title;
     }
 
-    @Data
-    public static class Anonymous {
-        private long id;
-        private String name;
-        private String flag;
-    }
 }

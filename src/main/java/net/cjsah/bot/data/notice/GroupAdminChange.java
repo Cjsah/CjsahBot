@@ -1,4 +1,4 @@
-package net.cjsah.bot.data.request;
+package net.cjsah.bot.data.notice;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,9 +8,7 @@ import net.cjsah.bot.data.BaseData;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class GroupAdd extends BaseData {
+public class GroupAdminChange extends BaseData {
     private long groupId;
     private long userId;
-    private String comment;
-    private String flag;
 }

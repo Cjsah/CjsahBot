@@ -64,7 +64,7 @@ class ReceivedMsgParserBuilder(
                 parser("meta_event", "meta_event_type") {
                     parser("heartbeat", isLast = true, run = {
                         val bean = JsonUtil.convert(it, HeartBeat::class.java)
-                        Event.broadcast(AppHeartBeatEvent(bean))
+                        Event.broadcast(AppHeartBeatEvent(bean.interval, bean.status))
                     })
                 }
             }

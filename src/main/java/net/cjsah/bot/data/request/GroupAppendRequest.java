@@ -1,14 +1,12 @@
-package net.cjsah.bot.data.notice;
+package net.cjsah.bot.data.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.cjsah.bot.data.BaseData;
 
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class GroupUserHonor extends BaseData {
+public class GroupAppendRequest extends BaseAppendRequest {
     private long groupId;
-    private long userId;
 }

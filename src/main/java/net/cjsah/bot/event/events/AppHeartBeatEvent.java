@@ -1,8 +1,13 @@
 package net.cjsah.bot.event.events;
 
-import net.cjsah.bot.data.meta.HeartBeat;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.cjsah.bot.data.StatusData;
 import net.cjsah.bot.event.IEvent;
 
-public record AppHeartBeatEvent(HeartBeat heartBeat) implements IEvent {
-
+@Getter
+@RequiredArgsConstructor
+public class AppHeartBeatEvent implements IEvent {
+    private final long interval;
+    private final StatusData status;
 }

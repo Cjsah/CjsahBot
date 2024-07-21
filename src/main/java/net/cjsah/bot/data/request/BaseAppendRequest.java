@@ -8,7 +8,7 @@ import net.cjsah.bot.data.BaseData;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FriendAdd extends BaseData {
+public class BaseAppendRequest extends BaseData {
     private long userId;
     private String comment;
     private String flag;
