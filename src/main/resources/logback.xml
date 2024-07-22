@@ -2,7 +2,7 @@
 <configuration>
     <property name="log.path" value="./logs"/>
     <property name="console.log.pattern"
-              value="%red(%d{yyyy-MM-dd HH:mm:ss,GMT+8}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}%n) - %msg%n"/>
+              value="%white([)%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})%white(]) [%cyan(%logger{36})] [%highlight(%level)] - %msg%n"/>
     <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss,GMT+8} [%thread] %-5level %logger{36} - %msg%n"/>
 
     <!-- 控制台输出 -->

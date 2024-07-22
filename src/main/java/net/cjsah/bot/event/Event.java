@@ -18,6 +18,8 @@ public class Event {
     }
 
     public static <T extends IEvent> void broadcast(@Nullable T event) {
+        System.out.println("broadcast");
+        System.out.println(event);
         if (event == null) return;
         List<Consumer<IEvent>> handlers = events.get(event.getClass());
         if (handlers != null) {

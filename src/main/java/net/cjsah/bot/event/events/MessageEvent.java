@@ -24,6 +24,7 @@ public class MessageEvent implements IEvent {
         this.messageId = json.get("message_id").asInt();
         this.userId = json.get("user_id").asLong();
         this.message = json.get("message");
+        System.out.println(message);
         this.rawMessage = json.get("raw_message").asText();
         this.font = json.get("font").asInt();
         this.sender = JsonUtil.convert(json.get("sender"), Sender.class);
