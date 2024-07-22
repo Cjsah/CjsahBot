@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class Event {
+public final class Event {
     private static final Map<Class<? extends IEvent>, List<Consumer<IEvent>>> events = new HashMap<>();
 
     @SuppressWarnings("unchecked")

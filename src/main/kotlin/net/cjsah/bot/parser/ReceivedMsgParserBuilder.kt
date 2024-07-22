@@ -2,6 +2,7 @@ package net.cjsah.bot.parser
 
 import com.alibaba.fastjson2.JSONObject
 import net.cjsah.bot.event.Event
+import net.cjsah.bot.event.events.AppConnectedEvent
 import net.cjsah.bot.event.events.AppHeartBeatEvent
 import net.cjsah.bot.event.events.AppendRequestEvent.FriendAppendRequestEvent
 import net.cjsah.bot.event.events.AppendRequestEvent.GroupAppendRequestEvent.GroupAppendInviteRequestEvent
@@ -46,6 +47,11 @@ class ReceivedMsgParserBuilder(
         private fun init(): ReceivedMsgParser {
             return node("post_type") {
                 parser("meta_event", "meta_event_type") {
+                    parser("lifecycle", "sub_type") {
+                        parser("connect", isLast = true, run = {
+                            Event.broadcast(AppConnectedEvent(it))
+                        })
+                    }
                     parser("heartbeat", isLast = true, run = {
                         Event.broadcast(AppHeartBeatEvent(it))
                     })
