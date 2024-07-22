@@ -32,8 +32,8 @@ import net.cjsah.bot.event.events.MessageEvent.GroupMessageEvent.GroupNoticeMess
 import net.cjsah.bot.event.events.MsgRecallEvent.FriendMsgRecallEvent
 import net.cjsah.bot.event.events.MsgRecallEvent.GroupMsgRecallEvent
 
-class ReceivedMsgParserBuilder(
-    private val node: ReceivedMsgParser
+class ReceivedCallbackParser(
+    private val node: ReceivedEventParserNode
 ) {
 
     companion object {
@@ -41,10 +41,10 @@ class ReceivedMsgParserBuilder(
 
         @JvmStatic
         fun parse(raw: JSONObject) {
-            root.parse(raw)
+            println(raw)
         }
 
-        private fun init(): ReceivedMsgParser {
+        private fun init(): ReceivedEventParserNode {
             return node("post_type") {
                 parser("meta_event", "meta_event_type") {
                     parser("lifecycle", "sub_type") {
@@ -169,10 +169,10 @@ class ReceivedMsgParserBuilder(
             nextKey: String,
             isLast: Boolean = false,
             run: (json: JSONObject) -> Unit = {},
-            block: ReceivedMsgParserBuilder.() -> Unit = {}
-        ): ReceivedMsgParser {
-            val node = ReceivedMsgParser(isLast, nextKey, run)
-            val builder = ReceivedMsgParserBuilder(node)
+            block: ReceivedCallbackParser.() -> Unit = {}
+        ): ReceivedEventParserNode {
+            val node = ReceivedEventParserNode(isLast, nextKey, run)
+            val builder = ReceivedCallbackParser(node)
             block(builder)
             return node
         }
@@ -183,10 +183,10 @@ class ReceivedMsgParserBuilder(
         nextKey: String = "",
         isLast: Boolean = false,
         run: (json: JSONObject) -> Unit = {},
-        block: ReceivedMsgParserBuilder.() -> Unit = {}
+        block: ReceivedCallbackParser.() -> Unit = {}
     ) {
-        val node = ReceivedMsgParser(isLast, nextKey, run)
-        val builder = ReceivedMsgParserBuilder(node)
+        val node = ReceivedEventParserNode(isLast, nextKey, run)
+        val builder = ReceivedCallbackParser(node)
         this.node.addParser(value, node)
         block(builder)
     }

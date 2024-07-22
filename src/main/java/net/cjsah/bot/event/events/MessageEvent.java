@@ -5,7 +5,7 @@ import lombok.Getter;
 import net.cjsah.bot.data.Anonymous;
 import net.cjsah.bot.data.Sender;
 import net.cjsah.bot.data.enums.MessageSourceType;
-import net.cjsah.bot.data.enums.MessageType;
+import net.cjsah.bot.data.enums.MessageFrom;
 import net.cjsah.bot.event.IEvent;
 
 import java.util.List;
@@ -18,24 +18,24 @@ public class MessageEvent implements IEvent {
     private final String rawMessage;
     private final int font;
     private final Sender sender;
-    private final MessageType messageType;
+    private final MessageFrom messageFrom;
     private final MessageSourceType sourceType;
 
-    public MessageEvent(JSONObject json, MessageType messageType, MessageSourceType sourceType) {
+    public MessageEvent(JSONObject json, MessageFrom messageFrom, MessageSourceType sourceType) {
         this.messageId = json.getIntValue("message_id");
         this.userId = json.getLongValue("user_id");
         this.message = json.getList("message", JSONObject.class);
         this.rawMessage = json.getString("raw_message");
         this.font = json.getIntValue("font");
         this.sender = json.getObject("sender", Sender.class);
-        this.messageType = messageType;
+        this.messageFrom = messageFrom;
         this.sourceType = sourceType;
     }
 
     public static class FriendMessageEvent extends MessageEvent {
 
         public FriendMessageEvent(JSONObject json, MessageSourceType sourceType) {
-            super(json, MessageType.FRIEND, sourceType);
+            super(json, MessageFrom.FRIEND, sourceType);
         }
 
         public static class FriendNormalMessageEvent extends FriendMessageEvent {
@@ -63,7 +63,7 @@ public class MessageEvent implements IEvent {
         private final Anonymous anonymous;
 
         public GroupMessageEvent(JSONObject json, MessageSourceType sourceType) {
-            super(json, MessageType.GROUP, sourceType);
+            super(json, MessageFrom.GROUP, sourceType);
             this.groupId = json.getLongValue("group_id");
             this.anonymous = json.getObject("anonymous", Anonymous.class);
         }

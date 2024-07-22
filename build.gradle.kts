@@ -15,6 +15,7 @@ val logback_version: String by project
 val jackson_version: String by project
 val lombok_version: String by project
 val fastjson_version: String by project
+val hutool_version: String by project
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -23,6 +24,7 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.alibaba.fastjson2:fastjson2:$fastjson_version")
+    implementation("cn.hutool:hutool-core:$hutool_version")
 
     compileOnly("org.projectlombok:lombok:$lombok_version")
     annotationProcessor("org.projectlombok:lombok:$lombok_version")

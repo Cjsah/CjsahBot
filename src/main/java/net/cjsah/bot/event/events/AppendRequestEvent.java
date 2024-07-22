@@ -3,7 +3,7 @@ package net.cjsah.bot.event.events;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.IncreaseType;
-import net.cjsah.bot.data.enums.MessageType;
+import net.cjsah.bot.data.enums.MessageFrom;
 import net.cjsah.bot.event.IEvent;
 
 @Getter
@@ -11,9 +11,9 @@ public class AppendRequestEvent implements IEvent {
     private final long userId;
     private final String comment;
     private final String flag;
-    private final MessageType type;
+    private final MessageFrom type;
 
-    public AppendRequestEvent(JSONObject json, MessageType type) {
+    public AppendRequestEvent(JSONObject json, MessageFrom type) {
         this.userId = json.getLongValue("user_id");
         this.comment = json.getString("comment");
         this.flag = json.getString("flag");
@@ -22,7 +22,7 @@ public class AppendRequestEvent implements IEvent {
 
     public static class FriendAppendRequestEvent extends AppendRequestEvent {
         public FriendAppendRequestEvent(JSONObject json) {
-            super(json, MessageType.FRIEND);
+            super(json, MessageFrom.FRIEND);
         }
     }
 
@@ -32,7 +32,7 @@ public class AppendRequestEvent implements IEvent {
         private final IncreaseType joinType;
 
         public GroupAppendRequestEvent(JSONObject json, IncreaseType joinType) {
-            super(json, MessageType.GROUP);
+            super(json, MessageFrom.GROUP);
             this.groupId = json.getLongValue("group_id");
             this.joinType = joinType;
         }

@@ -6,13 +6,18 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.cjsah.bot.api.Api
+import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.event.Event
 import net.cjsah.bot.event.events.AppHeartBeatEvent
-import net.cjsah.bot.parser.ReceivedMsgParserBuilder
+import net.cjsah.bot.msg.MessageChain
+import net.cjsah.bot.parser.ReceivedCallbackParser
+import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -31,7 +36,8 @@ suspend fun main() {
         timer?.heart(it.interval)
     }
 
-    println("send")
+//    Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
+    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
 
     while (Signal.isRunning());
@@ -64,7 +70,11 @@ suspend fun tryConnect() {
                 val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
                 if (receivedMsg.isEmpty()) continue
                 val json = JsonUtil.deserialize(receivedMsg)
-                ReceivedMsgParserBuilder.parse(json)
+                if (json.containsKey("retcode")) {
+                    ReceivedCallbackParser.parse(json)
+                } else {
+                    ReceivedEventParser.parse(json)
+                }
             } catch (e: Exception) {
                 log.error("Error!", e)
             }
@@ -73,5 +83,17 @@ suspend fun tryConnect() {
             log.warn("Session is closed!")
         }
     }
+}
 
+fun send(form: ApiParam) {
+    try {
+        val session = session?.outgoing
+        if (session != null) {
+            val body = form.generate()
+            val result = session.trySend(Frame.Text(body))
+            result.getOrThrow()
+        }
+    }catch (e: Exception) {
+        log.error("Send Error!", e)
+    }
 }
