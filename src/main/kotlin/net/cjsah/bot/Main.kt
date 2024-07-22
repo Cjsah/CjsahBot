@@ -8,7 +8,6 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.cjsah.bot.event.Event
@@ -66,8 +65,6 @@ suspend fun tryConnect() {
                 if (receivedMsg.isEmpty()) continue
                 val json = JsonUtil.deserialize(receivedMsg)
                 ReceivedMsgParserBuilder.parse(json)
-            } catch (e: ClosedReceiveChannelException) {
-
             } catch (e: Exception) {
                 log.error("Error!", e)
             }

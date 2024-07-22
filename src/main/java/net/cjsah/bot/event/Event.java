@@ -19,10 +19,11 @@ public class Event {
 
     public static <T extends IEvent> void broadcast(@Nullable T event) {
         if (event == null) return;
-        List<Consumer<IEvent>> handlers = events.get(event.getClass());
-        if (handlers != null) {
-            for (Consumer<IEvent> handler : handlers) {
-                handler.accept(event);
+        for (Map.Entry<Class<? extends IEvent>, List<Consumer<IEvent>>> entry : events.entrySet()) {
+            if (entry.getKey().isAssignableFrom(event.getClass())) {
+                for (Consumer<IEvent> handler : entry.getValue()) {
+                    handler.accept(event);
+                }
             }
         }
     }
