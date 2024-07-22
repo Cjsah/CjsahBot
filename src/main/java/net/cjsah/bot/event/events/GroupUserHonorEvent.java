@@ -1,8 +1,8 @@
 package net.cjsah.bot.event.events;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.HonorType;
-import net.cjsah.bot.data.notice.GroupUserHonor;
 import net.cjsah.bot.event.IEvent;
 
 @Getter
@@ -11,27 +11,27 @@ public class GroupUserHonorEvent implements IEvent {
     private final long userId;
     private final HonorType type;
 
-    public GroupUserHonorEvent(GroupUserHonor data, HonorType type) {
-        this.groupId = data.getGroupId();
-        this.userId = data.getUserId();
+    public GroupUserHonorEvent(JsonNode json, HonorType type) {
+        this.groupId = json.get("group_id").asLong();
+        this.userId = json.get("user_id").asLong();
         this.type = type;
     }
 
     public static class GroupUserDragonHonorEvent extends GroupUserHonorEvent {
-        public GroupUserDragonHonorEvent(GroupUserHonor data) {
-            super(data, HonorType.DRAGON);
+        public GroupUserDragonHonorEvent(JsonNode json) {
+            super(json, HonorType.DRAGON);
         }
     }
 
     public static class GroupUserChatFireHonorEvent extends GroupUserHonorEvent {
-        public GroupUserChatFireHonorEvent(GroupUserHonor data) {
-            super(data, HonorType.CHAT_FIRE);
+        public GroupUserChatFireHonorEvent(JsonNode json) {
+            super(json, HonorType.CHAT_FIRE);
         }
     }
 
     public static class GroupUserHappinessHonorEvent extends GroupUserHonorEvent {
-        public GroupUserHappinessHonorEvent(GroupUserHonor data) {
-            super(data, HonorType.HAPPINESS);
+        public GroupUserHappinessHonorEvent(JsonNode json) {
+            super(json, HonorType.HAPPINESS);
         }
     }
 }
