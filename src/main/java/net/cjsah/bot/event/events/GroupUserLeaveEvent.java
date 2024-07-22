@@ -1,6 +1,6 @@
 package net.cjsah.bot.event.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.DecreaseType;
 import net.cjsah.bot.event.IEvent;
@@ -12,27 +12,27 @@ public class GroupUserLeaveEvent implements IEvent {
     private final long operatorId;
     private final DecreaseType reason;
 
-    public GroupUserLeaveEvent(JsonNode json, DecreaseType reason) {
-        this.groupId = json.get("group_id").asLong();
-        this.userId = json.get("user_id").asLong();
-        this.operatorId = json.get("operator_id").asLong();
+    public GroupUserLeaveEvent(JSONObject json, DecreaseType reason) {
+        this.groupId = json.getLongValue("group_id");
+        this.userId = json.getLongValue("user_id");
+        this.operatorId = json.getLongValue("operator_id");
         this.reason = reason;
     }
 
     public static class GroupUserSelfLeaveEvent extends GroupUserLeaveEvent {
-        public GroupUserSelfLeaveEvent(JsonNode json) {
+        public GroupUserSelfLeaveEvent(JSONObject json) {
             super(json, DecreaseType.LEAVE);
         }
     }
 
     public static class GroupUserKickEvent extends GroupUserLeaveEvent {
-        public GroupUserKickEvent(JsonNode json) {
+        public GroupUserKickEvent(JSONObject json) {
             super(json, DecreaseType.KICK);
         }
     }
 
     public static class GroupUserKickMeEvent extends GroupUserLeaveEvent {
-        public GroupUserKickMeEvent(JsonNode json) {
+        public GroupUserKickMeEvent(JSONObject json) {
             super(json, DecreaseType.KICK_ME);
         }
     }

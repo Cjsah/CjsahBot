@@ -1,33 +1,23 @@
 package net.cjsah.bot.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 
 public class JsonUtil {
-    private static final ObjectMapper ObjectMapper = new ObjectMapper();
 
-    public static <T> String serialize(T data) throws JsonProcessingException {
-        return ObjectMapper.writeValueAsString(data);
+    public static <T> String serialize(T data) {
+        return JSON.toJSONString(data);
     }
 
-    public static <T> T deserialize(String str, Class<T> clazz) throws JsonProcessingException {
-        return ObjectMapper.readValue(str, clazz);
+    public static <T> T deserialize(String str, Class<T> clazz) {
+        return JSON.parseObject(str, clazz);
     }
 
-    public static ObjectNode deserialize(String str) throws JsonProcessingException {
-        return ObjectMapper.readValue(str, ObjectNode.class);
+    public static JSONObject deserialize(String str) {
+        return JSON.parseObject(str);
     }
 
-    public static <T> T convert(JsonNode json, Class<T> clazz) {
-        return ObjectMapper.convertValue(json, clazz);
-    }
-
-    static {
-        ObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        ObjectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+    public static <T> T convert(JSONObject json, Class<T> clazz) {
+        return json.to(clazz);
     }
 }

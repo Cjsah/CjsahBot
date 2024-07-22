@@ -1,6 +1,6 @@
 package net.cjsah.bot.event.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.IncreaseType;
 import net.cjsah.bot.data.enums.MessageType;
@@ -13,15 +13,15 @@ public class AppendRequestEvent implements IEvent {
     private final String flag;
     private final MessageType type;
 
-    public AppendRequestEvent(JsonNode json, MessageType type) {
-        this.userId = json.get("user_id").asLong();
-        this.comment = json.get("comment").asText();
-        this.flag = json.get("flag").asText();
+    public AppendRequestEvent(JSONObject json, MessageType type) {
+        this.userId = json.getLongValue("user_id");
+        this.comment = json.getString("comment");
+        this.flag = json.getString("flag");
         this.type = type;
     }
 
     public static class FriendAppendRequestEvent extends AppendRequestEvent {
-        public FriendAppendRequestEvent(JsonNode json) {
+        public FriendAppendRequestEvent(JSONObject json) {
             super(json, MessageType.FRIEND);
         }
     }
@@ -31,20 +31,20 @@ public class AppendRequestEvent implements IEvent {
         private final long groupId;
         private final IncreaseType joinType;
 
-        public GroupAppendRequestEvent(JsonNode json, IncreaseType joinType) {
+        public GroupAppendRequestEvent(JSONObject json, IncreaseType joinType) {
             super(json, MessageType.GROUP);
-            this.groupId = json.get("group_id").asLong();
+            this.groupId = json.getLongValue("group_id");
             this.joinType = joinType;
         }
 
         public static class GroupAppendNormalRequestEvent extends GroupAppendRequestEvent {
-            public GroupAppendNormalRequestEvent(JsonNode json) {
+            public GroupAppendNormalRequestEvent(JSONObject json) {
                 super(json, IncreaseType.APPROVE);
             }
         }
 
         public static class GroupAppendInviteRequestEvent extends GroupAppendRequestEvent {
-            public GroupAppendInviteRequestEvent(JsonNode json) {
+            public GroupAppendInviteRequestEvent(JSONObject json) {
                 super(json, IncreaseType.INVITE);
             }
         }

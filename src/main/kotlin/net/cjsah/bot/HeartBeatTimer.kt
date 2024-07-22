@@ -28,9 +28,7 @@ class HeartBeatTimer(private var nextTime: Long, private val callback: () -> Uni
     }
 
     private fun task() {
-        taskCount++
-        println("Executing task $taskCount")
-        if (taskCount >= 3) {
+        if (++taskCount >= 3) {
             stop()
             callback()
         }
@@ -43,7 +41,6 @@ class HeartBeatTimer(private var nextTime: Long, private val callback: () -> Uni
     }
 
     private fun reset() {
-        println("Reset called")
         job?.cancel()
         taskCount = 0
     }

@@ -1,7 +1,6 @@
 package net.cjsah.bot.parser
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.alibaba.fastjson2.JSONObject
 import net.cjsah.bot.event.Event
 import net.cjsah.bot.event.events.AppHeartBeatEvent
 import net.cjsah.bot.event.events.AppendRequestEvent.FriendAppendRequestEvent
@@ -40,7 +39,7 @@ class ReceivedMsgParserBuilder(
         private val root = init()
 
         @JvmStatic
-        fun parse(raw: ObjectNode) {
+        fun parse(raw: JSONObject) {
             root.parse(raw)
         }
 
@@ -163,26 +162,24 @@ class ReceivedMsgParserBuilder(
         private fun node(
             nextKey: String,
             isLast: Boolean = false,
-            nextProcess: (node: JsonNode) -> Any = { it.asText() },
-            run: (json: ObjectNode) -> Unit = {},
+            run: (json: JSONObject) -> Unit = {},
             block: ReceivedMsgParserBuilder.() -> Unit = {}
         ): ReceivedMsgParser {
-            val node = ReceivedMsgParser(isLast, nextKey, nextProcess, run)
+            val node = ReceivedMsgParser(isLast, nextKey, run)
             val builder = ReceivedMsgParserBuilder(node)
             block(builder)
             return node
         }
     }
 
-    fun <T> parser(
-        value: T,
+    fun parser(
+        value: String,
         nextKey: String = "",
         isLast: Boolean = false,
-        nextProcess: (node: JsonNode) -> Any = { it.asText() },
-        run: (json: ObjectNode) -> Unit = {},
+        run: (json: JSONObject) -> Unit = {},
         block: ReceivedMsgParserBuilder.() -> Unit = {}
     ) {
-        val node = ReceivedMsgParser(isLast, nextKey, nextProcess, run)
+        val node = ReceivedMsgParser(isLast, nextKey, run)
         val builder = ReceivedMsgParserBuilder(node)
         this.node.addParser(value, node)
         block(builder)

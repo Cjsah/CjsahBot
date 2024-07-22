@@ -26,8 +26,8 @@ public class Signal {
         }
     }
 
-    public static boolean isStopped() {
-        return Stop;
+    public static boolean isRunning() {
+        return !Stop;
     }
 
     public static void fromStatus(StatusData status) {

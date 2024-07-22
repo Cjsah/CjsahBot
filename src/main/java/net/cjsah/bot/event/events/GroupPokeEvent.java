@@ -1,6 +1,6 @@
 package net.cjsah.bot.event.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.event.IEvent;
 
@@ -10,9 +10,9 @@ public class GroupPokeEvent implements IEvent {
     private final long userId;
     private final long targetId;
 
-    public GroupPokeEvent(JsonNode json) {
-        this.groupId = json.get("group_id").asLong();
-        this.userId = json.get("user_id").asLong();
-        this.targetId = json.get("target_id").asLong();
+    public GroupPokeEvent(JSONObject json) {
+        this.groupId = json.getLongValue("group_id");
+        this.userId = json.getLongValue("user_id");
+        this.targetId = json.getLongValue("target_id");
     }
 }

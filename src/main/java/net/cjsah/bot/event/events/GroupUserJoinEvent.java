@@ -1,6 +1,6 @@
 package net.cjsah.bot.event.events;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.IncreaseType;
 import net.cjsah.bot.event.IEvent;
@@ -12,21 +12,21 @@ public class GroupUserJoinEvent implements IEvent {
     private final long operatorId;
     private final IncreaseType type;
 
-    public GroupUserJoinEvent(JsonNode json, IncreaseType type) {
-        this.groupId = json.get("group_id").asLong();
-        this.userId = json.get("user_id").asLong();
-        this.operatorId = json.get("operator_id").asLong();
+    public GroupUserJoinEvent(JSONObject json, IncreaseType type) {
+        this.groupId = json.getLongValue("group_id");
+        this.userId = json.getLongValue("user_id");
+        this.operatorId = json.getLongValue("operator_id");
         this.type = type;
     }
 
     public static class GroupUserApproveJoinEvent extends GroupUserJoinEvent {
-        public GroupUserApproveJoinEvent(JsonNode json) {
+        public GroupUserApproveJoinEvent(JSONObject json) {
             super(json, IncreaseType.APPROVE);
         }
     }
 
     public static class GroupUserInviteJoinEvent extends GroupUserJoinEvent {
-        public GroupUserInviteJoinEvent(JsonNode json) {
+        public GroupUserInviteJoinEvent(JSONObject json) {
             super(json, IncreaseType.INVITE);
         }
     }

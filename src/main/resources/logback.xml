@@ -3,8 +3,8 @@
     <conversionRule conversionWord="colorLevel"  converterClass="net.cjsah.bot.resolver.LogLevelColorConverter" />
     <property name="log.path" value="./logs"/>
     <property name="console.log.pattern"
-              value="[%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})] [%cyan(%logger{36})] [%colorLevel] - %msg%n"/>
-    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss,GMT+8} [%thread] %-5level %logger{36} - %msg%n"/>
+              value="[%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})] [%cyan(%logger{36})] [%colorLevel] %msg%n"/>
+    <property name="log.pattern" value="[%d{yyyy-MM-dd HH:mm:ss,GMT+8}] [%logger{36}] [%level] %msg%n"/>
 
     <!-- 控制台输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
