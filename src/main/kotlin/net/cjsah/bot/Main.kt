@@ -8,9 +8,13 @@ import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.event.Event
@@ -21,12 +25,15 @@ import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.LinkedList
 import java.util.concurrent.Executors
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
 internal val client = HttpClient(CIO) { install(WebSockets) }
 internal var session: DefaultClientWebSocketSession? = null
 internal var heart: HeartBeatTimer? = null
+
+private val callbacks = HashMap<String, Channel<JSONObject>>()
 
 internal suspend fun main() {
     tryConnect()
@@ -86,16 +93,27 @@ internal suspend fun tryConnect() {
 }
 
 @JvmOverloads
-internal fun request(form: ApiParam, callback: Boolean = true): JSONObject {
+internal fun request(form: ApiParam, callback: Boolean = true): JSONObject? {
     try {
         val session = session?.outgoing
+        var result: JSONObject? = null
         if (session != null) {
             val body = form.generate()
-            val result = session.trySend(Frame.Text(body))
-            result.getOrThrow()
+            val uuid = form.echo
+            var channel: Channel<JSONObject>? = null
+            if (callback) {
+                channel = Channel()
+                callbacks[uuid] = channel
+            }
+            val sendResult = session.trySend(Frame.Text(body))
+            sendResult.getOrThrow()
+            runBlocking {
+                result = channel?.receive()
+            }
         }
+        return result
     }catch (e: Exception) {
         log.error("Send Error!", e)
+        return JSONObject()
     }
-    return JSONObject()
 }
