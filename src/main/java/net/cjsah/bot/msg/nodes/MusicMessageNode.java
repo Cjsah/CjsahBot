@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @ToString(callSuper = true)
-public abstract class MusicMessageNode extends MessageNode {
+public class MusicMessageNode extends MessageNode {
     private final MusicType type;
     /* type == qq|163|xm */
     private final long id;

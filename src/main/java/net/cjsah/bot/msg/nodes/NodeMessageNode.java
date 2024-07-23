@@ -39,6 +39,11 @@ public class NodeMessageNode extends MessageNode {
         this.message = message;
     }
 
+    public NodeMessageNode(JSONObject json) {
+        super(MessageType.NODE);
+        throw new IllegalCallerException("不支持的操作!");
+    }
+
     @Override
     public void serializeData(JSONObject json) {
         if (this.message == null) {

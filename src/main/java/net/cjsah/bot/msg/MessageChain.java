@@ -4,9 +4,10 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.msg.nodes.TextMessageNode;
 
+import java.util.Collection;
 import java.util.List;
 
-public interface MessageChain extends List<MessageNode> {
+public interface MessageChain extends Collection<MessageNode> {
     MessageChain EMPTY = MessageChainImpl.EMPTY;
 
     static MessageChain raw(String text) {
