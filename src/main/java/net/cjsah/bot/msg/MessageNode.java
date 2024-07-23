@@ -29,6 +29,20 @@ public abstract class MessageNode {
 
     protected abstract void serializeData(JSONObject json);
 
+    protected int parseToInt(JSONObject json, String key) {
+        String val = json.getString(key);
+        return Integer.parseInt(val);
+    }
+
+    protected long parseToLong(JSONObject json, String key) {
+        String val = json.getString(key);
+        return Long.parseLong(val);
+    }
+    protected float parseToFloat(JSONObject json, String key) {
+        String val = json.getString(key);
+        return Float.parseFloat(val);
+    }
+
     public static MessageChain parseMessage(JSONArray array) {
 
     }
