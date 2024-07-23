@@ -7,7 +7,6 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -27,14 +26,14 @@ import java.util.concurrent.Executors
 internal val log: Logger = LoggerFactory.getLogger("Main")
 internal val client = HttpClient(CIO) { install(WebSockets) }
 internal var session: DefaultClientWebSocketSession? = null
-internal var timer: HeartBeatTimer? = null
+internal var heart: HeartBeatTimer? = null
 
 internal suspend fun main() {
     tryConnect()
 
     Event.subscribe(AppHeartBeatEvent::class.java) {
         Signal.fromStatus(it.status)
-        timer?.heart(it.interval)
+        heart?.heart(it.interval)
     }
 
 //    Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
@@ -46,7 +45,7 @@ internal suspend fun main() {
 }
 
 internal suspend fun tryConnect() {
-    timer?.stop()
+    heart?.stop()
     session?.close()
     session = null
     while (true) {
@@ -59,7 +58,7 @@ internal suspend fun tryConnect() {
         }
     }
 
-    timer = HeartBeatTimer(5000) {
+    heart = HeartBeatTimer(5000) {
         CoroutineScope(Dispatchers.Main).launch {
             tryConnect()
         }
