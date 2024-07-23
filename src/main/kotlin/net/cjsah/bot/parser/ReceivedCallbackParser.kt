@@ -32,7 +32,7 @@ import net.cjsah.bot.event.events.MessageEvent.GroupMessageEvent.GroupNoticeMess
 import net.cjsah.bot.event.events.MsgRecallEvent.FriendMsgRecallEvent
 import net.cjsah.bot.event.events.MsgRecallEvent.GroupMsgRecallEvent
 
-class ReceivedCallbackParser(
+internal class ReceivedCallbackParser(
     private val node: ReceivedEventParserNode
 ) {
 
@@ -42,6 +42,11 @@ class ReceivedCallbackParser(
         @JvmStatic
         fun parse(raw: JSONObject) {
             println(raw)
+        }
+
+        @JvmStatic
+        fun getMessageChain(json: JSONObject) {
+
         }
 
         private fun init(): ReceivedEventParserNode {

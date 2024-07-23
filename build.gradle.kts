@@ -28,6 +28,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:$lombok_version")
     annotationProcessor("org.projectlombok:lombok:$lombok_version")
+    testCompileOnly("org.projectlombok:lombok:$lombok_version")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombok_version")
 }
 
 tasks.test {

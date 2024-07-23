@@ -1,6 +1,6 @@
 package net.cjsah.bot.data.enums;
 
-public enum MessageSourceType {
+public enum MessageSendType {
     OTHER,
     NORMAL,
     TEMPORARY,

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.StatusData;
 import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.util.JsonUtil;
 
 @Getter
 public class AppHeartBeatEvent implements IEvent {
@@ -12,7 +13,7 @@ public class AppHeartBeatEvent implements IEvent {
 
     public AppHeartBeatEvent(JSONObject json) {
         this.interval = json.getLongValue("interval");
-        this.status = json.getObject("status", StatusData.class);
+        this.status = JsonUtil.getObject(json, "status", StatusData.class);
     }
 
 }

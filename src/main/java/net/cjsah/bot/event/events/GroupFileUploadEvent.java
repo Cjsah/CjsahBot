@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.InnerFile;
 import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.util.JsonUtil;
 
 @Getter
 public class GroupFileUploadEvent implements IEvent {
@@ -14,6 +15,6 @@ public class GroupFileUploadEvent implements IEvent {
     public GroupFileUploadEvent(JSONObject json) {
         this.groupId = json.getLongValue("group_id");
         this.uploaderId = json.getLongValue("user_id");
-        this.file = json.getObject("file", InnerFile.class);
+        this.file = JsonUtil.getObject(json, "file", InnerFile.class);
     }
 }

@@ -1,5 +1,6 @@
 package net.cjsah.bot
 
+import com.alibaba.fastjson2.JSONObject
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -23,12 +24,12 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 
-val log: Logger = LoggerFactory.getLogger("Main")
-val client = HttpClient(CIO) { install(WebSockets) }
-var session: DefaultClientWebSocketSession? = null
-var timer: HeartBeatTimer? = null
+internal val log: Logger = LoggerFactory.getLogger("Main")
+internal val client = HttpClient(CIO) { install(WebSockets) }
+internal var session: DefaultClientWebSocketSession? = null
+internal var timer: HeartBeatTimer? = null
 
-suspend fun main() {
+internal suspend fun main() {
     tryConnect()
 
     Event.subscribe(AppHeartBeatEvent::class.java) {
@@ -44,7 +45,7 @@ suspend fun main() {
 
 }
 
-suspend fun tryConnect() {
+internal suspend fun tryConnect() {
     timer?.stop()
     session?.close()
     session = null
@@ -85,7 +86,8 @@ suspend fun tryConnect() {
     }
 }
 
-fun send(form: ApiParam) {
+@JvmOverloads
+internal fun request(form: ApiParam, callback: Boolean = true): JSONObject {
     try {
         val session = session?.outgoing
         if (session != null) {
@@ -96,4 +98,5 @@ fun send(form: ApiParam) {
     }catch (e: Exception) {
         log.error("Send Error!", e)
     }
+    return JSONObject()
 }
