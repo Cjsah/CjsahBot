@@ -27,9 +27,9 @@ public class RecordMessageNode extends MessageNode {
 
     public RecordMessageNode(JSONObject json) {
         super(MessageType.RECORD);
-        this.file = json.getString("file");
+        this.file = parsetoString(json, "file");
         this.magic = json.getIntValue("magic") == 1;
-        this.url = json.getString("url");
+        this.url = parsetoString(json, "url");
     }
 
     @Override

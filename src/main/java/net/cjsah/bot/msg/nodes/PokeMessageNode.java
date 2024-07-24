@@ -10,27 +10,27 @@ import net.cjsah.bot.msg.MessageNode;
 @Getter
 @ToString(callSuper = true)
 public class PokeMessageNode extends MessageNode {
-    private final int type;
+    private final int pokeType;
     private final int id;
     private final String name;
 
-    public PokeMessageNode(int type, int id) {
+    public PokeMessageNode(int pokeType, int id) {
         super(MessageType.POKE);
-        this.type = type;
+        this.pokeType = pokeType;
         this.id = id;
         this.name = null;
     }
 
     public PokeMessageNode(JSONObject json) {
         super(MessageType.POKE);
-        this.type = this.parseToInt(json, "type");
+        this.pokeType = this.parseToInt(json, "type");
         this.id = this.parseToInt(json, "id");
         this.name = json.getString("name");
     }
 
     @Override
     public void serializeData(JSONObject json) {
-        json.put("type", String.valueOf(this.type));
+        json.put("type", String.valueOf(this.pokeType));
         json.put("id", String.valueOf(this.id));
     }
 }

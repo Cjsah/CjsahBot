@@ -27,8 +27,8 @@ public class LocationMessageNode extends MessageNode {
         super(MessageType.LOCATION);
         this.lat = this.parseToFloat(json, "lat");
         this.lon = this.parseToFloat(json, "lon");
-        this.title = json.getString("title");
-        this.description = json.getString("content");
+        this.title = parsetoString(json, "title");
+        this.description = parsetoString(json, "content");
     }
 
     @Override

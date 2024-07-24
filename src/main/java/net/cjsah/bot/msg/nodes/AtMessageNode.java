@@ -21,6 +21,7 @@ public class AtMessageNode extends MessageNode {
 
     public AtMessageNode(JSONObject json) {
         super(MessageType.AT);
+        System.out.println(json);
         String qq = json.getString("qq");
         this.qq = "all".equals(qq) ? -1 : Long.parseLong(qq);
     }

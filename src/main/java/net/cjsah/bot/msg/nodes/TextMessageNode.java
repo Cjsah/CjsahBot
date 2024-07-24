@@ -9,6 +9,7 @@ import net.cjsah.bot.msg.MessageNode;
 @Getter
 @ToString(callSuper = true)
 public class TextMessageNode extends MessageNode {
+    public static final MessageNode EMPTY = new TextMessageNode("");
     private final String text;
 
     public TextMessageNode(String text) {

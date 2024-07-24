@@ -10,25 +10,25 @@ import net.cjsah.bot.msg.MessageNode;
 @Getter
 @ToString(callSuper = true)
 public class ContactMessageNode extends MessageNode {
-    private final MessageSource type;
+    private final MessageSource source;
     private final long id;
 
-    public ContactMessageNode(MessageSource type, int id) {
+    public ContactMessageNode(MessageSource source, int id) {
         super(MessageType.CONTACT);
-        this.type = type;
+        this.source = source;
         this.id = id;
     }
 
     public ContactMessageNode(JSONObject json) {
         super(MessageType.CONTACT);
         String type = json.getString("type");
-        this.type = MessageSource.fromName(MessageSource::getContact, type);
+        this.source = MessageSource.fromName(MessageSource::getContact, type);
         this.id = this.parseToLong(json, "id");
     }
 
     @Override
     public void serializeData(JSONObject json) {
-        json.put("type", this.type.getContact());
+        json.put("type", this.source.getContact());
         json.put("id", String.valueOf(this.id));
     }
 }

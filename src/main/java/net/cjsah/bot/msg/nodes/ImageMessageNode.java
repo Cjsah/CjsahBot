@@ -31,9 +31,9 @@ public class ImageMessageNode extends MessageNode {
 
     public ImageMessageNode(JSONObject json) {
         super(MessageType.IMAGE);
-        this.file = json.getString("file");
+        this.file = parsetoString(json, "file");
         this.isFlash = "flush".equals(json.getString("type"));
-        this.url = json.getString("url");
+        this.url = parsetoString(json, "url");
     }
 
     @Override

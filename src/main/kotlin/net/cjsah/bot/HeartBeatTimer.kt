@@ -7,9 +7,10 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import net.cjsah.bot.util.CoroutineScopeUtil
 import java.util.concurrent.Executors
 
-class HeartBeatTimer(private var nextTime: Long, private val callback: () -> Unit) {
+class HeartBeatTimer(private var nextTime: Long, private val callback: suspend CoroutineScope.() -> Unit) {
     private var job: Job? = null
     private var taskCount = 0
     private val scope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
@@ -30,7 +31,8 @@ class HeartBeatTimer(private var nextTime: Long, private val callback: () -> Uni
     private fun task() {
         if (++taskCount >= 3) {
             stop()
-            callback()
+            log.warn("连接已断开!")
+            CoroutineScopeUtil.launch(callback)
         }
     }
 

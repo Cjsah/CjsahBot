@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @ToString(callSuper = true)
 public class MusicMessageNode extends MessageNode {
-    private final MusicType type;
+    private final MusicType musicType;
     /* type == qq|163|xm */
     private final long id;
     /* type == custom */
@@ -21,12 +21,12 @@ public class MusicMessageNode extends MessageNode {
     private final String content;
     private final String imageUrl;
 
-    public MusicMessageNode(MusicType type, long musicId) {
+    public MusicMessageNode(MusicType musicType, long musicId) {
         super(MessageType.MUSIC);
-        if (type == MusicType.CUSTOM) {
+        if (musicType == MusicType.CUSTOM) {
             throw new IllegalArgumentException("Custom music require url!");
         }
-        this.type = type;
+        this.musicType = musicType;
         this.id = musicId;
         this.url = null;
         this.audio = null;
@@ -37,7 +37,7 @@ public class MusicMessageNode extends MessageNode {
 
     public MusicMessageNode(String url, String audio, String title, @Nullable String content, @Nullable String imageUrl) {
         super(MessageType.MUSIC);
-        this.type = MusicType.CUSTOM;
+        this.musicType = MusicType.CUSTOM;
         this.id = 0;
         this.url = url;
         this.audio = audio;
@@ -49,8 +49,8 @@ public class MusicMessageNode extends MessageNode {
     public MusicMessageNode(JSONObject json) {
         super(MessageType.MUSIC);
         String type = json.getString("type");
-        this.type = MusicType.fromName(type);
-        if (this.type == MusicType.CUSTOM) {
+        this.musicType = MusicType.fromName(type);
+        if (this.musicType == MusicType.CUSTOM) {
             this.id = 0;
             this.url = json.getString("url");
             this.audio = json.getString("audio");
@@ -69,8 +69,8 @@ public class MusicMessageNode extends MessageNode {
 
     @Override
     public void serializeData(JSONObject json) {
-        json.put("type", this.type.getValue());
-        if (this.type == MusicType.CUSTOM) {
+        json.put("type", this.musicType.getValue());
+        if (this.musicType == MusicType.CUSTOM) {
             json.put("id", String.valueOf(this.id));
         } else {
             json.put("url", this.url);

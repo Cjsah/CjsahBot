@@ -7,25 +7,22 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.event.Event
 import net.cjsah.bot.event.events.AppHeartBeatEvent
-import net.cjsah.bot.msg.MessageChain
+import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
+import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.LinkedList
 import java.util.concurrent.Executors
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
@@ -33,7 +30,7 @@ internal val client = HttpClient(CIO) { install(WebSockets) }
 internal var session: DefaultClientWebSocketSession? = null
 internal var heart: HeartBeatTimer? = null
 
-private val callbacks = HashMap<String, Channel<JSONObject>>()
+internal val callbacks = HashMap<String, Channel<JSONObject>>()
 
 internal suspend fun main() {
     tryConnect()
@@ -43,8 +40,21 @@ internal suspend fun main() {
         heart?.heart(it.interval)
     }
 
+    Event.subscribe(MessageEvent.GroupMessageEvent::class.java) {
+        log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] ${it.rawMessage}")
+    }
+
+    Event.subscribe(MessageEvent.FriendMessageEvent::class.java) {
+        log.info("[好友] [${it.userId}(${it.sender.nickname})] ${it.rawMessage}")
+    }
+
+    Event.subscribe(MessageEvent::class.java) {
+        println("测试内容")
+        println(it.message)
+    }
+
 //    Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
-    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
+//    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
 
     while (Signal.isRunning());
@@ -55,9 +65,11 @@ internal suspend fun tryConnect() {
     heart?.stop()
     session?.close()
     session = null
+    log.info("正在连接到服务器...")
     while (true) {
         try {
-            session = client.webSocketSession(method = HttpMethod.Get, host = "127.0.0.1", port = 1111, path = "/")
+            session = client.webSocketSession(method = HttpMethod.Get, host = "server.cjsah.net", port = 1111, path = "/?access_token=CjsahBot-UO47rc3FVP")
+            log.info("连接成功!")
             break
         } catch (e: Exception) {
             log.warn("连接失败, 将在 3 秒后重试...", e)
@@ -66,7 +78,7 @@ internal suspend fun tryConnect() {
     }
 
     heart = HeartBeatTimer(5000) {
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScopeUtil.launch {
             tryConnect()
         }
     }
@@ -84,6 +96,9 @@ internal suspend fun tryConnect() {
                 }
             } catch (e: Exception) {
                 log.error("Error!", e)
+                if (e is ClosedReceiveChannelException) {
+                    break
+                }
             }
         }
         if (Signal.isRunning()) {
