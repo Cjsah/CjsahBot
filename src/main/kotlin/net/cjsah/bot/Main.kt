@@ -41,16 +41,11 @@ internal suspend fun main() {
     }
 
     Event.subscribe(MessageEvent.GroupMessageEvent::class.java) {
-        log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] ${it.rawMessage}")
+        log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] => ${it.message}")
     }
 
     Event.subscribe(MessageEvent.FriendMessageEvent::class.java) {
-        log.info("[好友] [${it.userId}(${it.sender.nickname})] ${it.rawMessage}")
-    }
-
-    Event.subscribe(MessageEvent::class.java) {
-        println("测试内容")
-        println(it.message)
+        log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
     }
 
 //    Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))

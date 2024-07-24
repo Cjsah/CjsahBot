@@ -2,13 +2,13 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.msg.MessageNode;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class NodeMessageNode extends MessageNode {
     /* 转发合并消息 */
     private final int messageId;
@@ -54,4 +54,20 @@ public class NodeMessageNode extends MessageNode {
             json.put("content", this.message.toJson());
         }
     }
+
+    @Override
+    public String toString() {
+        if (this.message == null) {
+            return this.toString("node", this.messageId);
+        } else {
+            assert this.nickname != null;
+            return this.toString("node", Map.of(
+                    "qq", this.qq,
+                    "nickname", this.nickname,
+                    "content", this.message.toString()
+            ));
+        }
+
+    }
+
 }

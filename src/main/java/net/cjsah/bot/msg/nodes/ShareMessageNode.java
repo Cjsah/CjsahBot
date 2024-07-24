@@ -2,13 +2,13 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class ShareMessageNode extends MessageNode {
     private final String url;
     private final String title;
@@ -30,4 +30,15 @@ public class ShareMessageNode extends MessageNode {
         json.put("content", this.content);
         json.put("image", this.imageUrl);
     }
+
+    @Override
+    public String toString() {
+        return this.toString("share", Map.of(
+                "url", this.url,
+                "title", this.title,
+                "content", this.content,
+                "image", this.imageUrl
+        ));
+    }
+
 }

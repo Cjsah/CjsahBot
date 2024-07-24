@@ -20,6 +20,15 @@ public class MessageChainImpl extends ArrayList<MessageNode> implements MessageC
         this.addAll(Arrays.asList(nodes));
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (MessageNode node : this) {
+            builder.append(node.toString());
+        }
+        return builder.toString();
+    }
+
     public static Collector<MessageNode, MessageChainImpl, MessageChain> list() {
         return new Collector<>() {
             @Override

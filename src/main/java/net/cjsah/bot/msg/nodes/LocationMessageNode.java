@@ -2,13 +2,13 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class LocationMessageNode extends MessageNode {
     private final float lat;
     private final float lon;
@@ -37,5 +37,16 @@ public class LocationMessageNode extends MessageNode {
         json.put("lon", String.valueOf(this.lon));
         json.put("title", this.title);
         json.put("content", this.description);
+    }
+
+
+    @Override
+    public String toString() {
+        return this.toString("location", Map.of(
+                "lat", this.lat,
+                "lon", this.lon,
+                "title", this.title,
+                "description", this.description
+        ));
     }
 }

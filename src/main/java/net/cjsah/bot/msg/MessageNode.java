@@ -3,16 +3,15 @@ package net.cjsah.bot.msg;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.util.StringUtil;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 
 @Getter
-@ToString
 public abstract class MessageNode {
     private final MessageType type;
 
@@ -46,6 +45,21 @@ public abstract class MessageNode {
     protected String parsetoString(JSONObject json, String key) {
         String val = json.getString(key);
         return StringUtil.netReplace(val);
+    }
+
+    public String toString() {
+        return "[" + this.type.getValue() + "]";
+    }
+
+    protected String toString(String key, Object value) {
+        return "[" + key + "=" + value + "]";
+    }
+
+    protected String toString(String name, Map<String, Object> map) {
+        String content = map.entrySet().stream()
+                .map(it -> it.getKey() + "=" + it.getValue())
+                .collect(StringUtil.join());
+        return "[" + name + content + "]";
     }
 
     public static MessageChain parseMessage(JSONArray array) {

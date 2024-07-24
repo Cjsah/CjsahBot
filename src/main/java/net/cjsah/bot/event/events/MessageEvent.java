@@ -9,6 +9,7 @@ import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.event.IEvent;
 import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.util.JsonUtil;
+import net.cjsah.bot.util.StringUtil;
 
 @Getter
 public class MessageEvent implements IEvent {
@@ -25,7 +26,7 @@ public class MessageEvent implements IEvent {
         this.messageId = json.getIntValue("message_id");
         this.userId = json.getLongValue("user_id");
         this.message = JsonUtil.getObject(json, "message", MessageChain.class);
-        this.rawMessage = json.getString("raw_message");
+        this.rawMessage = StringUtil.netReplace(json.getString("raw_message"));
         this.font = json.getIntValue("font");
         this.sender = JsonUtil.getObject(json, "sender", Sender.class);
         this.messageSource = messageSource;

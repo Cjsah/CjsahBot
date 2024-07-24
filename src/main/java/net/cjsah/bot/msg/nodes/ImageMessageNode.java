@@ -2,12 +2,12 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class ImageMessageNode extends MessageNode {
     private final String file;
     private final boolean isFlash;
@@ -43,4 +43,14 @@ public class ImageMessageNode extends MessageNode {
             json.put("type", "flush");
         }
     }
+
+    @Override
+    public String toString() {
+        return this.toString("image", Map.of(
+                "file", this.file,
+                "flash", this.isFlash,
+                "url", this.url
+        ));
+    }
+
 }

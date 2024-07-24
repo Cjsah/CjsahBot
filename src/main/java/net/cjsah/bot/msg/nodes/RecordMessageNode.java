@@ -2,12 +2,12 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class RecordMessageNode extends MessageNode {
     private final String file;
     private final boolean magic;
@@ -37,4 +37,14 @@ public class RecordMessageNode extends MessageNode {
         json.put("file", this.file);
         json.put("magic", this.magic ? 1 : 0);
     }
+
+    @Override
+    public String toString() {
+        return this.toString("record", Map.of(
+                "file", this.file,
+                "magic", this.magic,
+                "url", this.url
+        ));
+    }
+
 }

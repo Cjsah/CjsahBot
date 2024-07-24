@@ -2,13 +2,13 @@ package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
-import lombok.ToString;
 import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 
+import java.util.Map;
+
 @Getter
-@ToString(callSuper = true)
 public class ContactMessageNode extends MessageNode {
     private final MessageSource source;
     private final long id;
@@ -30,5 +30,13 @@ public class ContactMessageNode extends MessageNode {
     public void serializeData(JSONObject json) {
         json.put("type", this.source.getContact());
         json.put("id", String.valueOf(this.id));
+    }
+
+    @Override
+    public String toString() {
+        return this.toString("contact", Map.of(
+                "source", this.source.name().toLowerCase(),
+                "id", this.id
+        ));
     }
 }

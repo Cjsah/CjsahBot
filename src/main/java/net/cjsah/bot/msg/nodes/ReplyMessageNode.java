@@ -7,7 +7,6 @@ import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 
 @Getter
-@ToString(callSuper = true)
 public class ReplyMessageNode extends MessageNode {
     private final int messageId;
 
@@ -25,4 +24,10 @@ public class ReplyMessageNode extends MessageNode {
     public void serializeData(JSONObject json) {
         json.put("id", String.valueOf(this.messageId));
     }
+
+    @Override
+    public String toString() {
+        return this.toString("reply", this.messageId);
+    }
+
 }
