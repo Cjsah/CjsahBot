@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.event.Event
 import net.cjsah.bot.event.events.AppHeartBeatEvent
@@ -30,7 +31,7 @@ internal val client = HttpClient(CIO) { install(WebSockets) }
 internal var session: DefaultClientWebSocketSession? = null
 internal var heart: HeartBeatTimer? = null
 
-internal val callbacks = HashMap<String, Channel<JSONObject>>()
+internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
     tryConnect()
@@ -48,7 +49,9 @@ internal suspend fun main() {
         log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
     }
 
-//    Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
+    Api.getVersionInfo()
+//    val id = Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
+//    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
 
@@ -103,14 +106,14 @@ internal suspend fun tryConnect() {
 }
 
 @JvmOverloads
-internal fun request(form: ApiParam, callback: Boolean = true): JSONObject? {
+internal fun request(form: ApiParam, callback: Boolean = true): Any {
     try {
         val session = session?.outgoing
-        var result: JSONObject? = null
+        var result: Any? = null
         if (session != null) {
             val body = form.generate()
             val uuid = form.echo
-            var channel: Channel<JSONObject>? = null
+            var channel: Channel<Any?>? = null
             if (callback) {
                 channel = Channel()
                 callbacks[uuid] = channel
@@ -121,7 +124,7 @@ internal fun request(form: ApiParam, callback: Boolean = true): JSONObject? {
                 result = channel?.receive()
             }
         }
-        return result
+        return result ?: JSONObject()
     }catch (e: Exception) {
         log.error("Send Error!", e)
         return JSONObject()

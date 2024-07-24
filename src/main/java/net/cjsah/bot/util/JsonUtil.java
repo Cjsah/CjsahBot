@@ -1,6 +1,7 @@
 package net.cjsah.bot.util;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
 import net.cjsah.bot.data.enums.MessageSource;
@@ -9,6 +10,8 @@ import net.cjsah.bot.resolver.EnumDeserializer;
 import net.cjsah.bot.resolver.EnumSerializer;
 import net.cjsah.bot.resolver.MessageDeserializer;
 import net.cjsah.bot.resolver.MessageSerializer;
+
+import java.util.List;
 
 public class JsonUtil {
 
@@ -28,8 +31,20 @@ public class JsonUtil {
         return json.getObject(key, clazz, JSONReader.Feature.SupportSmartMatch);
     }
 
+    public static <T> List<T> getList(JSONObject json, String key, Class<T> clazz) {
+        return json.getList(key, clazz, JSONReader.Feature.SupportSmartMatch);
+    }
+
     public static <T> T convert(JSONObject json, Class<T> clazz) {
         return json.to(clazz);
+    }
+
+    public static <T> T convert(Object json, Class<T> clazz) {
+        return convert((JSONObject) json, clazz);
+    }
+
+    public static <T> List<T> convertList(Object array, Class<T> clazz) {
+        return ((JSONArray) array).toList(clazz, JSONReader.Feature.SupportSmartMatch);
     }
 
     static {
