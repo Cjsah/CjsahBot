@@ -1,9 +1,8 @@
 package net.cjsah.bot.event;
 
 import lombok.extern.slf4j.Slf4j;
+import net.cjsah.bot.resolver.ThreadPools;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,11 +25,13 @@ public final class Event {
         for (Map.Entry<Class<? extends IEvent>, List<Consumer<IEvent>>> entry : events.entrySet()) {
             if (entry.getKey().isAssignableFrom(event.getClass())) {
                 for (Consumer<IEvent> handler : entry.getValue()) {
-                    try {
-                        handler.accept(event);
-                    } catch (Exception e) {
-                        log.error("Error while handling event", e);
-                    }
+                    ThreadPools.execute(() -> {
+                        try {
+                            handler.accept(event);
+                        } catch (Exception e) {
+                            log.error("Error while handling event", e);
+                        }
+                    });
                 }
             }
         }
