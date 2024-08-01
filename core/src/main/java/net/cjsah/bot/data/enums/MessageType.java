@@ -4,7 +4,25 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.msg.MessageNode;
-import net.cjsah.bot.msg.nodes.*;
+import net.cjsah.bot.msg.nodes.AnonymousMessageNode;
+import net.cjsah.bot.msg.nodes.AtMessageNode;
+import net.cjsah.bot.msg.nodes.ContactMessageNode;
+import net.cjsah.bot.msg.nodes.DiceMessageNode;
+import net.cjsah.bot.msg.nodes.FaceMessageNode;
+import net.cjsah.bot.msg.nodes.ForwardMessageNode;
+import net.cjsah.bot.msg.nodes.ImageMessageNode;
+import net.cjsah.bot.msg.nodes.JsonMessageNode;
+import net.cjsah.bot.msg.nodes.LocationMessageNode;
+import net.cjsah.bot.msg.nodes.MusicMessageNode;
+import net.cjsah.bot.msg.nodes.NodeMessageNode;
+import net.cjsah.bot.msg.nodes.PokeMessageNode;
+import net.cjsah.bot.msg.nodes.RecordMessageNode;
+import net.cjsah.bot.msg.nodes.ReplyMessageNode;
+import net.cjsah.bot.msg.nodes.RpsMessageNode;
+import net.cjsah.bot.msg.nodes.ShakeMessageNode;
+import net.cjsah.bot.msg.nodes.TextMessageNode;
+import net.cjsah.bot.msg.nodes.VideoMessageNode;
+import net.cjsah.bot.msg.nodes.XMLMessageNode;
 
 import java.util.function.Function;
 

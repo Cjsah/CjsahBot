@@ -5,8 +5,6 @@ import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 
-import java.util.Map;
-
 @Getter
 public class AtMessageNode extends MessageNode {
     private final long qq;
