@@ -35,6 +35,8 @@ public class PluginThreadPools {
             thread.terminate();
             try {
                 thread.lock.wait();
+                PluginContext.PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
+                PluginContext.PLUGINS.remove(data.info().getId());
             } catch (InterruptedException e) {
                 PluginThread.log.error("Plugin thread was interrupted", e);
             }
@@ -71,7 +73,6 @@ public class PluginThreadPools {
             }
             PluginContext.PLUGIN.remove();
             PluginContext.PLUGIN_INFO.remove();
-            PluginContext.PLUGIN_INFO_MAP.remove(plugin);
             this.lock.notifyAll();
         }
 

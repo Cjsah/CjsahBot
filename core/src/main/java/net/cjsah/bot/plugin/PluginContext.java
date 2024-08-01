@@ -10,8 +10,14 @@ public class PluginContext {
     protected static final ThreadLocal<Plugin> PLUGIN = new ThreadLocal<>();
     protected static final ThreadLocal<PluginInfo> PLUGIN_INFO = new ThreadLocal<>();
 
-    protected static final Map<String, Plugin> PLUGINS = new ConcurrentHashMap<>();
-    protected static final Map<Plugin, PluginInfo> PLUGIN_INFO_MAP = new ConcurrentHashMap<>();
+    protected static final Map<String, PluginData> PLUGINS = new ConcurrentHashMap<>();
+    protected static final Map<Plugin, PluginData> PLUGIN_MAP = new ConcurrentHashMap<>();
+
+    protected static void appendPlugin(Plugin plugin, PluginInfo info, PluginLoader loader) {
+        PluginData data = new PluginData(plugin, info, loader);
+        PLUGINS.put(info.getId(), data);
+        PLUGIN_MAP.put(plugin, data);
+    }
 
     public static Plugin getCurrentPlugin() {
         return getCurrentPlugin(true);
@@ -34,10 +40,13 @@ public class PluginContext {
     }
 
     public static PluginInfo getPluginInfo(Plugin plugin) {
-        PluginInfo info = PLUGIN_INFO_MAP.get(plugin);
-        if (info == null) {
+        PluginData data = PLUGIN_MAP.get(plugin);
+        if (data == null) {
             log.warn("Plugin info not found");
+            return null;
         }
-        return info;
+        return data.info;
     }
+
+    public record PluginData(Plugin plugin, PluginInfo info, PluginLoader loader) {}
 }
