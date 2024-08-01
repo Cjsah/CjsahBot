@@ -21,6 +21,7 @@ import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.plugin.MainPlugin
+import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
@@ -36,7 +37,7 @@ internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
     FilePaths.init()
-
+    PluginLoader.loadPlugins()
 
     tryConnect()
 

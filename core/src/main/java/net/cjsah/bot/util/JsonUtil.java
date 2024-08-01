@@ -14,6 +14,7 @@ import net.cjsah.bot.resolver.MessageDeserializer;
 import net.cjsah.bot.resolver.MessageSerializer;
 
 import java.io.File;
+import java.io.Reader;
 import java.util.List;
 
 public class JsonUtil {
@@ -24,6 +25,10 @@ public class JsonUtil {
 
     public static <T> T deserialize(String str, Class<T> clazz) {
         return JSON.parseObject(str, clazz, JSONReader.Feature.SupportSmartMatch);
+    }
+
+    public static JSONObject deserialize(Reader reader) {
+        return JSON.parseObject(reader, JSONReader.Feature.SupportSmartMatch);
     }
 
     public static JSONObject deserialize(String str) {

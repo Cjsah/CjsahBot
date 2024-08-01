@@ -24,7 +24,7 @@ public class PluginThreadPools {
     }
 
     public static synchronized void execute(Runnable runnable) {
-        Plugin plugin = PluginContext.THREAD_LOCAL.get();
+        Plugin plugin = PluginContext.PLUGIN.get();
         if (plugin == null) plugin = MainPlugin.INSTANCE;
         execute(plugin, runnable);
     }
@@ -59,7 +59,7 @@ public class PluginThreadPools {
 
         @Override
         public void run() {
-            PluginContext.THREAD_LOCAL.set(this.plugin);
+            PluginContext.PLUGIN.set(this.plugin);
             while (this.running) {
                 try {
                     Runnable task = tasks.take();
@@ -69,7 +69,9 @@ public class PluginThreadPools {
                     Thread.currentThread().interrupt();
                 }
             }
-            PluginContext.THREAD_LOCAL.remove();
+            PluginContext.PLUGIN.remove();
+            PluginContext.PLUGIN_INFO.remove();
+            PluginContext.PLUGIN_INFO_MAP.remove(plugin);
             this.lock.notifyAll();
         }
 
