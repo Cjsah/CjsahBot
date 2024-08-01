@@ -1,6 +1,8 @@
 {
+  "id": "test-plugin",
   "name": "TestPlugin",
   "description": "Test Plugin",
+  "version": "",
   "info": {
     "authors": ["Cjsah"]
   },
