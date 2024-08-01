@@ -20,6 +20,7 @@ import net.cjsah.bot.event.events.AppHeartBeatEvent
 import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
+import net.cjsah.bot.plugin.MainPlugin
 import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
@@ -34,21 +35,21 @@ internal var heart: HeartBeatTimer? = null
 internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
-
+    FilePaths.init()
 
 
     tryConnect()
 
-    Event.subscribe(AppHeartBeatEvent::class.java) {
+    Event.subscribe(MainPlugin.INSTANCE, AppHeartBeatEvent::class.java) {
         Signal.fromStatus(it.status)
         heart?.heart(it.interval)
     }
 
-    Event.subscribe(MessageEvent.GroupMessageEvent::class.java) {
+    Event.subscribe(MainPlugin.INSTANCE, MessageEvent.GroupMessageEvent::class.java) {
         log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] => ${it.message}")
     }
 
-    Event.subscribe(MessageEvent.FriendMessageEvent::class.java) {
+    Event.subscribe(MainPlugin.INSTANCE, MessageEvent.FriendMessageEvent::class.java) {
         log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
     }
 
@@ -58,7 +59,8 @@ internal suspend fun main() {
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
 
-    while (Signal.isRunning());
+    Signal.waitStop()
+
 
 }
 

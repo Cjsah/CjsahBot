@@ -13,7 +13,7 @@ public class PluginThreadPools {
     private static final ExecutorService Executor = Executors.newCachedThreadPool();
     private static final Map<Plugin, PluginThread> Threads = new ConcurrentHashMap<>();
 
-    public static void execute(Plugin plugin, Runnable runnable) {
+    public static synchronized void execute(Plugin plugin, Runnable runnable) {
         PluginThread thread = Threads.get(plugin);
         if (thread == null) {
             thread = new PluginThread(plugin);
@@ -23,8 +23,8 @@ public class PluginThreadPools {
         thread.submitTask(runnable);
     }
 
-    public static void execute(Runnable runnable) {
-        Plugin plugin = Plugin.THREAD_LOCAL.get();
+    public static synchronized void execute(Runnable runnable) {
+        Plugin plugin = PluginContext.THREAD_LOCAL.get();
         if (plugin == null) plugin = MainPlugin.INSTANCE;
         execute(plugin, runnable);
     }
@@ -59,7 +59,7 @@ public class PluginThreadPools {
 
         @Override
         public void run() {
-            Plugin.THREAD_LOCAL.set(this.plugin);
+            PluginContext.THREAD_LOCAL.set(this.plugin);
             while (this.running) {
                 try {
                     Runnable task = tasks.take();
@@ -69,11 +69,11 @@ public class PluginThreadPools {
                     Thread.currentThread().interrupt();
                 }
             }
-            Plugin.THREAD_LOCAL.remove();
+            PluginContext.THREAD_LOCAL.remove();
             this.lock.notifyAll();
         }
 
-        public void submitTask(Runnable task) {
+        public synchronized void submitTask(Runnable task) {
             tasks.offer(task);
         }
 

@@ -48,21 +48,3 @@ subprojects {
     }
 
 }
-
-
-//
-//
-//group = "net.cjsah.bot"
-//version = "1.0-SNAPSHOT"
-//
-//repositories {
-//    mavenCentral()
-//}
-//
-//dependencies {
-//    implementation("io.ktor:ktor-client-core:$ktor_version")
-//    implementation("io.ktor:ktor-client-cio:$ktor_version")
-//    implementation("io.ktor:ktor-client-websockets:$ktor_version")
-//    implementation("org.quartz-scheduler:quartz:$quartz_version")
-//}
-//

@@ -1,0 +1,8 @@
+{
+  "name": "TestPlugin",
+  "description": "Test Plugin",
+  "info": {
+    "authors": ["Cjsah"]
+  },
+  "main": "net.cjsah.bot.ext.TestPlugin"
+}

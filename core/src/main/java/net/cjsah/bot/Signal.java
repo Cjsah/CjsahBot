@@ -3,6 +3,7 @@ package net.cjsah.bot;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.cjsah.bot.data.StatusData;
 import net.cjsah.bot.event.Event;
 import net.cjsah.bot.event.events.AppStopEvent;
@@ -11,6 +12,8 @@ import net.cjsah.bot.event.events.AppStopEvent;
 @Setter
 public class Signal {
     @Setter(AccessLevel.NONE)
+    public static final Object StopLock = new Object();
+
     private static boolean Stop = false;
     public static boolean AppInit = false;
     public static boolean AppEnable = false;
@@ -23,6 +26,16 @@ public class Signal {
         Event.broadcast(event);
         if (!event.isCancel()) {
             Stop = true;
+            synchronized (StopLock) {
+                StopLock.notifyAll();
+            }
+        }
+    }
+
+    @SneakyThrows
+    public static void waitStop() {
+        synchronized (StopLock) {
+            StopLock.wait();
         }
     }
 
