@@ -71,7 +71,14 @@ internal suspend fun tryConnect() {
     log.info("正在连接到服务器...")
     while (true) {
         try {
-            session = client.webSocketSession(method = HttpMethod.Get, host = "127.0.0.1", port = 8080, path = "/?access_token=")
+            val content = FilePaths.ACCOUNT.read()
+            val json = JsonUtil.deserialize(content)
+            session = client.webSocketSession(
+                method = HttpMethod.Get,
+                host = json.getString("host"),
+                port = json.getIntValue("port"),
+                path = "/?access_token=${json.getString("token")}"
+            )
             log.info("连接成功!")
             break
         } catch (e: Exception) {

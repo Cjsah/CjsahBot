@@ -1,9 +1,11 @@
 package net.cjsah.bot.util;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
+import kotlin.text.Charsets;
 import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.resolver.EnumDeserializer;
@@ -11,6 +13,7 @@ import net.cjsah.bot.resolver.EnumSerializer;
 import net.cjsah.bot.resolver.MessageDeserializer;
 import net.cjsah.bot.resolver.MessageSerializer;
 
+import java.io.File;
 import java.util.List;
 
 public class JsonUtil {
@@ -24,6 +27,12 @@ public class JsonUtil {
     }
 
     public static JSONObject deserialize(String str) {
+        return JSON.parseObject(str, JSONReader.Feature.SupportSmartMatch);
+    }
+
+    public static JSONObject deserializePath(String path) {
+        File file = new File(path);
+        String str = FileUtil.readString(file, Charsets.UTF_8);
         return JSON.parseObject(str, JSONReader.Feature.SupportSmartMatch);
     }
 
