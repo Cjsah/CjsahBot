@@ -19,6 +19,12 @@ public class PluginContext {
         PLUGIN_MAP.put(plugin, data);
     }
 
+    protected static PluginData removePlugin(Plugin plugin) {
+        PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
+        PluginContext.PLUGINS.remove(data.info().getId());
+        return data;
+    }
+
     public static Plugin getCurrentPlugin() {
         return getCurrentPlugin(true);
     }

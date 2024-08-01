@@ -1,6 +1,7 @@
 package net.cjsah.bot.plugin
 
 import net.cjsah.bot.FilePaths
+import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.log
 import net.cjsah.bot.resolver.Counter
 import net.cjsah.bot.util.JsonUtil
@@ -13,6 +14,7 @@ import java.util.jar.JarFile
 class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
     companion object {
+        @JvmStatic
         fun loadPlugins() {
             PluginThreadPools.execute(MainPlugin.INSTANCE) {
                 PluginContext.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO)
@@ -48,12 +50,17 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                     val clazz = loader.loadClass(main)
                     val plugin = clazz.getDeclaredConstructor().newInstance() as Plugin
                     counter.increment()
+                    PluginContext.appendPlugin(plugin, info, loader)
                     PluginThreadPools.execute(plugin) {
-                        PluginContext.PLUGIN_INFO.set(info)
-                        plugin.onLoad()
-                        PluginContext.appendPlugin(plugin, info, loader)
-                        log.info("插件 {} {} 已加载", info.name, info.version)
-                        counter.completed()
+                        try {
+                            PluginContext.PLUGIN_INFO.set(info)
+                            plugin.onLoad()
+                            log.info("插件 {} {} 已加载", info.name, info.version)
+                            counter.completed()
+                        }catch (e:Exception) {
+                            PluginContext.removePlugin(plugin)
+                            throw e;
+                        }
                     }
                 } catch (e: Exception) {
                     log.error("插件 {} 加载失败", jar.name, e)
@@ -61,6 +68,24 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
             }
             counter.await()
             log.info("插件已全部加载")
+        }
+
+        @JvmStatic
+        fun unloadPlugins() {
+            PluginContext.PLUGINS.forEach { (_, data) ->
+                unloadPlugin(data.plugin)
+            }
+        }
+
+        @JvmStatic
+        fun unloadPlugin(plugin: Plugin) {
+            PluginThreadPools.execute(plugin) {
+                EventManager.unsubscribe(plugin)
+                plugin.onUnload()
+            }
+            PluginThreadPools.unloadPlugin(plugin)
+            val data = PluginContext.removePlugin(plugin)
+            data.loader.close();
         }
     }
 

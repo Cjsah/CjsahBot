@@ -29,8 +29,10 @@ public class Counter {
 
     @SneakyThrows
     public void await() {
-        synchronized (lock) {
-            lock.wait();
+        if (this.count > 0) {
+            synchronized (lock) {
+                lock.wait();
+            }
         }
     }
 

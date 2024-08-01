@@ -62,6 +62,8 @@ internal suspend fun main() {
 
     Signal.waitStop()
 
+    PluginLoader.unloadPlugins()
+
 
 }
 

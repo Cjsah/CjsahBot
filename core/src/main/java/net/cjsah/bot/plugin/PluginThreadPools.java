@@ -29,14 +29,13 @@ public class PluginThreadPools {
         execute(plugin, runnable);
     }
 
-    public synchronized void unloadPlugin(Plugin plugin) {
+    public static synchronized void unloadPlugin(Plugin plugin) {
         PluginThread thread = Threads.get(plugin);
         if (thread != null) {
             thread.terminate();
             try {
                 thread.lock.wait();
-                PluginContext.PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
-                PluginContext.PLUGINS.remove(data.info().getId());
+                PluginContext.removePlugin(plugin);
             } catch (InterruptedException e) {
                 PluginThread.log.error("Plugin thread was interrupted", e);
             }
@@ -62,7 +61,7 @@ public class PluginThreadPools {
         @Override
         public void run() {
             PluginContext.PLUGIN.set(this.plugin);
-            while (this.running) {
+            while (this.running || !this.tasks.isEmpty()) {
                 try {
                     Runnable task = tasks.take();
                     task.run();
@@ -77,7 +76,11 @@ public class PluginThreadPools {
         }
 
         public synchronized void submitTask(Runnable task) {
-            tasks.offer(task);
+            if (this.running) {
+                tasks.offer(task);
+            } else {
+                log.warn("Plugin thread is still running");
+            }
         }
 
         public void terminate() {
