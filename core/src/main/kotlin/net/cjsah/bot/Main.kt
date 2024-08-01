@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.event.Event
+import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.event.events.AppHeartBeatEvent
 import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.parser.ReceivedCallbackParser
@@ -40,16 +40,16 @@ internal suspend fun main() {
 
     tryConnect()
 
-    Event.subscribe(MainPlugin.INSTANCE, AppHeartBeatEvent::class.java) {
+    EventManager.subscribe(MainPlugin.INSTANCE, AppHeartBeatEvent::class.java) {
         Signal.fromStatus(it.status)
         heart?.heart(it.interval)
     }
 
-    Event.subscribe(MainPlugin.INSTANCE, MessageEvent.GroupMessageEvent::class.java) {
+    EventManager.subscribe(MainPlugin.INSTANCE, MessageEvent.GroupMessageEvent::class.java) {
         log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] => ${it.message}")
     }
 
-    Event.subscribe(MainPlugin.INSTANCE, MessageEvent.FriendMessageEvent::class.java) {
+    EventManager.subscribe(MainPlugin.INSTANCE, MessageEvent.FriendMessageEvent::class.java) {
         log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
     }
 
