@@ -16,9 +16,13 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
     companion object {
         @JvmStatic
         fun loadPlugins() {
+            val counter = Counter()
+            PluginContext.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null)
             PluginThreadPools.execute(MainPlugin.INSTANCE) {
+                counter.increment()
                 PluginContext.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO)
-                PluginContext.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null)
+                MainPlugin.INSTANCE.onLoad()
+                counter.completed()
             }
             val files = FilePaths.PLUGIN.toFile().listFiles() ?: emptyArray()
             val jars = files.filter { it.isFile && it.extension == "jar" }
@@ -27,7 +31,6 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                 return
             }
             log.info("正在加载 {} 个插件", jars.size)
-            val counter = Counter()
             for (jar in jars) {
                 try {
                     val loader = PluginLoader(jar)
@@ -66,6 +69,7 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                     log.error("插件 {} 加载失败", jar.name, e)
                 }
             }
+
             counter.await()
             log.info("插件已全部加载")
         }

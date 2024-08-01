@@ -41,19 +41,6 @@ internal suspend fun main() {
 
     tryConnect()
 
-    EventManager.subscribe(MainPlugin.INSTANCE, AppHeartBeatEvent::class.java) {
-        Signal.fromStatus(it.status)
-        heart?.heart(it.interval)
-    }
-
-    EventManager.subscribe(MainPlugin.INSTANCE, MessageEvent.GroupMessageEvent::class.java) {
-        log.info("[群] [${it.groupId}] [${it.userId}(${it.sender.card})] => ${it.message}")
-    }
-
-    EventManager.subscribe(MainPlugin.INSTANCE, MessageEvent.FriendMessageEvent::class.java) {
-        log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
-    }
-
     Api.getVersionInfo()
 //    val id = Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
 //    log.info("id={}", id)
