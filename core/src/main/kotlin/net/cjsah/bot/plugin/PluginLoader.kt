@@ -14,6 +14,10 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
     companion object {
         fun loadPlugins() {
+            PluginThreadPools.execute(MainPlugin.INSTANCE) {
+                PluginContext.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO)
+                PluginContext.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null)
+            }
             val files = FilePaths.PLUGIN.toFile().listFiles() ?: emptyArray()
             val jars = files.filter { it.isFile && it.extension == "jar" }
             if (jars.isEmpty()) {
@@ -40,7 +44,7 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                         true
                     } == true) { break }
 
-                    val main = json.getString("main");
+                    val main = json.getString("main")
                     val clazz = loader.loadClass(main)
                     val plugin = clazz.getDeclaredConstructor().newInstance() as Plugin
                     counter.increment()

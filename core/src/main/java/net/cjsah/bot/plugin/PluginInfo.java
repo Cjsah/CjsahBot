@@ -13,6 +13,14 @@ public class PluginInfo {
     private final String version;
     private final Map<String, Object> info;
 
+    protected PluginInfo(String id, String name, String description, String version, Map<String, Object> info) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.version = version;
+        this.info = info;
+    }
+
     protected PluginInfo(JSONObject json) {
         this.id = json.getString("id");
         this.name = json.getString("name");
