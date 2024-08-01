@@ -50,8 +50,9 @@ public class FilePaths {
         @SneakyThrows
         public boolean checkAndCreate() {
             File file = this.path.toFile();
+            file = new File(file.getAbsolutePath());
             if (file.exists() && file.isFile()) return true;
-            File parent = this.path.getParent().toFile();
+            File parent = file.toPath().getParent().toFile();
             if (!parent.exists() && !parent.isDirectory()) {
                 if (!file.mkdirs()) {
                     log.error("Failed to create directory {}, Failed to create file {}", parent.getAbsolutePath(), file.getAbsolutePath());
