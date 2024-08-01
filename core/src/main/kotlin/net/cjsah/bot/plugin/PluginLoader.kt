@@ -89,7 +89,7 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
             }
             PluginThreadPools.unloadPlugin(plugin)
             val data = PluginContext.removePlugin(plugin)
-            data.loader.close();
+            data.loader?.close()
         }
     }
 
