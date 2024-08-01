@@ -4,10 +4,10 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.IncreaseType;
 import net.cjsah.bot.data.enums.MessageSource;
-import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.event.Event;
 
 @Getter
-public class AppendRequestEvent implements IEvent {
+public class AppendRequestEvent extends Event {
     private final long userId;
     private final String comment;
     private final String flag;

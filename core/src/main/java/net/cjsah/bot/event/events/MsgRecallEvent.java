@@ -3,10 +3,10 @@ package net.cjsah.bot.event.events;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageSource;
-import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.event.Event;
 
 @Getter
-public class MsgRecallEvent implements IEvent {
+public class MsgRecallEvent extends Event {
     private final long userId;
     private final long messageId;
     private final MessageSource type;

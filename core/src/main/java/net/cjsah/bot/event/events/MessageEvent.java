@@ -6,13 +6,13 @@ import net.cjsah.bot.data.Anonymous;
 import net.cjsah.bot.data.Sender;
 import net.cjsah.bot.data.enums.MessageSendType;
 import net.cjsah.bot.data.enums.MessageSource;
-import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.event.Event;
 import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.util.JsonUtil;
 import net.cjsah.bot.util.StringUtil;
 
 @Getter
-public class MessageEvent implements IEvent {
+public class MessageEvent extends Event {
     private final int messageId;
     private final long userId;
     private final MessageChain message;

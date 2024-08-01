@@ -1,7 +1,7 @@
 package net.cjsah.bot.parser
 
 import com.alibaba.fastjson2.JSONObject
-import net.cjsah.bot.event.Event
+import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.event.events.AppConnectedEvent
 import net.cjsah.bot.event.events.AppHeartBeatEvent
 import net.cjsah.bot.event.events.AppendRequestEvent.FriendAppendRequestEvent
@@ -49,77 +49,77 @@ class ReceivedEventParser(
                 parser("meta_event", "meta_event_type") {
                     parser("lifecycle", "sub_type") {
                         parser("connect", isLast = true, run = {
-                            Event.broadcast(AppConnectedEvent(it))
+                            EventManager.broadcast(AppConnectedEvent(it))
                         })
                     }
                     parser("heartbeat", isLast = true, run = {
-                        Event.broadcast(AppHeartBeatEvent(it))
+                        EventManager.broadcast(AppHeartBeatEvent(it))
                     })
                 }
                 parser("notice", "notice_type") {
                     parser("group_upload", isLast = true, run = {
-                        Event.broadcast(GroupFileUploadEvent(it))
+                        EventManager.broadcast(GroupFileUploadEvent(it))
                     })
                     parser("group_admin", "sub_type") {
                         parser("set", isLast = true, run = {
-                            Event.broadcast(GroupAdminSetEvent(it))
+                            EventManager.broadcast(GroupAdminSetEvent(it))
                         })
                         parser("unset", isLast = true, run = {
-                            Event.broadcast(GroupAdminUnsetEvent(it))
+                            EventManager.broadcast(GroupAdminUnsetEvent(it))
                         })
                     }
                     parser("group_decrease", "sub_type") {
                         parser("leave", isLast = true, run = {
-                            Event.broadcast(GroupUserSelfLeaveEvent(it))
+                            EventManager.broadcast(GroupUserSelfLeaveEvent(it))
                         })
                         parser("kick", isLast = true, run = {
-                            Event.broadcast(GroupUserKickEvent(it))
+                            EventManager.broadcast(GroupUserKickEvent(it))
                         })
                         parser("kick_me", isLast = true, run = {
-                            Event.broadcast(GroupUserKickMeEvent(it))
+                            EventManager.broadcast(GroupUserKickMeEvent(it))
                         })
                     }
                     parser("group_increase", "sub_type") {
                         parser("approve", isLast = true, run = {
-                            Event.broadcast(GroupUserApproveJoinEvent(it))
+                            EventManager.broadcast(GroupUserApproveJoinEvent(it))
                         })
                         parser("invite", isLast = true, run = {
-                            Event.broadcast(GroupUserInviteJoinEvent(it))
+                            EventManager.broadcast(GroupUserInviteJoinEvent(it))
                         })
                     }
                     parser("group_ban", "sub_type") {
                         parser("ban", isLast = true, run = {
-                            Event.broadcast(GroupMuteAppendEvent(it))
+                            EventManager.broadcast(GroupMuteAppendEvent(it))
                         })
                         parser("lift_ban", isLast = true, run = {
-                            Event.broadcast(GroupMuteRemoveEvent(it))
+                            EventManager.broadcast(GroupMuteRemoveEvent(it))
                         })
                     }
                     parser("friend_add", isLast = true, run = {
-                        Event.broadcast(FriendAppendedEvent(it))
+                        EventManager.broadcast(FriendAppendedEvent(it))
                     })
                     parser("group_recall", isLast = true, run = {
-                        Event.broadcast(GroupMsgRecallEvent(it))
+                        EventManager.broadcast(GroupMsgRecallEvent(it))
                     })
                     parser("friend_recall", isLast = true, run = {
-                        Event.broadcast(FriendMsgRecallEvent(it))
+                        EventManager.broadcast(FriendMsgRecallEvent(it))
                     })
                     parser("notify", "sub_type") {
                         parser("poke", isLast = true, run = {
-                            Event.broadcast(GroupPokeEvent(it))
+                            EventManager.broadcast(GroupPokeEvent(it))
                         })
                         parser("lucky_king", isLast = true, run = {
-                            Event.broadcast(GroupRedpackLuckyEvent(it))
+                            EventManager.broadcast(GroupRedpackLuckyEvent(it))
                         })
                         parser("honor", "honor_type") {
                             parser("talkative", isLast = true, run = {
-                                Event.broadcast(GroupUserDragonHonorEvent(it))
+                                EventManager.broadcast(GroupUserDragonHonorEvent(it))
                             })
                             parser("performer", isLast = true, run = {
-                                Event.broadcast(GroupUserChatFireHonorEvent(it))
+                                EventManager.broadcast(GroupUserChatFireHonorEvent(it))
                             })
                             parser("emotion", isLast = true, run = {
-                                Event.broadcast(GroupUserHappinessHonorEvent(it))
+                                EventManager.broadcast(GroupUserHappinessHonorEvent(it))
                             })
                         }
                     }
@@ -127,37 +127,37 @@ class ReceivedEventParser(
                 parser("message", "message_type") {
                     parser("private", "sub_type") {
                         parser("friend", isLast = true, run = {
-                            Event.broadcast(FriendNormalMessageEvent(it))
+                            EventManager.broadcast(FriendNormalMessageEvent(it))
                         })
                         parser("group", isLast = true, run = {
-                            Event.broadcast(FriendTemporaryMessageEvent(it))
+                            EventManager.broadcast(FriendTemporaryMessageEvent(it))
                         })
                         parser("other", isLast = true, run = {
-                            Event.broadcast(FriendOtherMessageEvent(it))
+                            EventManager.broadcast(FriendOtherMessageEvent(it))
                         })
                     }
                     parser("group", "sub_type") {
                         parser("normal", isLast = true, run = {
-                            Event.broadcast(GroupNormalMessageEvent(it))
+                            EventManager.broadcast(GroupNormalMessageEvent(it))
                         })
                         parser("anonymous", isLast = true, run = {
-                            Event.broadcast(GroupAnonymousMessageEvent(it))
+                            EventManager.broadcast(GroupAnonymousMessageEvent(it))
                         })
                         parser("notice", isLast = true, run = {
-                            Event.broadcast(GroupNoticeMessageEvent(it))
+                            EventManager.broadcast(GroupNoticeMessageEvent(it))
                         })
                     }
                 }
                 parser("request", "request_type") {
                     parser("friend", isLast = true, run = {
-                        Event.broadcast(FriendAppendRequestEvent(it))
+                        EventManager.broadcast(FriendAppendRequestEvent(it))
                     })
                     parser("group", "sub_type") {
                         parser("add", isLast = true, run = {
-                            Event.broadcast(GroupAppendNormalRequestEvent(it))
+                            EventManager.broadcast(GroupAppendNormalRequestEvent(it))
                         })
                         parser("invite", isLast = true, run = {
-                            Event.broadcast(GroupAppendInviteRequestEvent(it))
+                            EventManager.broadcast(GroupAppendInviteRequestEvent(it))
                         })
                     }
                 }
