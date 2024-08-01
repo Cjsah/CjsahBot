@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.cjsah.bot.data.StatusData;
-import net.cjsah.bot.event.Event;
+import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.AppStopEvent;
 
 @Getter
@@ -23,7 +23,7 @@ public class Signal {
 
     public static void stop() {
         AppStopEvent event = new AppStopEvent();
-        Event.broadcast(event);
+        EventManager.broadcast(event);
         if (!event.isCancel()) {
             Stop = true;
             synchronized (StopLock) {

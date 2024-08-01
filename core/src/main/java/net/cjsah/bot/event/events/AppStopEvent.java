@@ -1,15 +1,11 @@
 package net.cjsah.bot.event.events;
 
-import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.event.Event;
+import net.cjsah.bot.event.ICancelable;
 
-public class AppStopEvent implements IEvent {
+public class AppStopEvent extends Event implements ICancelable {
 
     private boolean isCancel = false;
-
-    @Override
-    public boolean cancelable() {
-        return true;
-    }
 
     @Override
     public boolean isCancel() {
@@ -20,5 +16,4 @@ public class AppStopEvent implements IEvent {
     public void cancel() {
         this.isCancel = true;
     }
-
 }

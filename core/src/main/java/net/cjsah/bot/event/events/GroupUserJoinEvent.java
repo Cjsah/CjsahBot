@@ -3,10 +3,10 @@ package net.cjsah.bot.event.events;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.IncreaseType;
-import net.cjsah.bot.event.IEvent;
+import net.cjsah.bot.event.Event;
 
 @Getter
-public class GroupUserJoinEvent implements IEvent {
+public class GroupUserJoinEvent extends Event {
     private final long groupId;
     private final long userId;
     private final long operatorId;
