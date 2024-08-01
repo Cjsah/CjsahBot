@@ -1,4 +1,10 @@
 package net.cjsah.bot.plugin;
 
-public class PluginLoader {
+import java.net.URL;
+import java.net.URLClassLoader;
+
+public class PluginLoader extends URLClassLoader {
+    public PluginLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
+    }
 }
