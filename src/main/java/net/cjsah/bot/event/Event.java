@@ -1,6 +1,7 @@
 package net.cjsah.bot.event;
 
 import lombok.extern.slf4j.Slf4j;
+import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.resolver.ThreadPools;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,5 +37,7 @@ public final class Event {
             }
         }
     }
+
+     record EventNode(Plugin plugin, Class<? extends IEvent> event, Consumer<IEvent> handler) {}
 
 }

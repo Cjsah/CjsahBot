@@ -16,22 +16,21 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public class JsonTest {
 
     @Test
     public void run() throws SchedulerException, InterruptedException {
-        TestTimer timer = new TestTimer();
-
-        TimeUnit.SECONDS.sleep(7);
-        timer.heartbeat(7000);
-
-
-
-
-        TimeUnit.MINUTES.sleep(2);
+//        TestTimer timer = new TestTimer();
+//
+//        TimeUnit.SECONDS.sleep(7);
+//        timer.heartbeat(7000);
+//
+//
+//
+//
+//        TimeUnit.MINUTES.sleep(2);
 
     }
 

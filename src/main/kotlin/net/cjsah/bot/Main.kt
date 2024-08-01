@@ -34,6 +34,9 @@ internal var heart: HeartBeatTimer? = null
 internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
+
+
+
     tryConnect()
 
     Event.subscribe(AppHeartBeatEvent::class.java) {

@@ -1,4 +1,6 @@
 package net.cjsah.bot.plugin;
 
-public class Plugin {
+public abstract class Plugin {
+    protected static final ThreadLocal<Plugin> THREAD_LOCAL = new ThreadLocal<>();
+
 }
