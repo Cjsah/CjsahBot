@@ -68,7 +68,7 @@ internal suspend fun tryConnect() {
     log.info("正在连接到服务器...")
     while (true) {
         try {
-            session = client.webSocketSession(method = HttpMethod.Get, host = "server.cjsah.net", port = 1111, path = "/?access_token=CjsahBot-UO47rc3FVP")
+            session = client.webSocketSession(method = HttpMethod.Get, host = "127.0.0.1", port = 8080, path = "/?access_token=")
             log.info("连接成功!")
             break
         } catch (e: Exception) {
