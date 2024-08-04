@@ -4,7 +4,7 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 
-public class StringReader {
+public final class StringReader {
     private final String string;
     private int cursor = 0;
     private static final char SYNTAX_ESCAPE = '\\';

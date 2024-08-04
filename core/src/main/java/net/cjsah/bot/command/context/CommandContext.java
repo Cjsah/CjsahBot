@@ -6,7 +6,7 @@ import net.cjsah.bot.command.source.CommandSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandContext {
+public final class CommandContext {
     private final Map<String, ParsedNode<?>> arguments;
     private final CommandSource<?> source;
     private final Command command;

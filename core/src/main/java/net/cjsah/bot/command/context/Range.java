@@ -1,8 +1,8 @@
 package net.cjsah.bot.command.context;
 
 public class Range {
-    private final int start;
-    private final int end;
+    public final int start;
+    public final int end;
 
     public Range(int pos) {
         this.start = pos;
