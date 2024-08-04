@@ -5,7 +5,7 @@ import net.cjsah.bot.plugin.Plugin;
 import org.slf4j.event.Level;
 
 public abstract class CommandSource<T> {
-    private final T source;
+    protected final T source;
 
     public CommandSource(T source) {
         this.source = source;
