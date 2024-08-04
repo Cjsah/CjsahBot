@@ -21,7 +21,7 @@ public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
 
     @Override
     public CommandNode build() {
-        LiteralCommandNode node = new LiteralCommandNode(
+        CommandNode node = new LiteralCommandNode(
                 this.getHelp(),
                 this.literal,
                 this.getRequirement(),

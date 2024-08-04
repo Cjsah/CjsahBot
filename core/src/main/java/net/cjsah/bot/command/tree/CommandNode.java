@@ -37,11 +37,11 @@ public abstract class CommandNode implements Comparable<CommandNode> {
 
     protected abstract boolean isValidInput(String input);
 
+    protected abstract String getSortedKey();
+
     public abstract void parse(StringReader reader, ContextBuilder builder) throws CommandException;
 
     public abstract ArgumentBuilder<?> createBuilder();
-
-    protected abstract String getSortedKey();
 
     public Collection<CommandNode> getChildren() {
         return this.children.values();
