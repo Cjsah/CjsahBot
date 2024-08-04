@@ -6,7 +6,7 @@ import net.cjsah.bot.command.tree.LiteralCommandNode;
 public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuilder> {
     private final String literal;
 
-    public LiteralArgumentBuilder(String literal) {
+    private LiteralArgumentBuilder(String literal) {
         this.literal = literal;
     }
 

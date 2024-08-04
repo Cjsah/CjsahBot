@@ -8,7 +8,7 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     private final String name;
     private final Argument<T> type;
 
-    public RequiredArgumentBuilder(String name, Argument<T> type) {
+    private RequiredArgumentBuilder(String name, Argument<T> type) {
         this.name = name;
         this.type = type;
     }
