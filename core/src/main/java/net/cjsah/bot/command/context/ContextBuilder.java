@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ContextBuilder {
+public final class ContextBuilder {
     private final Dispatcher dispatcher;
     private final CommandSource<?> source;
     private final CommandNode rootNode;
