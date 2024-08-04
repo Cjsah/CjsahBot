@@ -25,6 +25,10 @@ public class PluginContext {
         return data;
     }
 
+    public static Plugin getPlugin(String id) {
+        return PLUGINS.get(id).plugin;
+    }
+
     public static Plugin getCurrentPlugin() {
         return getCurrentPlugin(true);
     }
