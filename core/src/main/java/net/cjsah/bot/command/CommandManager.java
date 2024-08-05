@@ -1,16 +1,18 @@
 package net.cjsah.bot.command;
 
-import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.CommandException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
-@Slf4j
 public final class CommandManager {
+    private static final Logger log = LoggerFactory.getLogger("CommandManager");
+
     private static final Dispatcher dispatcher = new Dispatcher();
 
     public static LiteralArgumentBuilder literal(String literal) {

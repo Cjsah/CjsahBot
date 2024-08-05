@@ -40,4 +40,6 @@ public final class BuiltExceptions{
     public static final Para1CommandException FRIEND_NOT_FOUND = new Para1CommandException((friend) -> "机器人并没有此好友 '" + friend + "'");
     public static final Para1CommandException PLUGIN_NOT_FOUND = new Para1CommandException((plugin) -> "没有找到此插件: '" + plugin + "'");
 
+    public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");
+
 }

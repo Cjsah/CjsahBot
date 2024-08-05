@@ -1,12 +1,15 @@
 package net.cjsah.bot.plugin;
 
-import lombok.extern.slf4j.Slf4j;
+import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.CommandException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Slf4j
 public class PluginContext {
+    private static final Logger log = LoggerFactory.getLogger("PluginContext");
     protected static final ThreadLocal<Plugin> PLUGIN = new ThreadLocal<>();
     protected static final ThreadLocal<PluginInfo> PLUGIN_INFO = new ThreadLocal<>();
 
@@ -21,6 +24,7 @@ public class PluginContext {
 
     protected static PluginData removePlugin(Plugin plugin) {
         PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
+        if (data == null) return null;
         PluginContext.PLUGINS.remove(data.info().getId());
         return data;
     }
@@ -31,6 +35,14 @@ public class PluginContext {
 
     public static Plugin getCurrentPlugin() {
         return getCurrentPlugin(true);
+    }
+
+    public static Plugin getCurrentPluginOrThrow() throws CommandException {
+        Plugin plugin = PLUGIN.get();
+        if (plugin == null) {
+            throw BuiltExceptions.REGISTER_IN_PLUGIN.create();
+        }
+        return plugin;
     }
 
     public static Plugin getCurrentPlugin(boolean warn) {

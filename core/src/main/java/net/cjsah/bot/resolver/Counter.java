@@ -1,9 +1,7 @@
 package net.cjsah.bot.resolver;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Counter {
     private volatile int count = 0;
     private final Object lock = new Object();

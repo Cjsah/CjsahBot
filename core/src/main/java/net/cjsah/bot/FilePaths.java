@@ -2,7 +2,8 @@ package net.cjsah.bot;
 
 import cn.hutool.core.io.FileUtil;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +12,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class FilePaths {
+    private static final Logger log = LoggerFactory.getLogger("FilePath");
     private static final List<Path> Paths = new ArrayList<>();
     private static final List<AppFile> Files = new ArrayList<>();
     public static final Path PLUGIN = regPath("plugins");

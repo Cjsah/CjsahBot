@@ -15,12 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.event.EventManager
-import net.cjsah.bot.event.events.AppHeartBeatEvent
-import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
-import net.cjsah.bot.plugin.MainPlugin
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
@@ -41,7 +37,9 @@ internal suspend fun main() {
 
     tryConnect()
 
-    Api.getVersionInfo()
+    PluginLoader.onStarted()
+
+//    Api.getVersionInfo()
 //    val id = Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
 //    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
@@ -50,6 +48,9 @@ internal suspend fun main() {
     Signal.waitStop()
 
     PluginLoader.unloadPlugins()
+    heart?.stop()
+    session?.close()
+    session = null
 
 
 }
@@ -59,7 +60,7 @@ internal suspend fun tryConnect() {
     session?.close()
     session = null
     log.info("正在连接到服务器...")
-    while (true) {
+    while (Signal.isRunning()) {
         try {
             val content = FilePaths.ACCOUNT.read()
             val json = JsonUtil.deserialize(content)

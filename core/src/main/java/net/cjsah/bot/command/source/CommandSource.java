@@ -1,10 +1,12 @@
 package net.cjsah.bot.command.source;
 
-import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.Plugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 public abstract class CommandSource<T> {
+    protected static final Logger log = LoggerFactory.getLogger("CommandSource");
     protected final T sender;
 
     public CommandSource(T sender) {
@@ -19,9 +21,9 @@ public abstract class CommandSource<T> {
         return true;
     }
 
-    public abstract void sendFeedback(String message) throws CommandException;
+    public abstract void sendFeedback(String message);
 
-    public abstract void sendFeedback(String message, Level level) throws CommandException;
+    public abstract void sendFeedback(String message, Level level);
 
     public T getSender() {
         return this.sender;

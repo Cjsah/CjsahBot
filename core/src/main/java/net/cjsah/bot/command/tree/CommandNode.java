@@ -6,6 +6,7 @@ import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.context.ContextBuilder;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.CommandException;
+import net.cjsah.bot.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +20,10 @@ import java.util.function.Predicate;
 public abstract class CommandNode implements Comparable<CommandNode> {
     private final Map<String, CommandNode> children = new LinkedHashMap<>();
     private final Map<String, LiteralCommandNode> literals = new LinkedHashMap<>();
-    private final Map<String, ArgumentCommandNode> arguments = new LinkedHashMap<>();
+    private final Map<String, ArgumentCommandNode<?>> arguments = new LinkedHashMap<>();
     private final Predicate<CommandSource<?>> requirement;
+    @Nullable
+    private Plugin plugin;
     @Nullable
     private Command command;
     private String help;
@@ -60,8 +63,17 @@ public abstract class CommandNode implements Comparable<CommandNode> {
         return this.requirement;
     }
 
+    public void setPlugin(@NotNull  Plugin plugin) {
+        this.plugin = plugin;
+    }
+
     public boolean canUse(CommandSource<?> source) {
         return this.requirement.test(source);
+    }
+
+    public void addChild(@NotNull Plugin plugin, CommandNode child) {
+        child.setPlugin(plugin);
+        this.addChild(child);
     }
 
     public void addChild(CommandNode child) {
@@ -74,7 +86,7 @@ public abstract class CommandNode implements Comparable<CommandNode> {
             if (child instanceof LiteralCommandNode) {
                 literals.put(child.getName(), (LiteralCommandNode) child);
             } else if (child instanceof ArgumentCommandNode) {
-                arguments.put(child.getName(), (ArgumentCommandNode) child);
+                arguments.put(child.getName(), (ArgumentCommandNode<?>) child);
             }
         } else {
             node.help = child.help;
@@ -83,6 +95,18 @@ public abstract class CommandNode implements Comparable<CommandNode> {
             }
             child.getChildren().forEach(node::addChild);
         }
+    }
+
+    public void delChildByPlugin(Plugin plugin) {
+        this.children.entrySet().removeIf(entry -> {
+           if (entry.getValue().plugin != plugin) {
+               this.literals.remove(entry.getKey());
+               this.arguments.remove(entry.getKey());
+               return true;
+           }
+           entry.getValue().delChildByPlugin(plugin);
+           return false;
+        });
     }
 
     public Collection<? extends CommandNode> getRelevantNodes(StringReader input) {

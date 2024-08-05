@@ -1,7 +1,9 @@
 package net.cjsah.bot.plugin;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,10 +34,22 @@ public class PluginThreadPools {
     public static synchronized void unloadPlugin(Plugin plugin) {
         PluginThread thread = Threads.get(plugin);
         if (thread != null) {
+            PluginInfo info = PluginContext.getPluginInfo(plugin);
+            assert info != null;
             thread.terminate();
             try {
-                thread.lock.wait();
-                PluginContext.removePlugin(plugin);
+                synchronized (thread.lock) {
+                    if (!thread.cancelled) {
+                        thread.lock.wait();
+                    }
+                }
+                PluginContext.PluginData data = PluginContext.removePlugin(plugin);
+                if (data == null || data.loader() == null) return;
+                try {
+                    data.loader().close();
+                } catch (IOException e) {
+                    PluginThread.log.error("Cannot close plugin: {}", info.getId(), e);
+                }
             } catch (InterruptedException e) {
                 PluginThread.log.error("Plugin thread was interrupted", e);
             }
@@ -46,11 +60,12 @@ public class PluginThreadPools {
         Executor.shutdown();
     }
 
-    @Slf4j
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static class PluginThread implements Runnable {
+        private static final Logger log = LoggerFactory.getLogger("PluginThread");
         private final BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
         private volatile boolean running = true;
+        private volatile boolean cancelled = false;
         protected final Object lock = new Object();
         private final Plugin plugin;
 
@@ -72,7 +87,10 @@ public class PluginThreadPools {
             }
             PluginContext.PLUGIN.remove();
             PluginContext.PLUGIN_INFO.remove();
-            this.lock.notifyAll();
+            this.cancelled = true;
+            synchronized (this.lock) {
+                this.lock.notifyAll();
+            }
         }
 
         public synchronized void submitTask(Runnable task) {

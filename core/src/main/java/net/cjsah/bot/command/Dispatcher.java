@@ -1,6 +1,5 @@
 package net.cjsah.bot.command;
 
-import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.context.ContextBuilder;
@@ -9,6 +8,10 @@ import net.cjsah.bot.command.tree.CommandNode;
 import net.cjsah.bot.command.tree.RootCommandNode;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
+import net.cjsah.bot.plugin.Plugin;
+import net.cjsah.bot.plugin.PluginContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,13 +19,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 public class Dispatcher {
+    private static final Logger log = LoggerFactory.getLogger("Dispatcher");
     private static final char ARGUMENT_SEPARATOR = ' ';
     private final CommandNode roots = new RootCommandNode();
 
-    public void register(LiteralArgumentBuilder command) {
-        this.roots.addChild(command.build());
+    public void register(LiteralArgumentBuilder command) throws CommandException {
+        Plugin plugin = PluginContext.getCurrentPluginOrThrow();
+        this.roots.addChild(plugin, command.build());
     }
 
     public void execute(String input, CommandSource<?> source) throws CommandException {

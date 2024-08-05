@@ -1,11 +1,12 @@
 package net.cjsah.bot.event;
 
-import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,8 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-@Slf4j
 public final class EventManager {
+    private static final Logger log = LoggerFactory.getLogger("EventManager");
+
     private static final List<EventNode<?>> events = new ArrayList<>();
 
     /**

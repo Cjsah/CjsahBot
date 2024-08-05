@@ -2,9 +2,10 @@ package net.cjsah.bot.plugin
 
 import net.cjsah.bot.FilePaths
 import net.cjsah.bot.event.EventManager
-import net.cjsah.bot.log
 import net.cjsah.bot.resolver.Counter
 import net.cjsah.bot.util.JsonUtil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.InputStreamReader
 import java.net.URLClassLoader
@@ -14,6 +15,9 @@ import java.util.jar.JarFile
 class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
     companion object {
+        @JvmStatic
+        private val log: Logger = LoggerFactory.getLogger("PluginLoader")
+
         @JvmStatic
         fun loadPlugins() {
             val counter = Counter()
@@ -75,10 +79,20 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
         }
 
         @JvmStatic
-        fun unloadPlugins() {
-            PluginContext.PLUGINS.forEach { (_, data) ->
-                unloadPlugin(data.plugin)
+        fun onStarted() {
+            PluginContext.PLUGINS.values.forEach { it ->
+                PluginThreadPools.execute(it.plugin) {
+                    it.plugin.onStarted()
+                }
             }
+        }
+
+        @JvmStatic
+        fun unloadPlugins() {
+            PluginContext.PLUGINS.values.forEach {
+                unloadPlugin(it.plugin)
+            }
+            log.info("已卸载所有插件!")
         }
 
         @JvmStatic
@@ -88,8 +102,6 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                 plugin.onUnload()
             }
             PluginThreadPools.unloadPlugin(plugin)
-            val data = PluginContext.removePlugin(plugin)
-            data.loader?.close()
         }
     }
 
