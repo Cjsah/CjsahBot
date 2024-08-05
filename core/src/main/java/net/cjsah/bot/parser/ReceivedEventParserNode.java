@@ -1,6 +1,7 @@
 package net.cjsah.bot.parser;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.MainKt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class ReceivedEventParserNode {
-    private static final Logger log = LoggerFactory.getLogger(ReceivedEventParserNode.class);
     private final boolean isLast;
     private final String nextKey;
     private final Consumer<JSONObject> run;
@@ -35,7 +35,7 @@ public class ReceivedEventParserNode {
         if (parser != null) {
             parser.parse(raw);
         } else {
-            log.warn("Unknown node: {}", raw);
+            MainKt.getLog().warn("Unknown node: {}", raw);
         }
     }
 }

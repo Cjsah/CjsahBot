@@ -1,6 +1,7 @@
 package net.cjsah.bot.util;
 
 import cn.hutool.core.stream.CollectorUtil;
+import net.cjsah.bot.MainKt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class StringUtil {
                         extBuilder.setLength(0);
                         String value = NetMap.get(text);
                         if (value == null) {
-                            log.warn("未知的网络转义字符'&{};', 作为普通字符串处理", text);
+                            MainKt.getLog().warn("未知的网络转义字符'&{};', 作为普通字符串处理", text);
                             builder.append('&');
                             builder.append(text);
                             builder.append(';');
