@@ -16,7 +16,7 @@ public class UserCommandSource extends CommandSource<UserBaseData> {
 
     @Override
     public void sendFeedback(String message) throws CommandException {
-        Api.sendPrivateMsg(this.source.getUserId(), MessageChain.raw(message));
+        Api.sendPrivateMsg(this.sender.getUserId(), MessageChain.raw(message));
     }
 
     @Override

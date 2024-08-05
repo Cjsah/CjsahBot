@@ -23,6 +23,13 @@ class MainPlugin : Plugin() {
         EventManager.subscribe(INSTANCE, MessageEvent.FriendMessageEvent::class.java) {
             log.info("[好友] [${it.userId}(${it.sender.nickname})] => ${it.message}")
         }
+//
+//        EventManager.subscribe((INSTANCE), MessageEvent.GroupMessageEvent::class.java) {
+//            if (it.groupId == 799652476L && it.rawMessage == "/api") {
+//                Api.sendGroupMsg(it.groupId, MessageChain.raw("此消息为机器人发送"))
+//            }
+//
+//        }
     }
 
     companion object {

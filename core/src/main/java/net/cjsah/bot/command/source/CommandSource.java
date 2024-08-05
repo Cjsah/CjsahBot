@@ -5,10 +5,10 @@ import net.cjsah.bot.plugin.Plugin;
 import org.slf4j.event.Level;
 
 public abstract class CommandSource<T> {
-    protected final T source;
+    protected final T sender;
 
-    public CommandSource(T source) {
-        this.source = source;
+    public CommandSource(T sender) {
+        this.sender = sender;
     }
 
     public boolean hasPermission() { //TODO permission abstract
@@ -23,7 +23,7 @@ public abstract class CommandSource<T> {
 
     public abstract void sendFeedback(String message, Level level) throws CommandException;
 
-    public T getSource() {
-        return this.source;
+    public T getSender() {
+        return this.sender;
     }
 }
