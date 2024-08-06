@@ -19,6 +19,10 @@ public interface MessageChain extends Collection<MessageNode> {
         return MessageNode.parseMessage(array);
     }
 
+    static MessageChain of(MessageNode ...nodes) {
+        return new MessageChainImpl(nodes);
+    }
+
     default List<JSONObject> toJson() {
         return this.stream().map(it -> {
             JSONObject json = new JSONObject();

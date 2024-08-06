@@ -1,10 +1,16 @@
 package net.cjsah.bot.command.source;
 
+import net.cjsah.bot.msg.MessageChain;
 import org.slf4j.event.Level;
 
 public class ConsoleCommandSource extends CommandSource<Void> {
     public ConsoleCommandSource() {
         super(null);
+    }
+
+    @Override
+    public void sendFeedback(MessageChain chain) {
+        this.sendFeedback(chain.toString(), Level.INFO);
     }
 
     @Override

@@ -12,8 +12,14 @@ public class GroupCommandSource extends CommandSource<GroupSourceData> {
     }
 
     @Override
+    public void sendFeedback(MessageChain chain) {
+        Api.sendGroupMsg(this.sender.group().getGroupId(), chain);
+
+    }
+
+    @Override
     public void sendFeedback(String message) {
-        Api.sendGroupMsg(this.sender.group().getGroupId(), MessageChain.raw(message));
+        this.sendFeedback(MessageChain.raw(message));
     }
 
     @Override

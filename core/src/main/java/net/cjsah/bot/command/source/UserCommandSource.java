@@ -11,8 +11,14 @@ public class UserCommandSource extends CommandSource<UserBaseData> {
     }
 
     @Override
+    public void sendFeedback(MessageChain chain) {
+        Api.sendPrivateMsg(this.sender.getUserId(), chain);
+
+    }
+
+    @Override
     public void sendFeedback(String message) {
-        Api.sendPrivateMsg(this.sender.getUserId(), MessageChain.raw(message));
+        this.sendFeedback(MessageChain.raw(message));
     }
 
     @Override

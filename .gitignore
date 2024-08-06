@@ -40,5 +40,5 @@ bin/
 
 ### Run ###
 /run/
-/logs/
+logs/
 .kotlin

@@ -5,10 +5,15 @@ import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
 import net.cjsah.bot.util.JsonUtil;
+import net.cjsah.bot.util.StringUtil;
 
 @Getter
 public class JsonMessageNode extends MessageNode {
     private final JSONObject json;
+
+    public JsonMessageNode(String json) {
+        this(JsonUtil.deserialize(json), false);
+    }
 
     public JsonMessageNode(JSONObject json, boolean next) {
         super(MessageType.JSON);
@@ -22,7 +27,8 @@ public class JsonMessageNode extends MessageNode {
 
     @Override
     public void serializeData(JSONObject json) {
-        json.put("data", JsonUtil.serialize(this.json));
+        String str = JsonUtil.serialize(this.json);
+        json.put("data", str);
     }
 
     @Override
