@@ -1,5 +1,8 @@
 package net.cjsah.bot.exception;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public final class BuiltExceptions{
     public static final Para2CommandException DOUBLE_TOO_LOW = new Para2CommandException((found, min) -> "Double 必须小于 " + min + ", 但是发现了 " + found);
     public static final Para2CommandException DOUBLE_TOO_HIGH = new Para2CommandException((found, max) -> "Double 必须大于 " + max + ", 但是发现了 " + found);
@@ -42,4 +45,5 @@ public final class BuiltExceptions{
 
     public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");
 
+    public static final Supplier<PermissionException> CONFLICT_PERMISSION = () -> new PermissionException("权限冲突");
 }
