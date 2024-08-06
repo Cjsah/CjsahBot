@@ -9,6 +9,8 @@ import net.cjsah.bot.command.source.UserCommandSource
 import net.cjsah.bot.data.GroupSourceData
 import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.event.events.AppHeartBeatEvent
+import net.cjsah.bot.event.events.GroupUserJoinEvent
+import net.cjsah.bot.event.events.GroupUserLeaveEvent
 import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.heart
 import net.cjsah.bot.log
@@ -38,6 +40,14 @@ class MainPlugin : Plugin() {
                 val source = UserCommandSource(it.sender)
                 CommandManager.execute(it.rawMessage.substring(1), source)
             }
+        }
+
+        EventManager.subscribe(INSTANCE, GroupUserJoinEvent::class.java) {
+            log.info("[群] ${it.userId} 加入群 [${it.groupId}]")
+        }
+
+        EventManager.subscribe(INSTANCE, GroupUserLeaveEvent::class.java) {
+            log.info("[群] ${it.userId} 离开了群 [${it.groupId}]")
         }
 
         CommandManager.register { dispatcher ->

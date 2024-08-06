@@ -6,27 +6,29 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.plugin.PluginLoader
+import net.cjsah.bot.plugin.PluginThreadPools
 import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
-internal val client = HttpClient(CIO) { install(WebSockets) }
-internal var session: DefaultClientWebSocketSession? = null
+private val client = HttpClient(CIO) { install(WebSockets) }
+private var session: DefaultClientWebSocketSession? = null
+private val msgScope = CoroutineScopeUtil.newThread()
+private var job: Job? = null
 internal var heart: HeartBeatTimer? = null
 
 internal val callbacks = HashMap<String, Channel<Any?>>()
@@ -44,14 +46,18 @@ internal suspend fun main() {
 //    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
+    TimeUnit.SECONDS.sleep(3)
 
-    Signal.waitStop()
+//    Signal.waitStop()
 
     PluginLoader.unloadPlugins()
+    PluginThreadPools.shutdown()
     heart?.stop()
     session?.close()
     session = null
-
+    job?.join()
+    msgScope.shutdown()
+    log.info("Closed")
 
 }
 
@@ -79,13 +85,11 @@ internal suspend fun tryConnect() {
     }
 
     heart = HeartBeatTimer(5000) {
-        CoroutineScopeUtil.launch {
-            tryConnect()
-        }
+        tryConnect()
     }
 
-    CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher()).launch {
-        while(session != null) {
+    job = msgScope.scope.launch {
+        while (session != null) {
             try {
                 val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
                 if (receivedMsg.isEmpty()) continue
@@ -96,15 +100,16 @@ internal suspend fun tryConnect() {
                     ReceivedEventParser.parse(json)
                 }
             } catch (e: Exception) {
-                log.error("Error!", e)
                 if (e is ClosedReceiveChannelException) {
                     break
                 }
+                log.error("Error!", e)
             }
         }
         if (Signal.isRunning()) {
             log.warn("Session is closed!")
         }
+        this.cancel("")
     }
 }
 
