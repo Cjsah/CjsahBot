@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import lombok.Getter;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageNode;
+import net.cjsah.bot.util.MsgLogUtil;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public class ImageMessageNode extends MessageNode {
     private final String file;
     private final boolean isFlash;
     private final String url;
+    private final String local;
 
     /**
      * @param file
@@ -27,13 +29,15 @@ public class ImageMessageNode extends MessageNode {
         this.file = file;
         this.isFlash = isFlash;
         this.url = null;
+        this.local = null;
     }
 
     public ImageMessageNode(JSONObject json) {
         super(MessageType.IMAGE);
-        this.file = parsetoString(json, "file");
+        this.file = this.parsetoString(json, "file", true);
         this.isFlash = "flush".equals(json.getString("type"));
-        this.url = parsetoString(json, "url");
+        this.url = this.parsetoString(json, "url", true);
+        this.local = MsgLogUtil.saveImage(this.url);
     }
 
     @Override
@@ -49,7 +53,8 @@ public class ImageMessageNode extends MessageNode {
         return this.toString("image", Map.of(
                 "file", this.file,
                 "flash", this.isFlash,
-                "url", this.url
+                "url", this.url,
+                "local", this.local
         ));
     }
 

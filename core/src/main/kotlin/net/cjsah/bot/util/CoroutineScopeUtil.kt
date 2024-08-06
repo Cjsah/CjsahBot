@@ -9,11 +9,13 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.EmptyCoroutineContext
 
 object CoroutineScopeUtil {
+    @JvmStatic
     fun newThread(): CoroutineData {
         val executor = Executors.newSingleThreadExecutor()
         return CoroutineData(executor)
     }
 
+    @JvmStatic
     fun newScopeRun(block: suspend CoroutineScope.() -> Unit) {
         runBlocking {
             val thread = newThread()

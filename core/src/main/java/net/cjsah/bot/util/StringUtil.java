@@ -33,7 +33,15 @@ public class StringUtil {
             int c = str.codePointAt(i);
             switch (c) {
                 case '&':
-                    append = false;
+                    if (append) {
+                        append = false;
+                    } else {
+                        builder.append('&');
+                        if (!extBuilder.isEmpty()) {
+                            builder.append(extBuilder);
+                            extBuilder.setLength(0);
+                        }
+                    }
                     continue;
                 case ';':
                     if (!append) {
@@ -42,7 +50,6 @@ public class StringUtil {
                         extBuilder.setLength(0);
                         String value = NetMap.get(text);
                         if (value == null) {
-                            MainKt.getLog().warn("未知的网络转义字符'&{};', 作为普通字符串处理", text);
                             builder.append('&');
                             builder.append(text);
                             builder.append(';');
@@ -57,6 +64,10 @@ public class StringUtil {
             } else {
                 extBuilder.appendCodePoint(c);
             }
+        }
+        if (!append) {
+            builder.append('&');
+            builder.append(extBuilder);
         }
         return builder.toString();
     }

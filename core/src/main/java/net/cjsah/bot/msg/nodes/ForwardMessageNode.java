@@ -7,19 +7,19 @@ import net.cjsah.bot.msg.MessageNode;
 
 @Getter
 public class ForwardMessageNode extends MessageNode {
-    private final int messageId;
+    private final String messageId;
 
     /**
      * 需要通过 {@linkplain net.cjsah.bot.api.Api#getForwardMsg(String)[Api.getForwardMsg]}获取具体内容
      */
     public ForwardMessageNode(JSONObject json) {
         super(MessageType.FORWARD);
-        this.messageId = this.parseToInt(json, "id");
+        this.messageId = this.parsetoString(json, "id", false);
     }
 
     @Override
     public void serializeData(JSONObject json) {
-        json.put("id", String.valueOf(this.messageId));
+        json.put("id", this.messageId);
     }
 
     @Override

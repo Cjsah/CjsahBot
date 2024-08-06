@@ -1,4 +1,5 @@
 import lombok.SneakyThrows;
+import net.cjsah.bot.util.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.quartz.DateBuilder;
 import org.quartz.Job;
@@ -31,6 +32,9 @@ public class JsonTest {
 //
 //
 //        TimeUnit.MINUTES.sleep(2);
+        String url = "https://a.b.c/download?1=2&3=4&amp;5=6&aa;7=8&&t&scioaschioashc&oa&;hosi&c&";
+        System.out.println(url);
+        System.out.println(StringUtil.netReplace(url));
 
     }
 

@@ -43,8 +43,12 @@ public abstract class MessageNode {
     }
 
     protected String parsetoString(JSONObject json, String key) {
+        return this.parsetoString(json, key, false);
+    }
+
+    protected String parsetoString(JSONObject json, String key, boolean isUrl) {
         String val = json.getString(key);
-        return StringUtil.netReplace(val);
+        return isUrl ? StringUtil.netReplace(val) : val;
     }
 
     public String toString() {

@@ -46,9 +46,7 @@ internal suspend fun main() {
 //    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
-    TimeUnit.SECONDS.sleep(3)
-
-//    Signal.waitStop()
+    Signal.waitStop()
 
     PluginLoader.unloadPlugins()
     PluginThreadPools.shutdown()
@@ -58,7 +56,6 @@ internal suspend fun main() {
     job?.join()
     msgScope.shutdown()
     log.info("Closed")
-
 }
 
 internal suspend fun tryConnect() {

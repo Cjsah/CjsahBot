@@ -20,8 +20,8 @@ public class VideoMessageNode extends MessageNode {
 
     public VideoMessageNode(JSONObject json) {
         super(MessageType.VIDEO);
-        this.file = parsetoString(json, "file");
-        this.url = parsetoString(json, "url");
+        this.file = this.parsetoString(json, "file", true);
+        this.url = this.parsetoString(json, "url", true);
     }
 
     @Override

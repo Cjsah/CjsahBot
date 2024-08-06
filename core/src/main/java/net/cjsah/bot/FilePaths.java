@@ -16,6 +16,7 @@ public class FilePaths {
     private static final Logger log = LoggerFactory.getLogger("FilePath");
     private static final List<Path> Paths = new ArrayList<>();
     private static final List<AppFile> Files = new ArrayList<>();
+    public static final Path IMAGE_LOGS = regPath("logs/image");
     public static final Path PLUGIN = regPath("plugins");
     public static final Path CONFIG = regPath("config");
     public static final AppFile ACCOUNT = regFile("account.json", "{\"host\":\"127.0.0.1\",\"port\":8080,\"token\":\"\"}");
