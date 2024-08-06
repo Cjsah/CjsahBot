@@ -1,6 +1,5 @@
 package net.cjsah.bot.plugin
 
-import cn.hutool.core.io.FileUtil
 import net.cjsah.bot.Signal
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.command.CommandManager
@@ -15,10 +14,6 @@ import net.cjsah.bot.event.events.GroupUserLeaveEvent
 import net.cjsah.bot.event.events.MessageEvent
 import net.cjsah.bot.heart
 import net.cjsah.bot.log
-import net.cjsah.bot.msg.MessageChain
-import net.cjsah.bot.msg.nodes.JsonMessageNode
-import net.cjsah.bot.msg.nodes.XMLMessageNode
-import java.io.File
 import java.util.*
 
 class MainPlugin : Plugin() {

@@ -1,3 +1,8 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+//    id("org.springframework.boot") version "3.3.2"
+}
+
 val ktor_version: String by rootProject
 val quartz_version: String by rootProject
 
@@ -7,6 +12,12 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("org.quartz-scheduler:quartz:$quartz_version")
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "net.cjsah.bot.MainKt"
+    }
 }
 
 tasks.register<JavaExec>("runMain") {
