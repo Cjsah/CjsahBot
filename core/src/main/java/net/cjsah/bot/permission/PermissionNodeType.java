@@ -6,6 +6,4 @@ public enum PermissionNodeType {
     BLACK_GROUP,
     BLACK_USER,
     USER_SET;
-
-    pub
 }

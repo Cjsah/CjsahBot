@@ -8,7 +8,7 @@ object MsgLogUtil {
     @JvmStatic
     fun saveImage(url: String): String {
         val now = DateUtil.now()
-        val name = "${DateUtil.format(now, "HH:mm:ss")}-${IdUtil.fastSimpleUUID()}.png"
+        val name = "${DateUtil.format(now, "HH-mm-ss")}-${IdUtil.fastSimpleUUID()}.png"
         var file = FilePaths.IMAGE_LOGS.resolve(DateUtil.format(now, "yyyy-MM-dd")).toFile()
         if (!file.exists() || !file.isDirectory) {
             file.mkdirs()
