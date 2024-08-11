@@ -8,7 +8,9 @@ import java.util.List;
 public class PermissionNode {
     private final List<Long> list = new ArrayList<>();
 
-    public PermissionNode(JSONObject json, List<Long> list) {
+    public PermissionNode(JSONObject json) {
+        List<Long> list = json.getList("list", long.class);
+
         this.list.addAll(list);
     }
 

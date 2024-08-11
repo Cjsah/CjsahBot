@@ -1,5 +1,6 @@
 package net.cjsah.bot.plugin;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public class PluginThreadPools {
             }
         }
 
-        public synchronized void submitTask(Runnable task) {
+        public synchronized void submitTask(@NotNull Runnable task) {
             if (this.running) {
                 tasks.offer(task);
             } else {
