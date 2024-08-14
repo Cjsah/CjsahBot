@@ -1,10 +1,10 @@
 package net.cjsah.bot.permission;
 
 public enum RoleType {
-    OWNER("", 255),
-    ADMIN("", 100),
-    HELPER("", 10),
-    USER("", 1);
+    OWNER("owner", 255),
+    ADMIN("admin", 100),
+    HELPER("helper", 10),
+    USER("user", 1);
 
     RoleType(String name, int level) {
         this.name = name;

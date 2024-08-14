@@ -1,23 +1,15 @@
 package net.cjsah.bot
 
-import cn.hutool.core.io.FileUtil
 import com.alibaba.fastjson2.JSONObject
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.msg.MessageChain
-import net.cjsah.bot.msg.nodes.XMLMessageNode
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.plugin.PluginLoader
@@ -26,10 +18,11 @@ import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
-private val client = HttpClient(CIO) { install(WebSockets) }
+private val client = HttpClient(CIO) {
+    install(WebSockets)
+}
 private var session: DefaultClientWebSocketSession? = null
 private val msgScope = CoroutineScopeUtil.newThread()
 private var job: Job? = null
