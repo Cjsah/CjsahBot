@@ -1,6 +1,5 @@
 package net.cjsah.bot
 
-import cn.hutool.core.io.FileUtil
 import com.alibaba.fastjson2.JSONObject
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -14,32 +13,44 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.msg.MessageChain
-import net.cjsah.bot.msg.nodes.XMLMessageNode
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
 import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
+import org.quartz.JobBuilder
+import org.quartz.JobExecutionContext
+import org.quartz.SimpleScheduleBuilder
+import org.quartz.TriggerBuilder
+import org.quartz.impl.StdSchedulerFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.io.File
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
-private val client = HttpClient(CIO) { install(WebSockets) }
-private var session: DefaultClientWebSocketSession? = null
-private val msgScope = CoroutineScopeUtil.newThread()
-private var job: Job? = null
-internal var heart: HeartBeatTimer? = null
+internal val client = HttpClient(CIO) { install(WebSockets) }
+internal var heart: HeartBeat? = null
 
 internal val callbacks = HashMap<String, Channel<Any?>>()
+
+internal val factory = StdSchedulerFactory()
+internal val scheduler = factory.getScheduler()
 
 internal suspend fun main() {
     FilePaths.init()
     PluginLoader.loadPlugins()
+    scheduler.start()
+    val job = JobBuilder
+        .newJob(TokenJob::class.java)
+        .withIdentity("TokenJob", "Main")
+        .build()
+    val trigger = TriggerBuilder.newTrigger()
+        .withIdentity("TokenTrigger", "Main")
+        .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(30).repeatForever())
+        .startNow()
+        .build()
+    scheduler.scheduleJob(job, trigger)
 
     tryConnect()
 
@@ -55,87 +66,47 @@ internal suspend fun main() {
     PluginLoader.unloadPlugins()
     PluginThreadPools.shutdown()
     heart?.stop()
-    session?.close()
-    session = null
-    job?.join()
-    msgScope.shutdown()
+    client.close()
     log.info("Closed")
 }
 
 internal suspend fun tryConnect() {
     heart?.stop()
-    session?.close()
-    session = null
     log.info("正在连接到服务器...")
-    while (Signal.isRunning()) {
-        try {
-            val content = FilePaths.ACCOUNT.read()
-            val json = JsonUtil.deserialize(content)
-            session = client.webSocketSession(
-                method = HttpMethod.Get,
-                host = json.getString("host"),
-                port = json.getIntValue("port"),
-                path = "/?access_token=${json.getString("token")}"
-            )
-            log.info("连接成功!")
-            break
-        } catch (e: Exception) {
-            log.warn("连接失败, 将在 3 秒后重试...", e)
-            delay(3_000)
-        }
-    }
-
-    heart = HeartBeatTimer(5000) {
-        tryConnect()
-    }
-
-    job = msgScope.scope.launch {
-        while (session != null) {
-            try {
-                val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
-                if (receivedMsg.isEmpty()) continue
-                val json = JsonUtil.deserialize(receivedMsg)
-                if (json.containsKey("retcode")) {
-                    ReceivedCallbackParser.parse(json)
-                } else {
-                    ReceivedEventParser.parse(json)
-                }
-            } catch (e: Exception) {
-                if (e is ClosedReceiveChannelException) {
-                    break
-                }
-                log.error("Error!", e)
-            }
-        }
-        if (Signal.isRunning()) {
-            log.warn("Session is closed!")
-        }
-        this.cancel("")
-    }
+    val content = FilePaths.ACCOUNT.read()
+    val json = JsonUtil.deserialize(content)
+    heart = HeartBeat(json.getString("host"), json.getIntValue("port"))
 }
 
 @JvmOverloads
 internal fun request(form: ApiParam, callback: Boolean = true): Any {
-    try {
-        val session = session?.outgoing
-        var result: Any? = null
-        if (session != null) {
-            val body = form.generate()
-            val uuid = form.echo
-            var channel: Channel<Any?>? = null
-            if (callback) {
-                channel = Channel()
-                callbacks[uuid] = channel
-            }
-            val sendResult = session.trySend(Frame.Text(body))
-            sendResult.getOrThrow()
-            runBlocking {
-                result = channel?.receive()
-            }
-        }
-        return result ?: JSONObject()
-    }catch (e: Exception) {
-        log.error("Send Error!", e)
-        return JSONObject()
+//    try {
+//        val session = session?.outgoing
+//        var result: Any? = null
+//        if (session != null) {
+//            val body = form.generate()
+//            val uuid = form.echo
+//            var channel: Channel<Any?>? = null
+//            if (callback) {
+//                channel = Channel()
+//                callbacks[uuid] = channel
+//            }
+//            val sendResult = session.trySend(Frame.Text(body))
+//            sendResult.getOrThrow()
+//            runBlocking {
+//                result = channel?.receive()
+//            }
+//        }
+//        return result ?: JSONObject()
+//    }catch (e: Exception) {
+//        log.error("Send Error!", e)
+//        return JSONObject()
+//    }
+    return JSONObject()
+}
+
+class TokenJob : org.quartz.Job {
+    override fun execute(context: JobExecutionContext) {
+        println(1)
     }
 }
