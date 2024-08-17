@@ -36,7 +36,9 @@ class HeartBeatTimer(private var nextTime: Long, private val callback: suspend C
 
     fun heart(intervalMillis: Long) {
         reset()
-        nextTime = intervalMillis
+        if (intervalMillis > 0L) {
+            nextTime = intervalMillis
+        }
         startTimer()
     }
 

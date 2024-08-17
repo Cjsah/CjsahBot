@@ -5,21 +5,16 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.websocket.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.parser.ReceivedCallbackParser
-import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
-import net.cjsah.bot.util.CoroutineScopeUtil
+import net.cjsah.bot.util.DateUtil
 import net.cjsah.bot.util.JsonUtil
+import net.cjsah.bot.util.RequestUtil
 import org.quartz.JobBuilder
 import org.quartz.JobExecutionContext
 import org.quartz.SimpleScheduleBuilder
@@ -34,8 +29,10 @@ internal var heart: HeartBeat? = null
 
 internal val callbacks = HashMap<String, Channel<Any?>>()
 
-internal val factory = StdSchedulerFactory()
-internal val scheduler = factory.getScheduler()
+internal val scheduler = StdSchedulerFactory().getScheduler()
+
+private var token: String = ""
+private var expire: Long = 0
 
 internal suspend fun main() {
     FilePaths.init()
@@ -65,6 +62,7 @@ internal suspend fun main() {
 
     PluginLoader.unloadPlugins()
     PluginThreadPools.shutdown()
+    scheduler.shutdown()
     heart?.stop()
     client.close()
     log.info("Closed")
@@ -73,9 +71,14 @@ internal suspend fun main() {
 internal suspend fun tryConnect() {
     heart?.stop()
     log.info("正在连接到服务器...")
-    val content = FilePaths.ACCOUNT.read()
-    val json = JsonUtil.deserialize(content)
-    heart = HeartBeat(json.getString("host"), json.getIntValue("port"))
+
+
+
+//    val content = FilePaths.ACCOUNT.read()
+//    println(content)
+//    val json = JsonUtil.deserialize(content)
+//    println(json)
+//    heart = HeartBeat(json.getString("host"), json.getIntValue("port"))
 }
 
 @JvmOverloads
@@ -107,6 +110,33 @@ internal fun request(form: ApiParam, callback: Boolean = true): Any {
 
 class TokenJob : org.quartz.Job {
     override fun execute(context: JobExecutionContext) {
-        println(1)
+        val content = FilePaths.ACCOUNT.read()
+        val json = JsonUtil.deserialize(content)
+        val appId = json.getString("appId") ?: ""
+        val secret = json.getString("secret") ?: ""
+        val token = json.getString("token") ?: ""
+        val expire = json.getLongValue("expire")
+
+        if (appId.isEmpty() || secret.isEmpty()) {
+            log.warn("请填写appId和secret")
+            Signal.stop()
+            return
+        }
+
+        if (expire == 0L || token.isEmpty() || expire - DateUtil.nowTime() < 60) {
+            runBlocking {
+                log.info("appId: {}, secret: {}", appId, secret)
+                val res = RequestUtil.post(
+                    "https://bots.qq.com/app/getAppAccessToken",
+                    JSONObject().apply { put("appId", appId); put("clientSecret", secret) }
+                )
+                println(res)
+
+
+
+            }
+
+
+        }
     }
 }

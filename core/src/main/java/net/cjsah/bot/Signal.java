@@ -35,7 +35,9 @@ public class Signal {
     @SneakyThrows
     public static void waitStop() {
         synchronized (StopLock) {
-            StopLock.wait();
+            if (!Stop) {
+                StopLock.wait();
+            }
         }
     }
 

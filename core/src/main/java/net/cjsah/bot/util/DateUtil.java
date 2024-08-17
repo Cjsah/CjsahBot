@@ -16,6 +16,10 @@ public class DateUtil {
         return Date.from(nowDate().toInstant());
     }
 
+    public static long nowTime() {
+        return System.currentTimeMillis() / 1000;
+    }
+
     public static String format(Date date, String format) {
         SimpleDateFormat sfd = new SimpleDateFormat(format);
         return sfd.format(date);

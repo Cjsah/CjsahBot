@@ -73,6 +73,10 @@ class HeartBeat(
         }
     }
 
+    fun heart(time: Long = 0) {
+        this.heart.heart(0)
+    }
+
     suspend fun stop() {
         heart.stop()
         session?.close()

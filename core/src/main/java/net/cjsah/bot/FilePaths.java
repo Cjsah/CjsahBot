@@ -19,7 +19,7 @@ public class FilePaths {
     public static final Path IMAGE_LOGS = regPath("logs/image");
     public static final Path PLUGIN = regPath("plugins");
     public static final Path CONFIG = regPath("config");
-    public static final AppFile ACCOUNT = regFile("account.json", "{\"host\":\"127.0.0.1\",\"port\":8080,\"token\":\"\"}");
+    public static final AppFile ACCOUNT = regFile("account.json", "{\"token\":\"\",\"expire\":0,\"appId\":\"\",\"secret\":\"\"}");
 
     public static Path regPath(String path) {
         Path p = new File(path).toPath();
