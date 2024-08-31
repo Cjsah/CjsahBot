@@ -4,7 +4,9 @@ public enum RoleType {
     OWNER("owner", 255),
     ADMIN("admin", 100),
     HELPER("helper", 10),
-    USER("user", 1);
+    USER("user", 1),
+    DENY("deny", 0),
+    ;
 
     RoleType(String name, int level) {
         this.name = name;
@@ -19,5 +21,14 @@ public enum RoleType {
 
     public int getLevel() {
         return this.level;
+    }
+
+    public static RoleType parse(String name) {
+        for (RoleType roleType : values()) {
+            if (roleType.name.equals(name)) {
+                return roleType;
+            }
+        }
+        return null;
     }
 }

@@ -46,4 +46,5 @@ public final class BuiltExceptions{
     public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");
 
     public static final Supplier<PermissionException> CONFLICT_PERMISSION = () -> new PermissionException("权限冲突");
+    public static final Supplier<PermissionException> CONFLICT_GROUP_MATCH = () -> new PermissionException("无法在好友列表中匹配群组");
 }
