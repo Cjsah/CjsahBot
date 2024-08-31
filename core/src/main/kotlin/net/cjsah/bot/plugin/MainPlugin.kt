@@ -50,19 +50,19 @@ class MainPlugin : Plugin() {
             log.info("[群] ${it.userId} 离开了群 [${it.groupId}]")
         }
 
-        CommandManager.register { dispatcher ->
-            dispatcher.register(CommandManager.literal("console").then(CommandManager.literal("stop").executes("关闭Bot") {
-                Signal.stop()
-            }))
-            dispatcher.register(CommandManager.literal("help").executes("帮助") { context ->
-                val helps = dispatcher.getHelp(context.source)
-                if (context.source is ConsoleCommandSource) {
-                    helps.entries.forEach { context.source.sendFeedback("${it.key}\t${it.value}") }
-                } else {
-                    val collect = helps.entries.joinToString("\n") { "${it.key}\t${it.value}" }
-                    context.source.sendFeedback(collect)
-                }
-            })
+        CommandManager.register(CommandManager.literal("console").then(CommandManager.literal("stop").executes("关闭Bot") {
+            Signal.stop()
+        }))
+
+        CommandManager.register(CommandManager.literal("help").executes("帮助") { context ->
+            val helps = CommandManager.getHelp(context.source)
+            if (context.source is ConsoleCommandSource) {
+                helps.entries.forEach { context.source.sendFeedback("${it.key}\t${it.value}") }
+            } else {
+                val collect = helps.entries.joinToString("\n") { "${it.key}\t${it.value}" }
+                context.source.sendFeedback(collect)
+            }
+        })
 
 //            dispatcher.register(CommandManager.literal("test").then(CommandManager.literal("xml").executes("测试xml消息") { context ->
 //                val text = FileUtil.readUtf8String(File("test.xml"))
@@ -75,7 +75,7 @@ class MainPlugin : Plugin() {
 //                context.source.sendFeedback(msg)
 //            }))
 
-        }
+
 //
 //        EventManager.subscribe((INSTANCE), MessageEvent.GroupMessageEvent::class.java) {
 //            if (it.groupId == 799652476L && it.rawMessage == "/api") {

@@ -1,6 +1,8 @@
 package net.cjsah.bot.exception;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class BuiltExceptions{
@@ -45,6 +47,6 @@ public final class BuiltExceptions{
 
     public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");
 
-    public static final Supplier<PermissionException> CONFLICT_PERMISSION = () -> new PermissionException("权限冲突");
-    public static final Supplier<PermissionException> CONFLICT_GROUP_MATCH = () -> new PermissionException("无法在好友列表中匹配群组");
+    public static final BiFunction<String, String, PermissionException> CONFLICT_PERMISSION = (p1, p2) -> new PermissionException(p1 + " 与 " + p2 + " 权限冲突");
+    public static final Function<String, PermissionException> UNKNOWN_PERMISSION_TYPE = (type) -> new PermissionException("未知的权限类型: " + type);
 }

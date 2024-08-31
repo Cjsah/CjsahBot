@@ -16,10 +16,12 @@ public class FilePaths {
     private static final Logger log = LoggerFactory.getLogger("FilePath");
     private static final List<Path> Paths = new ArrayList<>();
     private static final List<AppFile> Files = new ArrayList<>();
+
     public static final Path IMAGE_LOGS = regPath("logs/image");
     public static final Path PLUGIN = regPath("plugins");
     public static final Path CONFIG = regPath("config");
     public static final AppFile ACCOUNT = regFile("account.json", "{\"host\":\"127.0.0.1\",\"port\":8080,\"token\":\"\"}");
+    public static final AppFile PERMISSION = regFile(CONFIG.resolve("permission.json"), "{\"global\":[],\"plugins\":[]}");
 
     public static Path regPath(String path) {
         Path p = new File(path).toPath();
@@ -29,7 +31,11 @@ public class FilePaths {
 
     public static AppFile regFile(String path, String defaultContent) {
         Path p = new File(path).toPath();
-        AppFile file = new AppFile(p, defaultContent);
+        return regFile(p, defaultContent);
+    }
+
+    public static AppFile regFile(Path path, String defaultContent) {
+        AppFile file = new AppFile(path, defaultContent);
         Files.add(file);
         return file;
     }

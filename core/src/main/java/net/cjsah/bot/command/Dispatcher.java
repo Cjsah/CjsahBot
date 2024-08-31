@@ -24,7 +24,7 @@ public class Dispatcher {
     private static final char ARGUMENT_SEPARATOR = ' ';
     private final CommandNode roots = new RootCommandNode();
 
-    public void register(LiteralArgumentBuilder command) throws CommandException {
+    public void register(LiteralArgumentBuilder command) {
         Plugin plugin = PluginContext.getCurrentPluginOrThrow();
         this.roots.addChild(plugin, command.build());
     }

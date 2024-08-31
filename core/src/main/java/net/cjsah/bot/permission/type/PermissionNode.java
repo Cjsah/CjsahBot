@@ -1,7 +1,6 @@
 package net.cjsah.bot.permission.type;
 
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.permission.PermissionNodeType;
 import net.cjsah.bot.permission.PermissionRoleNode;
 
@@ -12,9 +11,6 @@ public abstract class PermissionNode {
     private final List<Long> list = new ArrayList<>();
 
     public PermissionNode(JSONObject json) {
-        if (!this.isUseInGroup() && this.isMatchGroup()) {
-            throw BuiltExceptions.CONFLICT_GROUP_MATCH.get();
-        }
         List<Long> list = json.getList("list", long.class);
         this.list.addAll(list);
     }

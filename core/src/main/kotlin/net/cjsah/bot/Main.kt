@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
+import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
 import net.cjsah.bot.util.CoroutineScopeUtil
@@ -32,6 +33,7 @@ internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
     FilePaths.init()
+    PermissionManager.init()
     PluginLoader.loadPlugins()
 
     tryConnect()
