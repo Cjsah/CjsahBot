@@ -43,7 +43,7 @@ public class RoleSetNode extends PermissionNode {
 
     @Override
     public void handle(PermissionRoleNode node) {
-
+        node.setRole(this.role);
     }
 
 }

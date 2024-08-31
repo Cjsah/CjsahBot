@@ -12,33 +12,26 @@ public class PermissionManager {
     private static final List<PermissionNode> global = new ArrayList<>();
     private static final Map<String, List<PermissionNode>> permissions = new LinkedHashMap<>();
 
-    public static boolean gasPermission(String pluginId, long groupId, long userId) {
-        RoleType groupRole = RoleType.DENY;
-        RoleType userRole = RoleType.DENY;
-        boolean isInGroup = 0L == groupId;
-        for (PermissionNode node : global) {
-            if (node.isUseInGroup() == isInGroup && node.getList().contains(node.isMatchGroup() ? groupId : userId)) {
-                switch (node.getType()) {
-                    case USER_SET -> {
-                        RoleSetNode roleNode = (RoleSetNode) node;
-                        if (roleNode.getRole().getLevel() > userRole.getLevel()) {
-                            userRole = roleNode.getRole();
-                        }
-                    }
-                    case WHITE_GROUP -> {
-                        groupRole = ()
-                    }
-                }
-
-            }
-
-
-
-
-
+    public static boolean hasPermission(String pluginId, long groupId, long userId, RoleType permission) {
+        PermissionRoleNode role = new PermissionRoleNode();
+        if (matchRole(role, global, groupId, userId)) {
+            return false;
         }
+        List<PermissionNode> nodes = permissions.get(pluginId);
+        if (nodes != null && !nodes.isEmpty() && matchRole(role, nodes, groupId, userId)) {
+            return false;
+        }
+        return role.getRole().getLevel() >= permission.getLevel();
+    }
 
-
-        return true;
+    private static boolean matchRole(PermissionRoleNode role, List<PermissionNode> permissions, long groupId, long userId) {
+        boolean isInGroup = 0L != groupId;
+        for (PermissionNode node : permissions) {
+            if ((isInGroup ? node.canUseInGroup() : node.canUseInUser()) && node.match(groupId, userId)) {
+                node.handle(role);
+                if (role.isDeny()) return true;
+            }
+        }
+        return false;
     }
 }

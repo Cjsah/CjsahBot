@@ -1,13 +1,32 @@
 package net.cjsah.bot.permission;
 
 public class PermissionRoleNode {
-    private PermissionStatus groupStatus;
-    private PermissionStatus userStatus;
-    private RoleType role;
+    private boolean allow = false;
+    private boolean deny = false;
+    private RoleType role = null;
 
-    public PermissionRoleNode() {
-        this.groupStatus = PermissionStatus.PRE_DENY;
-        this.userStatus = PermissionStatus.PRE_DENY;
-        this.role = RoleType.DENY;
+    public PermissionRoleNode() {}
+
+    public void allow() {
+        this.allow = true;
+    }
+
+    public void deny() {
+        this.deny = true;
+    }
+
+    public boolean isDeny() {
+        return this.deny || this.role == RoleType.DENY;
+    }
+
+    public RoleType getRole() {
+        if (this.allow) return this.role == null ? RoleType.USER : this.role;
+        return this.role == null ? RoleType.DENY : this.role;
+    }
+
+    public void setRole(RoleType role) {
+        if (this.role == null || role.getLevel() > this.role.getLevel()) {
+            this.role = role;
+        }
     }
 }

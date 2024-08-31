@@ -40,7 +40,7 @@ public class BlackGroupUserNode extends PermissionNode {
 
     @Override
     public void handle(PermissionRoleNode node) {
-
+        node.deny();
     }
 
 }

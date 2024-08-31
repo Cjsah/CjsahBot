@@ -36,7 +36,7 @@ public class WhiteGroupNode extends PermissionNode {
 
     @Override
     public void handle(PermissionRoleNode node) {
-
+        node.allow();
     }
 
 }
