@@ -3,6 +3,7 @@ package net.cjsah.bot.plugin;
 import net.cjsah.bot.Signal;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.ConsoleCommandSource;
+import net.cjsah.bot.permission.RoleType;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ public class MainPlugin extends Plugin {
     @Override
     public void onLoad() {
 
-        CommandManager.register(CommandManager.literal("console").then(CommandManager.literal("stop").executes("关闭Bot", context -> Signal.stop())));
+        CommandManager.register(CommandManager.literal("console").requires(it -> it.hasPermission(RoleType.ADMIN)).then(CommandManager.literal("stop").executes("关闭Bot", context -> Signal.stop())));
 
         CommandManager.register(CommandManager.literal("help").executes("帮助", context -> {
 

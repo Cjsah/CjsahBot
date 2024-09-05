@@ -2,12 +2,19 @@ package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.data.GroupSourceData;
 import net.cjsah.bot.msg.MessageChain;
+import net.cjsah.bot.permission.PermissionManager;
+import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
 public class GroupCommandSource extends CommandSource<GroupSourceData> {
 
     public GroupCommandSource(GroupSourceData sender) {
         super(sender);
+    }
+
+    @Override
+    public boolean hasPermission(RoleType role) {
+        return PermissionManager.hasPermission("main", this.sender.group().getGroupId(), this.sender.user().getUserId(), role);
     }
 
     @Override

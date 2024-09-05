@@ -1,6 +1,7 @@
 package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.msg.MessageChain;
+import net.cjsah.bot.permission.RoleType;
 import net.cjsah.bot.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,7 @@ public abstract class CommandSource<T> {
         this.sender = sender;
     }
 
-    public boolean hasPermission() { //TODO permission abstract
-        return true;
-    }
+    public abstract boolean hasPermission(RoleType role);
 
     public boolean canUse(Plugin plugin) { //TODO permission abstract
         return true;

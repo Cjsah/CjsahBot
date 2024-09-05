@@ -1,11 +1,17 @@
 package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.msg.MessageChain;
+import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
 public class ConsoleCommandSource extends CommandSource<Void> {
     public ConsoleCommandSource() {
         super(null);
+    }
+
+    @Override
+    public boolean hasPermission(RoleType role) {
+        return true;
     }
 
     @Override

@@ -1,13 +1,19 @@
 package net.cjsah.bot.command.source;
 
-import net.cjsah.bot.api.Api;
 import net.cjsah.bot.data.UserBaseData;
 import net.cjsah.bot.msg.MessageChain;
+import net.cjsah.bot.permission.PermissionManager;
+import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
 public class UserCommandSource extends CommandSource<UserBaseData> {
     public UserCommandSource(UserBaseData user) {
         super(user);
+    }
+
+    @Override
+    public boolean hasPermission(RoleType role) {
+        return PermissionManager.hasPermission("main", 0, this.sender.getUserId(), role);
     }
 
     @Override
