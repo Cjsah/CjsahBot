@@ -9,6 +9,7 @@ import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.parser.ReceivedCallbackParser
 import net.cjsah.bot.parser.ReceivedEventParser
@@ -49,7 +50,7 @@ internal suspend fun main() {
 
     PluginLoader.unloadPlugins()
     PluginThreadPools.shutdown()
-    heart?.stop()
+    heart?.cancel()
     session?.close()
     session = null
     job?.join()
@@ -58,7 +59,7 @@ internal suspend fun main() {
 }
 
 internal suspend fun tryConnect() {
-    heart?.stop()
+    heart?.cancel()
     session?.close()
     session = null
     log.info("正在连接到服务器...")
@@ -66,12 +67,9 @@ internal suspend fun tryConnect() {
         try {
             val content = FilePaths.ACCOUNT.read()
             val json = JsonUtil.deserialize(content)
-            session = client.webSocketSession(
-                method = HttpMethod.Get,
-                host = json.getString("host"),
-                port = json.getIntValue("port"),
-                path = "/?access_token=${json.getString("token")}"
-            )
+            val token = json.getString("token");
+            Api.setToken(token)
+            session = client.webSocketSession("wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot&client_type=heybox_chat&chat_version=999.0.0&chat_version=1.24.5&token=${token}")
             log.info("连接成功!")
             break
         } catch (e: Exception) {
@@ -80,21 +78,28 @@ internal suspend fun tryConnect() {
         }
     }
 
-    heart = HeartBeatTimer(5000) {
-        tryConnect()
-    }
+    heart = HeartBeatTimer({ session?.outgoing?.trySend(Frame.Text("PING")) }) {
+        runBlocking {
+            tryConnect()
+        }
+    }.also { it.start() }
 
     job = msgScope.scope.launch {
         while (session != null) {
             try {
                 val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
+                println(receivedMsg)
                 if (receivedMsg.isEmpty()) continue
-                val json = JsonUtil.deserialize(receivedMsg)
-                if (json.containsKey("retcode")) {
-                    ReceivedCallbackParser.parse(json)
-                } else {
-                    ReceivedEventParser.parse(json)
+                if (receivedMsg == "PONG") {
+                    heart?.heartPong()
                 }
+
+//                val json = JsonUtil.deserialize(receivedMsg)
+//                if (json.containsKey("retcode")) {
+//                    ReceivedCallbackParser.parse(json)
+//                } else {
+//                    ReceivedEventParser.parse(json)
+//                }
             } catch (e: Exception) {
                 if (e is ClosedReceiveChannelException) {
                     break

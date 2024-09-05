@@ -5,6 +5,7 @@ plugins {
 
 val ktor_version: String by rootProject
 val quartz_version: String by rootProject
+val websocket_version: String by rootProject
 
 dependencies {
     implementation(project(":api"))
@@ -12,6 +13,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("org.quartz-scheduler:quartz:$quartz_version")
+    implementation("org.java-websocket:Java-WebSocket:$websocket_version")
 }
 
 tasks.withType<Jar> {

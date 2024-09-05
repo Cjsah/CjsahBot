@@ -35,7 +35,7 @@ subprojects {
         testImplementation(kotlin("test"))
         implementation("ch.qos.logback:logback-classic:$logback_version")
         implementation("com.alibaba.fastjson2:fastjson2:$fastjson_version")
-        implementation("cn.hutool:hutool-core:$hutool_version")
+        implementation("cn.hutool:hutool-all:$hutool_version")
 
         compileOnly("org.projectlombok:lombok:$lombok_version")
         annotationProcessor("org.projectlombok:lombok:$lombok_version")
