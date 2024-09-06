@@ -1,13 +1,16 @@
 package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
 public enum EventType {
+    @Deprecated
     MESSAGE(5, MessageEvent::new),
+    COMMAND(50, CommandEvent::new)
     ;
 
     EventType(int type, Function<JSONObject, Event> factory) {

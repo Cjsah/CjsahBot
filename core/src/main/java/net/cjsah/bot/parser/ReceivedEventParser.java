@@ -15,7 +15,7 @@ public class ReceivedEventParser {
         int type = raw.getIntValue("type");
         EventType eventType = EventType.getByType(type);
         if (eventType == null) {
-            log.warn("Unknown event type: {}", type);
+            log.warn("Unknown event type: {}, {}", type, raw);
             return;
         }
         JSONObject data = raw.getJSONObject("data");

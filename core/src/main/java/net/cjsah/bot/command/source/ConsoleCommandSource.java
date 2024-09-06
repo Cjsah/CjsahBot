@@ -3,7 +3,7 @@ package net.cjsah.bot.command.source;
 import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
-public class ConsoleCommandSource extends CommandSource<Void> {
+public class ConsoleCommandSource extends CommandSource<CommandSourceContent> {
     public ConsoleCommandSource() {
         super(null);
     }

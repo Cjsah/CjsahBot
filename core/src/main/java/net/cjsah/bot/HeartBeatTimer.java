@@ -38,9 +38,6 @@ public class HeartBeatTimer {
     }
 
     public void start() throws SchedulerException {
-        if (this.scheduler.isStarted()) {
-            throw new SchedulerException("Heartbeat is already started");
-        }
         JobDetail job = JobBuilder
                 .newJob(HeartBeatJob.class)
                 .withIdentity("Job", "Heart")
@@ -53,7 +50,9 @@ public class HeartBeatTimer {
                 .build();
         this.scheduler.scheduleJob(job, trigger);
         this.count.set(0);
-        this.scheduler.start();
+        if (!this.scheduler.isStarted()) {
+            this.scheduler.start();
+        }
     }
 
     public synchronized void stop() {
