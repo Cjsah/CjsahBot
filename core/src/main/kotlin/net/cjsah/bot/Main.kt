@@ -1,9 +1,11 @@
 package net.cjsah.bot
 
 import com.alibaba.fastjson2.JSONObject
+import com.alibaba.fastjson2.JSONWriter
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
@@ -11,8 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.api.ApiParam
-import net.cjsah.bot.parser.ReceivedCallbackParser
-import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
@@ -20,6 +20,8 @@ import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import kotlin.collections.HashMap
+import kotlin.collections.set
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
 private val client = HttpClient(CIO) {
@@ -46,6 +48,20 @@ internal suspend fun main() {
 //    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
+    Api.sendMsg("@{id:3595194642557722626} @{id:66956739} 1111\n\n# 0\n" +
+            "## 1\n" +
+            "### aa\n" +
+            "- bbb\n" +
+            "  - cc\n" +
+            "    dd\n" +
+            "1. ccc\n" +
+            "2. d\n" +
+            "\n" +
+            "> dsdsd\n" +
+            "`test`\n" +
+            "'''sss'''\n" +
+            "''sss''", "3595194642503450624", "3595194642524176386")
+
     Signal.waitStop()
 
     PluginLoader.unloadPlugins()
@@ -69,7 +85,33 @@ internal suspend fun tryConnect() {
             val json = JsonUtil.deserialize(content)
             val token = json.getString("token");
             Api.setToken(token)
-            session = client.webSocketSession("wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot&client_type=heybox_chat&chat_version=999.0.0&chat_version=1.24.5&token=${token}")
+            session = client.webSocketSession(
+                "wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot"
+            )
+            {
+                headers {
+                    append("client_type", "heybox_chat")
+                    append("x_client_type", "web")
+                    append("os_type", "web")
+                    append("x_os_type", "bot")
+                    append("x_app", "heybox_chat")
+                    append("chat_version", "1.24.5")
+                    append("token", token)
+                }
+            }
+
+//            session = client.webSocketSession(
+//                "wss://chat.xiaoheihe.cn/chatroom/ws/connect"
+//            ) {
+//                headers {
+//                    append("chat_os_type", "bot")
+//                    append("client_type", "heybox_chat")
+//                    append("chat_version", "999.0.0")
+//                    append("chat_version", "1.24.5")
+//                    append("token", token)
+//                }
+//            }
+
             log.info("连接成功!")
             break
         } catch (e: Exception) {
@@ -88,14 +130,17 @@ internal suspend fun tryConnect() {
         while (session != null) {
             try {
                 val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
-                println(receivedMsg)
                 if (receivedMsg.isEmpty()) continue
                 if (receivedMsg == "PONG") {
                     heart?.heartPong()
+                    continue
                 }
 
-//                val json = JsonUtil.deserialize(receivedMsg)
-//                if (json.containsKey("retcode")) {
+                val json = JsonUtil.deserialize(receivedMsg)
+                if (json.getIntValue("type") == 50) {
+                    println(json.toString(JSONWriter.Feature.PrettyFormat))
+                }
+            //                if (json.containsKey("retcode")) {
 //                    ReceivedCallbackParser.parse(json)
 //                } else {
 //                    ReceivedEventParser.parse(json)
