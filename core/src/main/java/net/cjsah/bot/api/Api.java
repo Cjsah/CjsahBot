@@ -3,6 +3,7 @@ package net.cjsah.bot.api;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.util.JsonUtil;
 
 import java.nio.charset.StandardCharsets;
@@ -12,8 +13,8 @@ import java.util.function.Consumer;
 public final class Api {
     private static String TOKEN = "";
 
-    public static void sendMsg(String msg, String room, String channel) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
+    public static String sendMsg(String msg, String room, String channel) {
+        JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
             json.put("msg", msg);
             json.put("msg_type", 10);
             json.put("heychat_ack_id", "0"); // ?
@@ -26,6 +27,7 @@ public final class Api {
             json.put("channel_id", channel);
             json.put("channel_type", 1);
         });
+        return res.getJSONObject("result").getString("msg_id");
     }
 
     public static String getToken() {
@@ -52,8 +54,11 @@ public final class Api {
         request.body(JsonUtil.serialize(body));
         try (HttpResponse response = request.execute()) {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
-            System.out.println(bodyStr);
-            return JsonUtil.deserialize(bodyStr);
+            JSONObject json = JsonUtil.deserialize(bodyStr);
+            if (!"ok".equals(json.getString("status"))) {
+                throw BuiltExceptions.REQUEST_FAILED.apply(json.getString("msg"));
+            }
+            return json;
         }
     }
 }

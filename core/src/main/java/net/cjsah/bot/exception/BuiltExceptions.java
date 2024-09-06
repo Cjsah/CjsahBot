@@ -1,9 +1,7 @@
 package net.cjsah.bot.exception;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public final class BuiltExceptions{
     public static final Para2CommandException DOUBLE_TOO_LOW = new Para2CommandException((found, min) -> "Double 必须小于 " + min + ", 但是发现了 " + found);
@@ -46,6 +44,8 @@ public final class BuiltExceptions{
     public static final Para1CommandException PLUGIN_NOT_FOUND = new Para1CommandException((plugin) -> "没有找到此插件: '" + plugin + "'");
 
     public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");
+
+    public static final Function<String, RequestException> REQUEST_FAILED = (msg) -> new RequestException("请求失败: " + msg);
 
     public static final BiFunction<String, String, PermissionException> CONFLICT_PERMISSION = (p1, p2) -> new PermissionException(p1 + " 与 " + p2 + " 权限冲突");
     public static final Function<String, PermissionException> UNKNOWN_PERMISSION_TYPE = (type) -> new PermissionException("未知的权限类型: " + type);

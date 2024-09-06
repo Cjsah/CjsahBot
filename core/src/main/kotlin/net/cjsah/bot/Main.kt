@@ -1,18 +1,15 @@
 package net.cjsah.bot
 
-import com.alibaba.fastjson2.JSONObject
 import com.alibaba.fastjson2.JSONWriter
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
-import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
-import net.cjsah.bot.api.ApiParam
 import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
@@ -20,8 +17,6 @@ import net.cjsah.bot.util.CoroutineScopeUtil
 import net.cjsah.bot.util.JsonUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import kotlin.collections.HashMap
-import kotlin.collections.set
 
 internal val log: Logger = LoggerFactory.getLogger("Main")
 private val client = HttpClient(CIO) {
@@ -85,10 +80,7 @@ internal suspend fun tryConnect() {
             val json = JsonUtil.deserialize(content)
             val token = json.getString("token");
             Api.setToken(token)
-            session = client.webSocketSession(
-                "wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot"
-            )
-            {
+            session = client.webSocketSession("wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot") {
                 headers {
                     append("client_type", "heybox_chat")
                     append("x_client_type", "web")
@@ -156,31 +148,5 @@ internal suspend fun tryConnect() {
             log.warn("Session is closed!")
         }
         this.cancel("")
-    }
-}
-
-@JvmOverloads
-internal fun request(form: ApiParam, callback: Boolean = true): Any {
-    try {
-        val session = session?.outgoing
-        var result: Any? = null
-        if (session != null) {
-            val body = form.generate()
-            val uuid = form.echo
-            var channel: Channel<Any?>? = null
-            if (callback) {
-                channel = Channel()
-                callbacks[uuid] = channel
-            }
-            val sendResult = session.trySend(Frame.Text(body))
-            sendResult.getOrThrow()
-            runBlocking {
-                result = channel?.receive()
-            }
-        }
-        return result ?: JSONObject()
-    }catch (e: Exception) {
-        log.error("Send Error!", e)
-        return JSONObject()
     }
 }

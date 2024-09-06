@@ -1,6 +1,5 @@
 package net.cjsah.bot.command.source;
 
-import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.permission.RoleType;
 import net.cjsah.bot.plugin.Plugin;
 import org.slf4j.Logger;
@@ -20,8 +19,6 @@ public abstract class CommandSource<T> {
     public boolean canUse(Plugin plugin) { //TODO permission abstract
         return true;
     }
-
-    public abstract void sendFeedback(MessageChain chain);
 
     public abstract void sendFeedback(String message);
 

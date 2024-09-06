@@ -6,12 +6,6 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
 import kotlin.text.Charsets;
-import net.cjsah.bot.data.enums.MessageSource;
-import net.cjsah.bot.msg.MessageChain;
-import net.cjsah.bot.resolver.EnumDeserializer;
-import net.cjsah.bot.resolver.EnumSerializer;
-import net.cjsah.bot.resolver.MessageDeserializer;
-import net.cjsah.bot.resolver.MessageSerializer;
 
 import java.io.File;
 import java.io.Reader;
@@ -59,12 +53,5 @@ public class JsonUtil {
 
     public static <T> List<T> convertList(Object array, Class<T> clazz) {
         return ((JSONArray) array).toList(clazz, JSONReader.Feature.SupportSmartMatch);
-    }
-
-    static {
-        JSON.register(MessageSource.class, new EnumSerializer<MessageSource>("source"));
-        JSON.register(MessageSource.class, new EnumDeserializer<MessageSource>("source"));
-        JSON.register(MessageChain.class, new MessageSerializer());
-        JSON.register(MessageChain.class, new MessageDeserializer());
     }
 }

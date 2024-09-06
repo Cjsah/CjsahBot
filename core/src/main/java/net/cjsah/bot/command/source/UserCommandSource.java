@@ -1,14 +1,14 @@
 package net.cjsah.bot.command.source;
 
-import net.cjsah.bot.data.UserBaseData;
-import net.cjsah.bot.msg.MessageChain;
+import net.cjsah.bot.api.Api;
+import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
-public class UserCommandSource extends CommandSource<UserBaseData> {
-    public UserCommandSource(UserBaseData user) {
-        super(user);
+public class UserCommandSource extends CommandSource<MessageEvent> {
+    public UserCommandSource(MessageEvent msg) {
+        super(msg);
     }
 
     @Override
@@ -17,18 +17,13 @@ public class UserCommandSource extends CommandSource<UserBaseData> {
     }
 
     @Override
-    public void sendFeedback(MessageChain chain) {
-
-    }
-
-    @Override
     public void sendFeedback(String message) {
-        this.sendFeedback(MessageChain.raw(message));
+        Api.sendMsg(message, this.sender.getRoomId(), this.sender.getChannelId());
     }
 
     @Override
     public void sendFeedback(String message, Level level) {
-        log.warn("好友消息不应该使用日志形式发送");
+        log.warn("此消息不应该使用日志形式发送");
         this.sendFeedback(message);
     }
 }

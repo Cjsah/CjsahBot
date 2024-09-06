@@ -1,6 +1,5 @@
 package net.cjsah.bot.command.source;
 
-import net.cjsah.bot.msg.MessageChain;
 import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;
 
@@ -12,11 +11,6 @@ public class ConsoleCommandSource extends CommandSource<Void> {
     @Override
     public boolean hasPermission(RoleType role) {
         return true;
-    }
-
-    @Override
-    public void sendFeedback(MessageChain chain) {
-        this.sendFeedback(chain.toString(), Level.INFO);
     }
 
     @Override
