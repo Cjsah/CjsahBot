@@ -1,0 +1,47 @@
+package net.cjsah.bot.api;
+
+public class MsgBuilder {
+    private final String roomId;
+    private final String channelId;
+    private final String msg;
+    private String at;
+    private String replay;
+
+    public MsgBuilder(String roomId, String channelId, String msg) {
+        this.roomId = roomId;
+        this.channelId = channelId;
+        this.msg = msg;
+        this.at = "";
+        this.replay = "";
+    }
+
+    public MsgBuilder at(int at) {
+        this.at = String.valueOf(at);
+        return this;
+    }
+
+    public MsgBuilder replay(String replay) {
+        this.replay = replay;
+        return this;
+    }
+
+    public String getRoomId() {
+        return this.roomId;
+    }
+
+    public String getChannelId() {
+        return this.channelId;
+    }
+
+    public String getMsg() {
+        return this.msg;
+    }
+
+    public String getAt() {
+        return this.at;
+    }
+
+    public String getReplay() {
+        return this.replay;
+    }
+}

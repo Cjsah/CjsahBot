@@ -13,18 +13,18 @@ import java.util.function.Consumer;
 public final class Api {
     private static String TOKEN = "";
 
-    public static String sendMsg(String msg, String room, String channel) {
+    public static String sendMsg(MsgBuilder builder) {
         JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
-            json.put("msg", msg);
+            json.put("room_id", builder.getRoomId());
+            json.put("channel_id", builder.getChannelId());
+            json.put("msg", builder.getMsg());
+            json.put("reply_id", builder.getReplay());
+            json.put("at_user_id", builder.getAt());
             json.put("msg_type", 10);
-            json.put("heychat_ack_id", "0"); // ?
-            json.put("reply_id", "");
-            json.put("room_id", room);
+            json.put("heychat_ack_id", "0");
             json.put("addition", "{}");
-            json.put("at_user_id", "66956739"); // ?
-            json.put("at_role_id", "3595194642557722626"); // ?
-            json.put("mention_channel_id", ""); // ?
-            json.put("channel_id", channel);
+            json.put("at_role_id", "");
+            json.put("mention_channel_id", "");
             json.put("channel_type", 1);
         });
         return res.getJSONObject("result").getString("msg_id");

@@ -1,8 +1,11 @@
 package net.cjsah.bot.ext;
 
+import net.cjsah.bot.FilePaths;
 import net.cjsah.bot.plugin.Plugin;
 
 public class TestPlugin extends Plugin {
+
+
     @Override
     public void onLoad() {
 //        CommandManager.register(CommandManager.literal("test").executes("插件测试", context -> {

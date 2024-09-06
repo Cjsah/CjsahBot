@@ -4,38 +4,29 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.permission.PermissionNodeType;
 import net.cjsah.bot.permission.PermissionRoleNode;
 
-public class BlackGroupNode extends PermissionNode {
-    public BlackGroupNode(JSONObject json) {
+public class BlackRoomNode extends PermissionNode {
+    public BlackRoomNode(JSONObject json) {
         super(json);
     }
 
     @Override
     public boolean isConflict(PermissionNode node) {
-        return node instanceof WhiteGroupNode;
+        return node instanceof WhiteRoomNode;
     }
 
     @Override
     public PermissionNodeType getType() {
-        return PermissionNodeType.BLACK_GROUP;
+        return PermissionNodeType.BLACK_ROOM;
     }
 
     @Override
-    public boolean canUseInGroup() {
-        return true;
-    }
-
-    @Override
-    public boolean canUseInUser() {
-        return false;
-    }
-
-    @Override
-    public boolean match(long groupId, long userId) {
-        return this.isMatch(groupId);
+    public boolean match(String roomId, String channelId, long userId) {
+        return this.isMatch(roomId);
     }
 
     @Override
     public void handle(PermissionRoleNode node) {
         node.deny();
     }
+
 }

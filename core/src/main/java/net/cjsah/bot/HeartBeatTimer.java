@@ -56,7 +56,7 @@ public class HeartBeatTimer {
         this.scheduler.start();
     }
 
-    private  void stop() {
+    public synchronized void stop() {
         TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
         JobKey jobKey = new JobKey("Job", "Heart");
         try {

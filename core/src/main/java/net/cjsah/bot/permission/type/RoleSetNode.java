@@ -18,7 +18,7 @@ public class RoleSetNode extends PermissionNode {
 
     @Override
     public boolean isConflict(PermissionNode node) {
-        return node instanceof BlackGroupNode;
+        return node instanceof BlackChannelNode;
     }
 
     @Override
@@ -27,17 +27,7 @@ public class RoleSetNode extends PermissionNode {
     }
 
     @Override
-    public boolean canUseInGroup() {
-        return true;
-    }
-
-    @Override
-    public boolean canUseInUser() {
-        return true;
-    }
-
-    @Override
-    public boolean match(long groupId, long userId) {
+    public boolean match(String roomId, String channelId, long userId) {
         return this.isMatch(userId);
     }
 

@@ -1,6 +1,7 @@
 package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.api.Api;
+import net.cjsah.bot.api.MsgBuilder;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.permission.RoleType;
@@ -13,12 +14,14 @@ public class UserCommandSource extends CommandSource<MessageEvent> {
 
     @Override
     public boolean hasPermission(RoleType role) {
-        return PermissionManager.hasPermission("main", 0, this.sender.getUserId(), role);
+        return PermissionManager.hasPermission("main", this.sender.getRoomId(), this.sender.getChannelId(), this.sender.getUserId(), role);
     }
 
     @Override
     public void sendFeedback(String message) {
-        Api.sendMsg(message, this.sender.getRoomId(), this.sender.getChannelId());
+        Api.sendMsg(new MsgBuilder(this.sender.getRoomId(), this.sender.getChannelId(), message)
+                .at(this.sender.getUserId())
+                .replay(this.sender.getMsgId()));
     }
 
     @Override

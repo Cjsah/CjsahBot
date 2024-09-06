@@ -20,17 +20,7 @@ public class WhiteUserNode extends PermissionNode {
     }
 
     @Override
-    public boolean canUseInGroup() {
-        return false;
-    }
-
-    @Override
-    public boolean canUseInUser() {
-        return true;
-    }
-
-    @Override
-    public boolean match(long groupId, long userId) {
+    public boolean match(String roomId, String channelId, long userId) {
         return this.isMatch(userId);
     }
 

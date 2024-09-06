@@ -1,6 +1,5 @@
 package net.cjsah.bot
 
-import com.alibaba.fastjson2.JSONWriter
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -10,6 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
+import net.cjsah.bot.parser.ReceivedEventParser
 import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
@@ -25,7 +25,11 @@ private val client = HttpClient(CIO) {
 private var session: DefaultClientWebSocketSession? = null
 private val msgScope = CoroutineScopeUtil.newThread()
 private var job: Job? = null
-internal var heart: HeartBeatTimer? = null
+internal val heart: HeartBeatTimer = HeartBeatTimer({ session?.outgoing?.trySend(Frame.Text("PING")) }) {
+    runBlocking {
+        tryConnect()
+    }
+}
 
 internal val callbacks = HashMap<String, Channel<Any?>>()
 
@@ -43,25 +47,25 @@ internal suspend fun main() {
 //    log.info("id={}", id)
 //    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
 
-    Api.sendMsg("@{id:3595194642557722626} @{id:66956739} 1111\n\n# 0\n" +
-            "## 1\n" +
-            "### aa\n" +
-            "- bbb\n" +
-            "  - cc\n" +
-            "    dd\n" +
-            "1. ccc\n" +
-            "2. d\n" +
-            "\n" +
-            "> dsdsd\n" +
-            "`test`\n" +
-            "'''sss'''\n" +
-            "''sss''", "3595194642503450624", "3595194642524176386")
+//    Api.sendMsg("@{id:3595194642557722626} @{id:66956739} 1111\n\n# 0\n" +
+//            "## 1\n" +
+//            "### aa\n" +
+//            "- bbb\n" +
+//            "  - cc\n" +
+//            "    dd\n" +
+//            "1. ccc\n" +
+//            "2. d\n" +
+//            "\n" +
+//            "> dsdsd\n" +
+//            "`test`\n" +
+//            "'''sss'''\n" +
+//            "''sss''", "3595194642503450624", "3595194642524176386")
 
     Signal.waitStop()
 
     PluginLoader.unloadPlugins()
     PluginThreadPools.shutdown()
-    heart?.cancel()
+    heart.cancel()
     session?.close()
     session = null
     job?.join()
@@ -70,7 +74,7 @@ internal suspend fun main() {
 }
 
 internal suspend fun tryConnect() {
-    heart?.cancel()
+    heart.stop()
     session?.close()
     session = null
     log.info("正在连接到服务器...")
@@ -91,19 +95,6 @@ internal suspend fun tryConnect() {
                     append("token", token)
                 }
             }
-
-//            session = client.webSocketSession(
-//                "wss://chat.xiaoheihe.cn/chatroom/ws/connect"
-//            ) {
-//                headers {
-//                    append("chat_os_type", "bot")
-//                    append("client_type", "heybox_chat")
-//                    append("chat_version", "999.0.0")
-//                    append("chat_version", "1.24.5")
-//                    append("token", token)
-//                }
-//            }
-
             log.info("连接成功!")
             break
         } catch (e: Exception) {
@@ -112,11 +103,7 @@ internal suspend fun tryConnect() {
         }
     }
 
-    heart = HeartBeatTimer({ session?.outgoing?.trySend(Frame.Text("PING")) }) {
-        runBlocking {
-            tryConnect()
-        }
-    }.also { it.start() }
+    heart.start()
 
     job = msgScope.scope.launch {
         while (session != null) {
@@ -124,19 +111,11 @@ internal suspend fun tryConnect() {
                 val receivedMsg = (session?.incoming?.receive() as? Frame.Text)?.readText() ?: ""
                 if (receivedMsg.isEmpty()) continue
                 if (receivedMsg == "PONG") {
-                    heart?.heartPong()
+                    heart.heartPong()
                     continue
                 }
-
                 val json = JsonUtil.deserialize(receivedMsg)
-                if (json.getIntValue("type") == 50) {
-                    println(json.toString(JSONWriter.Feature.PrettyFormat))
-                }
-            //                if (json.containsKey("retcode")) {
-//                    ReceivedCallbackParser.parse(json)
-//                } else {
-//                    ReceivedEventParser.parse(json)
-//                }
+                ReceivedEventParser.parse(json);
             } catch (e: Exception) {
                 if (e is ClosedReceiveChannelException) {
                     break

@@ -46,22 +46,21 @@ public class PermissionManager {
         return nodes;
     }
 
-    public static boolean hasPermission(String pluginId, long groupId, long userId, RoleType permission) {
+    public static boolean hasPermission(String pluginId, String roomId, String channelId, long userId, RoleType permission) {
         PermissionRoleNode role = new PermissionRoleNode();
-        if (matchRole(role, global, groupId, userId)) {
+        if (matchRole(role, global, roomId, channelId, userId)) {
             return false;
         }
         List<PermissionNode> nodes = permissions.get(pluginId);
-        if (nodes != null && !nodes.isEmpty() && matchRole(role, nodes, groupId, userId)) {
+        if (nodes != null && !nodes.isEmpty() && matchRole(role, nodes, roomId, channelId, userId)) {
             return false;
         }
         return role.getRole().getLevel() >= permission.getLevel();
     }
 
-    private static boolean matchRole(PermissionRoleNode role, List<PermissionNode> permissions, long groupId, long userId) {
-        boolean isInGroup = 0L != groupId;
+    private static boolean matchRole(PermissionRoleNode role, List<PermissionNode> permissions, String roomId, String channelId, long userId) {
         for (PermissionNode node : permissions) {
-            if ((isInGroup ? node.canUseInGroup() : node.canUseInUser()) && node.match(groupId, userId)) {
+            if (node.match(roomId, channelId, userId)) {
                 node.handle(role);
                 if (role.isDeny()) return true;
             }

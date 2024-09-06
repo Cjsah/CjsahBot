@@ -33,6 +33,8 @@
         </filter>
     </appender>
 
+    <logger name="org.quartz" level="warn" />
+
     <!--系统操作日志-->
     <root level="info">
         <appender-ref ref="console" />
