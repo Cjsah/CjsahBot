@@ -39,8 +39,6 @@ public final class BuiltExceptions{
     public static final Para0CommandException DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new Para0CommandException("需要空格来结束一个参数，但发现尾随数据 ");
     public static final Para1CommandException DISPATCHER_PARSE_EXCEPTION = new Para1CommandException((message) -> "无法解析命令: '" + message + "'");
 
-    public static final Para1CommandException GROUP_NOT_FOUND = new Para1CommandException((group) -> "机器人并没有加入此群组 '" + group + "'");
-    public static final Para1CommandException FRIEND_NOT_FOUND = new Para1CommandException((friend) -> "机器人并没有此好友 '" + friend + "'");
     public static final Para1CommandException PLUGIN_NOT_FOUND = new Para1CommandException((plugin) -> "没有找到此插件: '" + plugin + "'");
 
     public static final Para0CommandException REGISTER_IN_PLUGIN = new Para0CommandException("请在插件中注册命令");

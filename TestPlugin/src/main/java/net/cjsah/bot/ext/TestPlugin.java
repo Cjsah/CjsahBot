@@ -17,7 +17,7 @@ public class TestPlugin extends Plugin {
             int sender = context.getSource().getSender().getId();
             String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
             Random random = new Random(date.hashCode() + sender);
-            int rp = (random.nextInt(500) % 100) + 1;
+            int rp = random.nextInt(500) % 101;
             context.getSource().sendFeedback("@{id:" + sender + "} 您今日的人品值为: " + rp);
         }));
 

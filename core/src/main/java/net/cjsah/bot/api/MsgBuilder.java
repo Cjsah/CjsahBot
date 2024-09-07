@@ -44,4 +44,15 @@ public class MsgBuilder {
     public String getReplay() {
         return this.replay;
     }
+
+    @Override
+    public String toString() {
+        return "MsgBuilder{" +
+                "roomId='" + roomId + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", msg='" + msg + '\'' +
+                ", at='" + at + '\'' +
+                ", replay='" + replay + '\'' +
+                '}';
+    }
 }

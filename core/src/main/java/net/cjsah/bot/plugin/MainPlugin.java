@@ -8,14 +8,12 @@ import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.RoleType;
-import net.cjsah.bot.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class MainPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger("Console");
@@ -24,15 +22,6 @@ public class MainPlugin extends Plugin {
 
     @Override
     public void onLoad() {
-
-        CommandManager.register(CommandManager.literal("jrrp").executes("今日人品", context -> {
-            int sender = context.getSource().getSender().getId();
-            String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
-            Random random = new Random(date.hashCode() + sender);
-            int rp = (random.nextInt(500) % 100) + 1;
-            context.getSource().sendFeedback("@{id:" + sender + "} 您今日的人品值为: " + rp);
-        }));
-
 
         EventManager.subscribe(INSTANCE, MessageEvent.class, event -> {
             log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg());

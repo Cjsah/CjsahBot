@@ -42,25 +42,6 @@ internal suspend fun main() {
 
     PluginLoader.onStarted()
 
-//    Api.getVersionInfo()
-//    val id = Api.sendPrivateMsg(2684117397L, MessageChain.raw("测试"))
-//    log.info("id={}", id)
-//    Api.sendGroupMsg(799652476L, MessageChain.raw("测试"))
-
-//    Api.sendMsg("@{id:3595194642557722626} @{id:66956739} 1111\n\n# 0\n" +
-//            "## 1\n" +
-//            "### aa\n" +
-//            "- bbb\n" +
-//            "  - cc\n" +
-//            "    dd\n" +
-//            "1. ccc\n" +
-//            "2. d\n" +
-//            "\n" +
-//            "> dsdsd\n" +
-//            "`test`\n" +
-//            "'''sss'''\n" +
-//            "''sss''", "3595194642503450624", "3595194642524176386")
-
     Signal.waitStop()
 
     PluginLoader.unloadPlugins()

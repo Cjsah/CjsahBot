@@ -34,8 +34,8 @@ public class CommandEvent extends Event implements CommandSourceContent {
         this.msgId = json.getString("msg_id");
         JSONObject room = json.getJSONObject("room_base_info");
         this.roomAvatar = room.getString("room_avatar");
-        this.roomId = json.getString("room_id");
-        this.roomName = json.getString("room_name");
+        this.roomId = room.getString("room_id");
+        this.roomName = room.getString("room_name");
         JSONObject channel = json.getJSONObject("channel_base_info");
         this.channelId = channel.getString("channel_id");
         this.channelName = channel.getString("channel_name");
