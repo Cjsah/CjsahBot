@@ -14,16 +14,24 @@
       "id": "...",
       "permissions": [
         {
-          "type": "white_group",
-          "list": [12345678, 87654321]
+          "type": "white_room",
+          "list": ["12345678", "87654321"]
+        },
+        {
+          "type": "white_channel",
+          "list": ["12345678", "87654321"]
         },
         {
           "type": "white_user",
           "list": [12345678, 87654321]
         },
         {
-          "type": "black_group",
-          "list": [12345678, 87654321]
+          "type": "black_room",
+          "list": ["12345678", "87654321"]
+        },
+        {
+          "type": "black_channel",
+          "list": ["12345678", "87654321"]
         },
         {
           "type": "black_user",
