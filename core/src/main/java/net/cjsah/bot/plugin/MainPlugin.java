@@ -39,8 +39,10 @@ public class MainPlugin extends Plugin {
             CommandManager.execute(cmd.trim(), source);
         });
 
+        // console stop
         CommandManager.register(CommandManager.literal("console").requires(it -> it.hasPermission(RoleType.ADMIN)).then(CommandManager.literal("stop").executes("关闭Bot", context -> Signal.stop())));
 
+        // help
         CommandManager.register(CommandManager.literal("help").executes("帮助", context -> {
             Map<String, String> helps = CommandManager.getHelp(context.getSource());
             if (context.getSource() instanceof ConsoleCommandSource) {
