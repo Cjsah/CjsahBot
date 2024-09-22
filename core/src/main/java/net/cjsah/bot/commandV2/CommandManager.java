@@ -15,7 +15,16 @@ public class CommandManager {
                 .toList();
 
         for (Method method : methods) {
+            Command annotation = method.getAnnotation(Command.class);
+            String cmd = annotation.value();
+            CommandReader reader = new CommandReader(cmd);
+            reader.parse();
+
+
             Parameter[] parameters = method.getParameters();
+
+
+
             for (Parameter parameter : parameters) {
                 System.out.println(parameter.getName());
             }

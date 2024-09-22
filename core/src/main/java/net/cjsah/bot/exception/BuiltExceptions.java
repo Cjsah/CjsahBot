@@ -36,7 +36,8 @@ public final class BuiltExceptions{
 
     public static final Para0CommandException DISPATCHER_UNKNOWN_COMMAND = new Para0CommandException("未知指令");
     public static final Para0CommandException DISPATCHER_UNKNOWN_ARGUMENT = new Para0CommandException("参数错误 / 没有权限");
-    public static final Para0CommandException DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new Para0CommandException("需要空格来结束一个参数，但发现尾随数据 ");
+    public static final Para1CommandException COMMAND_PATTERN_ERROR = new Para1CommandException((cmd) -> "命令格式错误: " + cmd);
+    public static final Para0CommandException DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new Para0CommandException("需要空格来结束一个参数，但发现尾随数据");
     public static final Para1CommandException DISPATCHER_PARSE_EXCEPTION = new Para1CommandException((message) -> "无法解析命令: '" + message + "'");
 
     public static final Para1CommandException PLUGIN_NOT_FOUND = new Para1CommandException((plugin) -> "没有找到此插件: '" + plugin + "'");
