@@ -4,6 +4,10 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class DoubleArgument implements Argument<Double> {
+    public static DoubleArgument INSTANCE = new DoubleArgument();
+
+    private DoubleArgument() {}
+
     @Override
     public Double parse(final String node) throws CommandException {
         if (node.isEmpty()) {

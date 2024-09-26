@@ -4,6 +4,10 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class IntArgument implements Argument<Integer> {
+    public static IntArgument INSTANCE = new IntArgument();
+
+    private IntArgument() {}
+
     @Override
     public Integer parse(final String node) throws CommandException {
         if (node.isEmpty()) {

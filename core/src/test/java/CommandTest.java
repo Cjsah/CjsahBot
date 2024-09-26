@@ -10,7 +10,7 @@ public class CommandTest {
         CommandManager.register(CommandTest.class);
     }
 
-    @Command("/test <a> <b> <c> <p>")
+    @Command("/test <a> <b> <c> <p> ")
     public static void testCmd(int a, boolean b, String c, Map<String, String> p) {
         System.out.println(a);
         System.out.println(b);

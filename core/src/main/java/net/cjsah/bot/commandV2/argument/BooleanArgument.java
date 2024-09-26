@@ -4,6 +4,10 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class BooleanArgument implements Argument<Boolean> {
+    public static BooleanArgument INSTANCE = new BooleanArgument();
+
+    private BooleanArgument() {}
+
     @Override
     public Boolean parse(final String node) throws CommandException {
         if (node.isEmpty()) {
