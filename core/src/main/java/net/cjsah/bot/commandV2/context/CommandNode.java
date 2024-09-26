@@ -4,15 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandNode {
-    private final String node;
+    private final String name;
     private final List<CommandParameter> parameters;
 
     public CommandNode(String node) {
-        this.node = node;
+        this.name = node;
         this.parameters = new ArrayList<>();
     }
 
     public void appendParameter(CommandParameter parameter) {
         this.parameters.add(parameter);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public List<CommandParameter> getParameters() {
+        return this.parameters;
     }
 }
