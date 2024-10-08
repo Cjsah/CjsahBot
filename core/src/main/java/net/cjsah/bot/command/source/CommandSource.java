@@ -1,4 +1,4 @@
-package net.cjsah.bot.commandV2.source;
+package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.permission.RoleType;
 import net.cjsah.bot.plugin.Plugin;

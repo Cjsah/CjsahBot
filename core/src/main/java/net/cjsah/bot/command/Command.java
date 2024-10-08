@@ -1,4 +1,4 @@
-package net.cjsah.bot.commandV2;
+package net.cjsah.bot.command;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

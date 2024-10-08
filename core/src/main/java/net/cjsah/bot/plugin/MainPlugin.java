@@ -1,10 +1,10 @@
 package net.cjsah.bot.plugin;
 
 import net.cjsah.bot.Signal;
-import net.cjsah.bot.commandV2.Command;
-import net.cjsah.bot.commandV2.CommandManager;
-import net.cjsah.bot.commandV2.source.CommandSource;
-import net.cjsah.bot.commandV2.source.UserCommandSource;
+import net.cjsah.bot.command.Command;
+import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.command.source.UserCommandSource;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.event.events.MessageEvent;

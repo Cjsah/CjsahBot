@@ -1,6 +1,6 @@
-package net.cjsah.bot.commandV2.context;
+package net.cjsah.bot.command.context;
 
-import net.cjsah.bot.commandV2.argument.Argument;
+import net.cjsah.bot.command.argument.Argument;
 
 public record CommandParameter(String name, String description, Class<? extends Argument<?>> resolver) {
 }

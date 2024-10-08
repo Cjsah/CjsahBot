@@ -1,8 +1,8 @@
 package net.cjsah.bot.ext;
 
-import net.cjsah.bot.commandV2.Command;
-import net.cjsah.bot.commandV2.CommandManager;
-import net.cjsah.bot.commandV2.source.CommandSource;
+import net.cjsah.bot.command.Command;
+import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.util.DateUtil;
 

@@ -1,9 +1,9 @@
-package net.cjsah.bot.commandV2.context;
+package net.cjsah.bot.command.context;
 
-import net.cjsah.bot.commandV2.CommandParam;
-import net.cjsah.bot.commandV2.argument.Argument;
-import net.cjsah.bot.commandV2.argument.special.EmptyArgument;
-import net.cjsah.bot.commandV2.source.CommandSource;
+import net.cjsah.bot.command.CommandParam;
+import net.cjsah.bot.command.argument.Argument;
+import net.cjsah.bot.command.argument.special.EmptyArgument;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 
 import java.lang.reflect.Parameter;

@@ -1,4 +1,4 @@
-package net.cjsah.bot.commandV2.context;
+package net.cjsah.bot.command.context;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

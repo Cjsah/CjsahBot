@@ -1,8 +1,8 @@
-package net.cjsah.bot.commandV2.argument;
+package net.cjsah.bot.command.argument;
 
-import net.cjsah.bot.commandV2.argument.special.ArgsArgument;
-import net.cjsah.bot.commandV2.argument.special.CommandSourceArgument;
-import net.cjsah.bot.commandV2.source.CommandSource;
+import net.cjsah.bot.command.argument.special.ArgsArgument;
+import net.cjsah.bot.command.argument.special.CommandSourceArgument;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 

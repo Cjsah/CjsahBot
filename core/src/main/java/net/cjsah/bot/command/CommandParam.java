@@ -1,7 +1,7 @@
-package net.cjsah.bot.commandV2;
+package net.cjsah.bot.command;
 
-import net.cjsah.bot.commandV2.argument.Argument;
-import net.cjsah.bot.commandV2.argument.special.EmptyArgument;
+import net.cjsah.bot.command.argument.Argument;
+import net.cjsah.bot.command.argument.special.EmptyArgument;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.ElementType;

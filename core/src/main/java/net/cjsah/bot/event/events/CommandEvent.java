@@ -1,7 +1,7 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.commandV2.source.CommandSourceContent;
+import net.cjsah.bot.command.source.CommandSourceContent;
 import net.cjsah.bot.event.Event;
 
 import java.util.Collections;

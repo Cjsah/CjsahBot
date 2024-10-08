@@ -1,9 +1,7 @@
-package net.cjsah.bot.commandV2.argument.special;
+package net.cjsah.bot.command.argument.special;
 
-import net.cjsah.bot.commandV2.argument.Argument;
+import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.exception.CommandException;
-
-import java.util.Map;
 
 public class CommandSourceArgument implements Argument<Void> { // special
     private CommandSourceArgument() {}

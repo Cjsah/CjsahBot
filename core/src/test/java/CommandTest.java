@@ -1,7 +1,7 @@
-import net.cjsah.bot.commandV2.Command;
-import net.cjsah.bot.commandV2.CommandManager;
-import net.cjsah.bot.commandV2.CommandParam;
-import net.cjsah.bot.commandV2.argument.LongArgument;
+import net.cjsah.bot.command.Command;
+import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.CommandParam;
+import net.cjsah.bot.command.argument.LongArgument;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

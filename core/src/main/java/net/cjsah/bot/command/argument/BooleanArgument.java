@@ -1,4 +1,4 @@
-package net.cjsah.bot.commandV2.argument;
+package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
