@@ -41,7 +41,7 @@ public enum PermissionNodeType {
         PermissionNodeType nodeType = Arrays.stream(values())
                 .filter(it -> it.title.equals(type))
                 .findFirst()
-                .orElseThrow(() -> BuiltExceptions.UNKNOWN_PERMISSION_TYPE.apply(type));
+                .orElseThrow(() -> BuiltExceptions.UNKNOWN_PERMISSION_TYPE.create(type));
         return nodeType.factory.apply(json);
     }
 }

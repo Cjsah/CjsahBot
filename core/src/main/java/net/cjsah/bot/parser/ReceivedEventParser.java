@@ -21,6 +21,5 @@ public class ReceivedEventParser {
         JSONObject data = raw.getJSONObject("data");
         Event event = eventType.getFactory().apply(data);
         EventManager.broadcast(event);
-
     }
 }

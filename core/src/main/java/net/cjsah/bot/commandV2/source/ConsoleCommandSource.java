@@ -1,4 +1,4 @@
-package net.cjsah.bot.command.source;
+package net.cjsah.bot.commandV2.source;
 
 import net.cjsah.bot.permission.RoleType;
 import org.slf4j.event.Level;

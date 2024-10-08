@@ -1,0 +1,90 @@
+[
+  {
+    "protocol": null,
+    "permission": null,
+    "name": "/cmd",
+    "description": "执行指令",
+    "options": [
+      {
+        "key": null,
+        "required": true,
+        "description": "命令内容",
+        "name": "param",
+        "type": 3
+      }
+    ],
+    "id": "1831954369729146880",
+    "type": 0
+  },
+  {
+    "protocol": null,
+    "permission": null,
+    "name": "/jrrp",
+    "description": "今日人品",
+    "options": [],
+    "id": "1831971473287163904",
+    "type": 0
+  },
+  {
+    "protocol": null,
+    "permission": null,
+    "name": "/sddd",
+    "description": "test",
+    "options": [
+      {
+        "key": null,
+        "required": false,
+        "description": "222",
+        "name": "111",
+        "type": 3
+      },
+      {
+        "key": null,
+        "required": true,
+        "description": "",
+        "name": "222",
+        "choices": [
+          {
+            "key": null,
+            "name": "选项1",
+            "type": 3
+          },
+          {
+            "key": null,
+            "name": "选项2",
+            "type": 3
+          },
+          {
+            "key": null,
+            "name": "选项3",
+            "type": 3
+          }
+        ],
+        "type": 9
+      },
+      {
+        "key": null,
+        "required": false,
+        "description": "qqq",
+        "name": "333",
+        "type": 6
+      },
+      {
+        "key": null,
+        "required": false,
+        "description": "int",
+        "name": "444",
+        "type": 4
+      },
+      {
+        "key": null,
+        "required": true,
+        "description": "bool",
+        "name": "555",
+        "type": 5
+      }
+    ],
+    "id": "1834766440251191296",
+    "type": 0
+  }
+]

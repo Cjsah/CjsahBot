@@ -26,6 +26,11 @@ public class PluginThreadPools {
         thread.submitTask(runnable);
     }
 
+    public static synchronized void execute(String pluginId, Runnable runnable) {
+        Plugin plugin = PluginContext.getPlugin(pluginId);
+        execute(plugin, runnable);
+    }
+
     public static synchronized void execute(Runnable runnable) {
         Plugin plugin = PluginContext.PLUGIN.get();
         if (plugin == null) plugin = MainPlugin.INSTANCE;
@@ -53,6 +58,8 @@ public class PluginThreadPools {
                 }
             } catch (InterruptedException e) {
                 PluginThread.log.error("Plugin thread was interrupted", e);
+            } catch (Exception e) {
+                PluginThread.log.error("Plugin {} thread exception", info.getId(), e);
             }
         }
     }

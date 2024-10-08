@@ -1,6 +1,8 @@
 package net.cjsah.bot.commandV2.argument;
 
-import net.cjsah.bot.commandV2.CommandManager;
+import net.cjsah.bot.commandV2.argument.special.ArgsArgument;
+import net.cjsah.bot.commandV2.argument.special.CommandSourceArgument;
+import net.cjsah.bot.commandV2.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
@@ -8,41 +10,23 @@ public interface Argument<T> {
 
     T parse(final String node) throws CommandException;
 
-    static <CLASS extends Class<?>> Argument<?> generate(CLASS clazz) {
-        switch (clazz.getTypeName()) {
-            case "boolean":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case "java.lang.Boolean":
-                return BooleanArgument.INSTANCE;
-            case "byte":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case "java.lang.Byte":
-                return ByteArgument.INSTANCE;
-            case "short":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case "java.lang.Short":
-                return ShortArgument.INSTANCE;
-            case "int":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case"java.lang.Integer":
-                return IntArgument.INSTANCE;
-            case "long":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case"java.lang.Long":
-                return LongArgument.INSTANCE;
-            case "float":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case"java.lang.Float":
-                return FloatArgument.INSTANCE;
-            case "double":
-                CommandManager.log.warn("基本类型对可选内容兼容性较差, 建议使用包装类型");
-            case"java.lang.Double":
-                return DoubleArgument.INSTANCE;
-            case "java.lang.String":
-                return StringArgument.INSTANCE;
-            case "java.util.Map":
-                return ArgsArgument.INSTANCE;
-            default: throw BuiltExceptions.UNSUPPORTED_TYPE.create(clazz.getTypeName());
-        }
+    static Class<? extends Argument<?>> getResolver(Class<?> clazz) {
+        return switch (clazz.getTypeName()) {
+            case "boolean", "java.lang.Boolean" -> BooleanArgument.class;
+            case "byte", "java.lang.Byte" -> ByteArgument.class;
+            case "short", "java.lang.Short" -> ShortArgument.class;
+            case "int", "java.lang.Integer" -> IntArgument.class;
+            case "long", "java.lang.Long" -> LongArgument.class;
+            case "float", "java.lang.Float" -> FloatArgument.class;
+            case "double", "java.lang.Double" -> DoubleArgument.class;
+            case "java.lang.String" -> StringArgument.class;
+            case "java.util.Map" -> ArgsArgument.class;
+            default -> {
+                if (CommandSource.class.isAssignableFrom(clazz)) {
+                    yield CommandSourceArgument.class;
+                }
+                throw BuiltExceptions.UNSUPPORTED_TYPE.create(clazz.getTypeName());
+            }
+        };
     }
 }

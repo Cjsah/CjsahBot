@@ -39,7 +39,7 @@ public class PermissionManager {
             PermissionNode node = PermissionNodeType.generate(json);
             PermissionNode conflict = nodes.stream().filter(it -> it.isConflict(node)).findFirst().orElse(null);
             if (conflict != null) {
-                throw BuiltExceptions.CONFLICT_PERMISSION.apply(conflict.getType().getTitle(), node.getType().getTitle());
+                throw BuiltExceptions.CONFLICT_PERMISSION.create(conflict.getType().getTitle(), node.getType().getTitle());
             }
             nodes.add(node);
         }

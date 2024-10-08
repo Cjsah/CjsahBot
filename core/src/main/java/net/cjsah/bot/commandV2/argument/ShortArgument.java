@@ -4,10 +4,6 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class ShortArgument implements Argument<Short> {
-    public static ShortArgument INSTANCE = new ShortArgument();
-
-    private ShortArgument() {}
-
     @Override
     public Short parse(final String node) throws CommandException {
         if (node.isEmpty()) {

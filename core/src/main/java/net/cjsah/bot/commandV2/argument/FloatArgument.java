@@ -4,10 +4,6 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class FloatArgument implements Argument<Float> {
-    public static FloatArgument INSTANCE = new FloatArgument();
-
-    private FloatArgument() {}
-
     @Override
     public Float parse(final String node) throws CommandException {
         if (node.isEmpty()) {

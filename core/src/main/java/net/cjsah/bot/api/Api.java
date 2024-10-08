@@ -14,7 +14,6 @@ public final class Api {
     private static String TOKEN = "";
 
     public static String sendMsg(MsgBuilder builder) {
-        System.out.println(builder);
         JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
             json.put("room_id", builder.getRoomId());
             json.put("channel_id", builder.getChannelId());
@@ -57,7 +56,7 @@ public final class Api {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);
             if (!"ok".equals(json.getString("status"))) {
-                throw BuiltExceptions.REQUEST_FAILED.apply(json.getString("msg"));
+                throw BuiltExceptions.REQUEST_FAILED.create(json.getString("msg"));
             }
             return json;
         }

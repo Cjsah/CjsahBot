@@ -4,10 +4,6 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 public class ByteArgument implements Argument<Byte> {
-    public static ByteArgument INSTANCE = new ByteArgument();
-
-    private ByteArgument() {}
-
     @Override
     public Byte parse(final String node) throws CommandException {
         if (node.isEmpty()) {
