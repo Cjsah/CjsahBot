@@ -54,4 +54,10 @@ public class JsonUtil {
     public static <T> List<T> convertList(Object array, Class<T> clazz) {
         return ((JSONArray) array).toList(clazz, JSONReader.Feature.SupportSmartMatch);
     }
+
+    public static Object getOrDefault(JSONObject json, String key, Object defaultValue) {
+        Object value = json.get(key);
+        if (value == null) return defaultValue;
+        return value;
+    }
 }
