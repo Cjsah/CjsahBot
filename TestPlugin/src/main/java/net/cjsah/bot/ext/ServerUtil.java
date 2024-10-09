@@ -20,10 +20,10 @@ public class ServerUtil {
 
         byte[] request = new RequestInfoGenerator(ip, port).generate();
 
-        try (Socket socket = new Socket(ip, port);
-             InputStream in = socket.getInputStream();
-             OutputStream out = socket.getOutputStream()) {
-
+        try {
+            Socket socket = new Socket(ip, port);
+            InputStream in = socket.getInputStream();
+            OutputStream out = socket.getOutputStream();
             socket.setSoTimeout(1000);
 
             out.write(request);
@@ -52,10 +52,15 @@ public class ServerUtil {
                     array[index++] = bytes[i];
                 }
             }
+
+            in.close();
+            out.close();
+            socket.close();
+
             String str = new String(deleteHead(array));
             return JsonUtil.deserialize(str);
         } catch (Exception e) {
-            log.error("Failed to get server info", e);
+            log.warn("Failed to get server info", e);
             return JSONObject.of("error", e.getMessage());
         }
     }

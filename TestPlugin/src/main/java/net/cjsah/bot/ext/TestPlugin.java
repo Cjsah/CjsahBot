@@ -62,6 +62,11 @@ public class TestPlugin extends Plugin {
 
     private static void getInfo(String ip, int port, CommandSource<?> source) {
         JSONObject info = ServerUtil.requestInfo(ip, port);
+        String error = info.getString("error");
+        if (error != null) {
+            source.sendFeedback("获取失败: " + error);
+            return;
+        }
         JSONObject players = info.getJSONObject("players");
         JSONObject description = info.getJSONObject("description");
         String text = description.getString("text");
