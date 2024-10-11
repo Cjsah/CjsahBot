@@ -68,15 +68,20 @@ public class TestPlugin extends Plugin {
             return;
         }
         JSONObject players = info.getJSONObject("players");
-        JSONObject description = info.getJSONObject("description");
-        String text = description.getString("text");
-        if (description.containsKey("extra")) {
-            List<JSONObject> extra = description.getList("extra", JSONObject.class);
-            text = extra.stream()
-                    .map(it -> it.getString("text"))
-                    .collect(Collectors.joining("\n", "\n", "\n"));
+        StringBuilder builder = new StringBuilder();
+        Object description = info.get("description");
+        if (description instanceof String value) {
+            builder.append(value);
+        } else if (description instanceof JSONObject json) {
+            builder.append(json.getString("text"));
+            if (json.containsKey("extra")) {
+                List<JSONObject> extra = json.getList("extra", JSONObject.class);
+                builder.append(extra.stream()
+                        .map(it -> it.getString("text"))
+                        .collect(Collectors.joining("\n", "\n", "\n")));
+            }
         }
-        text = text.replaceAll("\\u00a7([a-zA-Z0-9])", "");
+        String text = builder.toString().replaceAll("\\u00a7([a-zA-Z0-9])", "");
         String val = Constants.MC_SERVER_MSG.formatted(
                 ip, port,
                 info.getJSONObject("version").getString("name"),

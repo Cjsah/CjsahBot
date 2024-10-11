@@ -96,7 +96,7 @@ public class CommandManager {
                 try {
                     node.getMethod().invoke(null, args);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    log.error("Failed to execute command: {}", e.getMessage());
+                    log.error("Failed to execute command", e);
                 }
             });
         } catch (CommandException e) { // 命令导致的异常
