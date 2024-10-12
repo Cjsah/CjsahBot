@@ -22,8 +22,8 @@ public class TestPlugin extends Plugin {
     }
 
     @Command("/jrrp")
-    public static void jrrp(CommandSource<?> source) {
-        int sender = source.getSender().getId();
+    public static void jrrp(CommandSource source) {
+        int sender = source.sender().getSenderId();
         String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
         Random random = new Random(date.hashCode() + sender);
         int rp = random.nextInt(500) % 101;
@@ -31,7 +31,7 @@ public class TestPlugin extends Plugin {
     }
 
     @Command("/mcv")
-    public static void mcv(CommandSource<?> source) {
+    public static void mcv(CommandSource source) {
         HttpRequest request = HttpRequest.get("https://launchermeta.mojang.com/mc/game/version_manifest.json");
         try (HttpResponse response = request.execute()) {
             if (response.getStatus() != 200) {
@@ -47,7 +47,7 @@ public class TestPlugin extends Plugin {
     }
 
     @Command("/mcs <ip>")
-    public static void mcs(String ip, CommandSource<?> source) {
+    public static void mcs(String ip, CommandSource source) {
         if (!ip.matches("([^/:]+)(:\\d*)?")) {
             source.sendFeedback("地址格式错误!");
             return;
@@ -60,7 +60,7 @@ public class TestPlugin extends Plugin {
         }
     }
 
-    private static void getInfo(String ip, int port, CommandSource<?> source) {
+    private static void getInfo(String ip, int port, CommandSource source) {
         JSONObject info = ServerUtil.requestInfo(ip, port);
         String error = info.getString("error");
         if (error != null) {
@@ -94,7 +94,7 @@ public class TestPlugin extends Plugin {
     }
 
     @Command("/mcbug <code>")
-    public static void mcv(int code, CommandSource<?> source) {
+    public static void mcv(int code, CommandSource source) {
         HttpRequest request = HttpRequest.get("https://bugs.mojang.com/rest/api/2/issue/MC-" + code);
         try (HttpResponse response = request.execute()) {
             if (response.getStatus() != 200) {

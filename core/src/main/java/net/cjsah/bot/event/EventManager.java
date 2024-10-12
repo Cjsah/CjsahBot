@@ -1,7 +1,7 @@
 package net.cjsah.bot.event;
 
-import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContext;
+import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public final class EventManager {
@@ -30,9 +31,9 @@ public final class EventManager {
      */
     public static <T extends Event> void subscribe(Class<T> clazz, Consumer<T> handler) {
         // 获取当前插件上下文中的插件
-        Plugin plugin = PluginContext.getCurrentPlugin();
+        PluginInfo info = PluginContext.getCurrentPluginInfo();
         // 使用获取到的插件和事件处理程序进行订阅
-        subscribe(plugin, clazz, handler);
+        subscribe(info.getId(), clazz, handler);
     }
 
 
@@ -79,12 +80,12 @@ public final class EventManager {
      * <p>
      * 该方法允许插件订阅特定类型的事件，当事件发生时，指定的事件处理程序会被调用
      *
-     * @param plugin  订阅事件的插件实例
-     * @param clazz   被订阅事件的类类型
-     * @param handler 事件发生时调用的事件处理程序，接受事件类型的实例作为参数
+     * @param pluginId  订阅事件的插件ID
+     * @param clazz     被订阅事件的类类型
+     * @param handler   事件发生时调用的事件处理程序，接受事件类型的实例作为参数
      */
-    public static <T extends Event> void subscribe(Plugin plugin, Class<T> clazz, Consumer<T> handler) {
-        events.add(new EventNode<>(plugin, clazz, handler));
+    public static <T extends Event> void subscribe(String pluginId, Class<T> clazz, Consumer<T> handler) {
+        events.add(new EventNode<>(pluginId, clazz, handler));
     }
 
 
@@ -93,11 +94,11 @@ public final class EventManager {
      * <p>
      * 当一个插件不再需要接收事件通知时，可以通过此方法取消其订阅，从而提高系统的性能和资源利用率
      *
-     * @param plugin 要取消订阅的插件对象
+     * @param pluginId 要取消订阅的插件ID
      */
-    public static void unsubscribe(Plugin plugin) {
+    public static void unsubscribe(String pluginId) {
         // 移除所有属于指定插件的事件监听器
-        events.removeIf(it -> it.plugin == plugin);
+        events.removeIf(it -> Objects.equals(it.pluginId, pluginId));
     }
 
 
@@ -111,8 +112,8 @@ public final class EventManager {
      * @param event 事件类型，必须是Event的子类
      */
     public static <T extends Event> void unsubscribe(Class<T> event) {
-        Plugin plugin = PluginContext.getCurrentPlugin();
-        events.removeIf(it -> it.plugin == plugin && it.event == event);
+        PluginInfo info = PluginContext.getCurrentPluginInfo();
+        events.removeIf(it -> Objects.equals(it.pluginId, info.getId()) && it.event == event);
     }
 
 
@@ -130,7 +131,7 @@ public final class EventManager {
         // 使用并行流过滤并执行匹配的事件处理函数
         events.stream().parallel().filter(it -> it.event.isAssignableFrom(event.getClass())).forEach(it -> {
             // 使用插件的线程池执行事件处理函数
-            PluginThreadPools.execute(it.plugin, () -> {
+            PluginThreadPools.execute(it.pluginId, () -> {
                 try {
                     // 动态类型转换并调用事件处理函数
                     ((Consumer<T>) it.handler).accept(event);
@@ -143,7 +144,7 @@ public final class EventManager {
     }
 
 
-    record EventNode<T extends Event>(Plugin plugin, Class<T> event, Consumer<T> handler) {
+    record EventNode<T extends Event>(String pluginId, Class<T> event, Consumer<T> handler) {
     }
 
 }

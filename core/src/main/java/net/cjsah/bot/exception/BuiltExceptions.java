@@ -36,6 +36,7 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory READER_EXPECTED_SYMBOL = new CommandExceptionFactory("无效的 '%c'");
 
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_COMMAND = new CommandExceptionFactory("未知指令");
+    public static final CommandExceptionFactory DISPATCHER_COMMAND_NO_PERMISSION = new CommandExceptionFactory("没有权限执行此命令");
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_ARGUMENT = new CommandExceptionFactory("参数错误 / 没有权限");
     public static final CommandExceptionFactory COMMAND_PATTERN_ERROR = new CommandExceptionFactory("命令格式错误: %s");
     public static final CommandExceptionFactory DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new CommandExceptionFactory("需要空格来结束一个参数，但发现尾随数据");

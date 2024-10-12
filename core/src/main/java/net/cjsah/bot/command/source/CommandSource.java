@@ -1,30 +1,26 @@
 package net.cjsah.bot.command.source;
 
+import net.cjsah.bot.api.Api;
+import net.cjsah.bot.api.MsgBuilder;
+import net.cjsah.bot.event.events.CommandEvent;
+import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.permission.RoleType;
 import net.cjsah.bot.plugin.Plugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 
-public abstract class CommandSource<T extends CommandSourceContent> {
-    protected static final Logger log = LoggerFactory.getLogger("CommandSource");
-    protected final T sender;
+public record CommandSource(CommandEvent sender) {
 
-    public CommandSource(T sender) {
-        this.sender = sender;
+    public boolean hasPermission(RoleType role) {
+        return PermissionManager.hasPermission("main", this.sender.getRoomId(), this.sender.getChannelId(), this.sender.getSenderId(), role);
     }
-
-    public abstract boolean hasPermission(RoleType role);
 
     public boolean canUse(Plugin plugin) { //TODO permission abstract
         return true;
     }
 
-    public abstract void sendFeedback(String message);
+    public void sendFeedback(String message) {
+        Api.sendMsg(new MsgBuilder(this.sender.getRoomId(), this.sender.getChannelId(), message)
+                .at(this.sender.getSenderId())
+                .replay(this.sender.getMsgId()));
 
-    public abstract void sendFeedback(String message, Level level);
-
-    public T getSender() {
-        return this.sender;
     }
 }

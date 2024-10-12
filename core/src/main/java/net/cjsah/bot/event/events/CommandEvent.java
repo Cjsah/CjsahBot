@@ -1,7 +1,6 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.command.source.CommandSourceContent;
 import net.cjsah.bot.event.Event;
 
 import java.util.Collections;
@@ -10,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class CommandEvent extends Event implements CommandSourceContent {
+public class CommandEvent extends Event {
     private final int botId;
     private final String msgId;
 
@@ -29,7 +28,7 @@ public class CommandEvent extends Event implements CommandSourceContent {
 
     private final String cmdId;
     private final String cmdName;
-    private final Map<String, CommandOption> cmdOptions;
+    private final Map<String, String> cmdOptions;
 
     public CommandEvent(JSONObject json) {
         this.botId = json.getIntValue("bot_id");
@@ -50,8 +49,8 @@ public class CommandEvent extends Event implements CommandSourceContent {
         JSONObject command = json.getJSONObject("command_info");
         this.cmdId = command.getString("id");
         this.cmdName = command.getString("name").substring(1);
-        List<CommandOption> options = command.getList("options", CommandOption.class);
-        this.cmdOptions = options == null ? Collections.emptyMap() : options.stream().collect(Collectors.toMap(CommandOption::name, it -> it));
+        List<JSONObject> options = command.getList("options", JSONObject.class);
+        this.cmdOptions = options == null ? Collections.emptyMap() : options.stream().collect(Collectors.toMap(it -> it.getString("name"), it -> it.getString("value")));
     }
 
     public int getBotId() {
@@ -110,7 +109,7 @@ public class CommandEvent extends Event implements CommandSourceContent {
         return this.cmdName;
     }
 
-    public Map<String, CommandOption> getCmdOptions() {
+    public Map<String, String> getCmdOptions() {
         return this.cmdOptions;
     }
 
@@ -118,11 +117,4 @@ public class CommandEvent extends Event implements CommandSourceContent {
     public int hashCode() {
         return Objects.hash(botId, msgId, roomAvatar, roomId, roomName, channelId, channelName, channelType, senderAvatar, senderId, senderName, senderLevel, cmdId, cmdName, cmdOptions);
     }
-
-    @Override
-    public int getId() {
-        return this.senderId;
-    }
-
-    public record CommandOption(String name, int type, String value) { }
 }

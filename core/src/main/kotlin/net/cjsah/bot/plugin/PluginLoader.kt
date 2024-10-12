@@ -1,6 +1,7 @@
 package net.cjsah.bot.plugin
 
 import net.cjsah.bot.FilePaths
+import net.cjsah.bot.command.CommandManager
 import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.resolver.Counter
 import net.cjsah.bot.util.JsonUtil
@@ -97,8 +98,10 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
         @JvmStatic
         fun unloadPlugin(plugin: Plugin) {
+            val info = PluginContext.getPluginInfo(plugin);
             PluginThreadPools.execute(plugin) {
-                EventManager.unsubscribe(plugin)
+                EventManager.unsubscribe(info.id)
+                CommandManager.deregister(info.id)
                 plugin.onUnload()
             }
             PluginThreadPools.unloadPlugin(plugin)
