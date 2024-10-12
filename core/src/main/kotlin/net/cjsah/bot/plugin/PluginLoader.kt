@@ -67,7 +67,7 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
                             counter.completed()
                         }catch (e:Exception) {
                             PluginContext.removePlugin(plugin)
-                            throw e;
+                            throw e
                         }
                     }
                 } catch (e: Exception) {
@@ -98,8 +98,8 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
         @JvmStatic
         fun unloadPlugin(plugin: Plugin) {
-            val info = PluginContext.getPluginInfo(plugin);
             PluginThreadPools.execute(plugin) {
+                val info = PluginContext.getCurrentPluginInfo()
                 EventManager.unsubscribe(info.id)
                 CommandManager.deregister(info.id)
                 plugin.onUnload()

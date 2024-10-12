@@ -21,11 +21,13 @@ public class MainPlugin extends Plugin {
     public void onLoad() {
         CommandManager.register(MainPlugin.class);
 
-        EventManager.subscribe(PLUGIN_INFO.getId(), MessageEvent.class, event -> {
+        String pluginId = PLUGIN_INFO.getId();
+
+        EventManager.subscribe(pluginId, MessageEvent.class, event -> {
             log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg());
         });
 
-        EventManager.subscribe(PLUGIN_INFO.getId(), CommandEvent.class, event -> {
+        EventManager.subscribe(pluginId, CommandEvent.class, event -> {
             CommandSource source = new CommandSource(event);
             CommandManager.execute(event.getCmdName(), event.getCmdOptions(), source);
         });

@@ -3,6 +3,7 @@ package net.cjsah.bot.event.events;
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.Event;
 
+@Deprecated
 public class MessageEvent extends Event {
     private final String avatar;
     private final boolean bot;
