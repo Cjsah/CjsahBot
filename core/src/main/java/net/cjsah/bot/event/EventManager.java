@@ -1,5 +1,6 @@
 package net.cjsah.bot.event;
 
+import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
@@ -141,6 +142,18 @@ public final class EventManager {
                 }
             });
         });
+    }
+
+    public static void parseEvent(JSONObject raw) {
+        int type = raw.getIntValue("type");
+        EventType eventType = EventType.getByType(type);
+        if (eventType == null) {
+            log.warn("Unknown event type: {}, {}", type, raw);
+            return;
+        }
+        JSONObject data = raw.getJSONObject("data");
+        Event event = eventType.getFactory().apply(data);
+        EventManager.broadcast(event);
     }
 
 

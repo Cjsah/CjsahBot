@@ -2,6 +2,7 @@ package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.events.CommandEvent;
+import net.cjsah.bot.event.events.MessageEmojiEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.event.events.UserModifyEvent;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +14,7 @@ public enum EventType {
     MESSAGE(5, MessageEvent::new),
     COMMAND(50, CommandEvent::new),
     USER_MODIFY(3001, UserModifyEvent::new),
+    MSG_EMOJI(5003, MessageEmojiEvent::new),
     ;
 
     EventType(int type, Function<JSONObject, Event> factory) {

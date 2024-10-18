@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
-import net.cjsah.bot.parser.ReceivedEventParser
+import net.cjsah.bot.event.EventManager
 import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
@@ -96,7 +96,7 @@ internal suspend fun tryConnect() {
                     continue
                 }
                 val json = JsonUtil.deserialize(receivedMsg)
-                ReceivedEventParser.parse(json);
+                EventManager.parseEvent(json)
             } catch (e: Exception) {
                 if (e is ClosedReceiveChannelException) {
                     break
