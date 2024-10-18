@@ -70,7 +70,7 @@ public class CommandManager {
             CommandNode node = COMMANDS.get(info.getCommand());
             Map<String, String> options = info.getOptions();
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
-            if (!source.hasPermission(node.getRole())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
+            if (!source.hasPermission(node.getPluginId(), node.getRole())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
             List<CommandParameter> parameters = node.getParameters();
             Object[] args = new Object[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {
@@ -96,7 +96,10 @@ public class CommandManager {
             PluginThreadPools.execute(node.getPluginId(), () -> {
                 try {
                     node.getMethod().invoke(null, args);
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                } catch (CommandException e) {
+                    source.sendFeedback(e.getMessage());
+                    log.error("Failed to execute command", e);
+                } catch (Exception e) {
                     log.error("Failed to execute command", e);
                 }
             });

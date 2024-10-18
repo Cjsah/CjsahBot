@@ -11,7 +11,7 @@ public class RoomRole {
     private final String roomId;
     private final long permissions;
     private final String iconUrl;
-    private final int type;
+    private final RoleType type;
     private final Color color;
     private final List<Color> colorList;
     private final int position;
@@ -26,7 +26,7 @@ public class RoomRole {
         this.roomId = json.getString("room_id");
         this.permissions = json.getLongValue("permissions");
         this.iconUrl = json.getString("icon");
-        this.type = json.getIntValue("type");
+        this.type = RoleType.of(json.getIntValue("type"));
         this.color = new Color(json.getIntValue("color"));
         List<Integer> colors = json.getList("color_list", int.class);
         this.colorList = colors == null ? List.of() : colors.stream().map(Color::new).toList();
@@ -56,7 +56,7 @@ public class RoomRole {
         return this.iconUrl;
     }
 
-    public int getType() {
+    public RoleType getType() {
         return this.type;
     }
 

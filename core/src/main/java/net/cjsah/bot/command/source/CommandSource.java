@@ -5,16 +5,11 @@ import net.cjsah.bot.api.MsgBuilder;
 import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.permission.RoleType;
-import net.cjsah.bot.plugin.Plugin;
 
 public record CommandSource(CommandEvent sender) {
 
-    public boolean hasPermission(RoleType role) {
-        return PermissionManager.hasPermission("main", this.sender.getRoomInfo().getId(), this.sender.getChannelInfo().getId(), this.sender.getSenderInfo().getId(), role);
-    }
-
-    public boolean canUse(Plugin plugin) { //TODO permission abstract
-        return true;
+    public boolean hasPermission(String pluginId, RoleType role) {
+        return PermissionManager.hasPermission(pluginId, this.sender.getRoomInfo().getId(), this.sender.getChannelInfo().getId(), this.sender.getSenderInfo().getId(), role);
     }
 
     public void sendFeedback(String message) {
