@@ -6,7 +6,6 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.event.EventManager
@@ -30,8 +29,6 @@ internal val heart: HeartBeatTimer = HeartBeatTimer({ session?.outgoing?.trySend
         tryConnect()
     }
 }
-
-internal val callbacks = HashMap<String, Channel<Any?>>()
 
 internal suspend fun main() {
     FilePaths.init()

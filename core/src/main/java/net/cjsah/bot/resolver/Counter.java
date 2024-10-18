@@ -1,7 +1,5 @@
 package net.cjsah.bot.resolver;
 
-import lombok.SneakyThrows;
-
 public class Counter {
     private volatile int count = 0;
     private final Object lock = new Object();
@@ -25,8 +23,7 @@ public class Counter {
         }
     }
 
-    @SneakyThrows
-    public void await() {
+    public void await() throws InterruptedException {
         if (this.count > 0) {
             synchronized (lock) {
                 lock.wait();

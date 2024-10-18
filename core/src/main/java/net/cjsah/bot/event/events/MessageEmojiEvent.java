@@ -1,9 +1,6 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.RoomInfo;
-import net.cjsah.bot.data.UserInfo;
-import net.cjsah.bot.data.UserModifyState;
 import net.cjsah.bot.event.Event;
 
 public class MessageEmojiEvent extends Event {
@@ -13,12 +10,12 @@ public class MessageEmojiEvent extends Event {
     private final String emoji;
     private final boolean append;
 
-    public MessageEmojiEvent(JSONObject json) {
+    public MessageEmojiEvent(JSONObject json, boolean append) {
         this.channelId = json.getString("channel_id");
         this.msgId = json.getString("msg_id");
         this.userId = json.getIntValue("user_id");
         this.emoji = json.getString("emoji");
-        this.append = json.getIntValue("is_add") == 1;
+        this.append = append;
     }
 
     public String getChannelId() {
@@ -39,6 +36,14 @@ public class MessageEmojiEvent extends Event {
 
     public boolean isAppend() {
         return this.append;
+    }
+
+    public static MessageEmojiEvent create(JSONObject json) {
+        if (json.getIntValue("is_add") == 1) {
+            return new MessageEmojiPinEvent(json);
+        } else {
+            return new MessageEmojiUnpinEvent(json);
+        }
     }
 
     @Override

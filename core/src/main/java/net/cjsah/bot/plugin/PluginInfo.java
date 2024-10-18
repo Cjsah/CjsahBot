@@ -1,11 +1,9 @@
 package net.cjsah.bot.plugin;
 
 import com.alibaba.fastjson2.JSONObject;
-import lombok.ToString;
 
 import java.util.Map;
 
-@ToString
 public class PluginInfo {
     private final String id;
     private final String name;
@@ -47,5 +45,16 @@ public class PluginInfo {
 
     public Map<String, Object> getInfo() {
         return this.info;
+    }
+
+    @Override
+    public String toString() {
+        return "PluginInfo{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", version='" + version + '\'' +
+                ", info=" + info +
+                '}';
     }
 }

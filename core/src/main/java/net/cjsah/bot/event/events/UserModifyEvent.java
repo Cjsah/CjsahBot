@@ -11,10 +11,10 @@ public class UserModifyEvent extends Event {
     private final UserInfo userInfo;
     private final UserModifyState state;
 
-    public UserModifyEvent(JSONObject json) {
+    public UserModifyEvent(JSONObject json, UserModifyState state) {
         this.roomInfo = new RoomInfo(json.getJSONObject("room_base_info"));
         this.userInfo = new UserInfo(json.getJSONObject("sender_info"));
-        this.state = UserModifyState.of(json.getIntValue("state"));
+        this.state = state;
     }
 
     public RoomInfo getRoomInfo() {
@@ -27,6 +27,14 @@ public class UserModifyEvent extends Event {
 
     public UserModifyState getState() {
         return this.state;
+    }
+
+    public static UserModifyEvent create(JSONObject json) {
+        UserModifyState state = UserModifyState.of(json.getIntValue("state"));
+        return switch (state) {
+            case JOIN -> new UserJoinEvent(json);
+            case LEAVE -> new UserLeaveEvent(json);
+        };
     }
 
     @Override

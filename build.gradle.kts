@@ -15,7 +15,6 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jetbrains.kotlin.plugin.lombok")
 
     group = rootProject.group
     version = rootProject.version
@@ -36,11 +35,6 @@ subprojects {
         implementation("ch.qos.logback:logback-classic:$logback_version")
         implementation("com.alibaba.fastjson2:fastjson2:$fastjson_version")
         implementation("cn.hutool:hutool-all:$hutool_version")
-
-        compileOnly("org.projectlombok:lombok:$lombok_version")
-        annotationProcessor("org.projectlombok:lombok:$lombok_version")
-        testCompileOnly("org.projectlombok:lombok:$lombok_version")
-        testAnnotationProcessor("org.projectlombok:lombok:$lombok_version")
     }
 
     tasks.test {

@@ -13,8 +13,8 @@ public enum EventType {
     @Deprecated
     MESSAGE(5, MessageEvent::new),
     COMMAND(50, CommandEvent::new),
-    USER_MODIFY(3001, UserModifyEvent::new),
-    MSG_EMOJI(5003, MessageEmojiEvent::new),
+    USER_MODIFY(3001, UserModifyEvent::create),
+    MSG_EMOJI(5003, MessageEmojiEvent::create),
     ;
 
     EventType(int type, Function<JSONObject, Event> factory) {

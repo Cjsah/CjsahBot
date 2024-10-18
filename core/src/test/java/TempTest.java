@@ -1,7 +1,8 @@
 import com.alibaba.fastjson2.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.util.JsonUtil;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,8 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class TempTest {
+    private static final Logger log = LoggerFactory.getLogger("TempTest");
+
     @Test
     public void test() {
         String ip = "server.cjsah.net";

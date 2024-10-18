@@ -1,16 +1,9 @@
 package net.cjsah.bot;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.AppStopEvent;
 
-@Getter
-@Setter
 public class Signal {
-    @Setter(AccessLevel.NONE)
     public static final Object StopLock = new Object();
 
     private static boolean Stop = false;
@@ -26,8 +19,7 @@ public class Signal {
         }
     }
 
-    @SneakyThrows
-    public static void waitStop() {
+    public static void waitStop() throws InterruptedException {
         synchronized (StopLock) {
             StopLock.wait();
         }

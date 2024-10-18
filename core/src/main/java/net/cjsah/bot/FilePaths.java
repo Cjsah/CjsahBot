@@ -1,7 +1,6 @@
 package net.cjsah.bot;
 
 import cn.hutool.core.io.FileUtil;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,6 @@ public class FilePaths {
 
     public record AppFile(Path path, String defaultContent) {
 
-        @SneakyThrows
         public boolean checkAndCreate() {
             File file = this.path.toFile();
             file = new File(file.getAbsolutePath());

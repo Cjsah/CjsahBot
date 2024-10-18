@@ -81,7 +81,7 @@ class PluginLoader(file: File): URLClassLoader(arrayOf(file.toURI().toURL())) {
 
         @JvmStatic
         fun onStarted() {
-            PluginContext.PLUGINS.values.forEach { it ->
+            PluginContext.PLUGINS.values.forEach {
                 PluginThreadPools.execute(it.plugin) {
                     it.plugin.onStarted()
                 }

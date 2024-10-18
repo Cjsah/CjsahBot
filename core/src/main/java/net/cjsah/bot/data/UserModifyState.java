@@ -1,8 +1,8 @@
 package net.cjsah.bot.data;
 
 public enum UserModifyState {
-    IN(1),
-    OUT(0);
+    JOIN(1),
+    LEAVE(0);
 
     private final int index;
 
@@ -16,8 +16,8 @@ public enum UserModifyState {
 
     public static UserModifyState of(int index) {
         return switch (index) {
-            case 0 -> OUT;
-            case 1 -> IN;
+            case 0 -> LEAVE;
+            case 1 -> JOIN;
             default -> throw new IllegalArgumentException("Unknown UserModifyState index: " + index);
         };
     }

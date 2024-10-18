@@ -121,7 +121,7 @@ public final class Api {
     }
 
     @Deprecated
-    public static void deleteMeme(String roomId, String path) { // TODO room_id 未添加
+    public static void deleteMeme(String roomId, String path) {
         post("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/del", json -> {
             json.put("room_id", roomId);
             json.put("path", path);
@@ -129,7 +129,7 @@ public final class Api {
     }
 
     @Deprecated
-    public static void updateMeme(String roomId, String path, String name) { // TODO room_id 未添加
+    public static void updateMeme(String roomId, String path, String name) {
         post("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/edit", json -> {
             json.put("room_id", roomId);
             json.put("path", path);

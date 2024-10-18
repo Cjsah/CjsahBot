@@ -23,9 +23,9 @@ public class MainPlugin extends Plugin {
 
         String pluginId = PLUGIN_INFO.getId();
 
-        EventManager.subscribe(pluginId, MessageEvent.class, event -> {
-            log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg());
-        });
+        EventManager.subscribe(pluginId, MessageEvent.class, event ->
+                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
+        );
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
             CommandSource source = new CommandSource(event);
