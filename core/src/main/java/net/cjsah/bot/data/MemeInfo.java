@@ -36,4 +36,15 @@ public class MemeInfo {
     public MemeType getMemeType() {
         return this.memeType;
     }
+
+    @Override
+    public String toString() {
+        return "MemeInfo{" +
+                "name='" + name + '\'' +
+                ", path='" + path + '\'' +
+                ", ext='" + ext + '\'' +
+                ", createTime=" + createTime +
+                ", memeType=" + memeType +
+                '}';
+    }
 }

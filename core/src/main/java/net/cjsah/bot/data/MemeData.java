@@ -18,4 +18,12 @@ public class MemeData {
     public MemeInfo getMemeInfo() {
         return this.memeInfo;
     }
+
+    @Override
+    public String toString() {
+        return "MemeData{" +
+                "userInfo=" + userInfo +
+                ", memeInfo=" + memeInfo +
+                '}';
+    }
 }

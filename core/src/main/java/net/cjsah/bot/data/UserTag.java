@@ -26,4 +26,13 @@ public class UserTag {
     public String getText() {
         return this.text;
     }
+
+    @Override
+    public String toString() {
+        return "UserTag{" +
+                "bgColor=" + bgColor +
+                ", textColor=" + textColor +
+                ", text='" + text + '\'' +
+                '}';
+    }
 }
