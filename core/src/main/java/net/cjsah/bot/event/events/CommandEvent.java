@@ -1,56 +1,28 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.data.ChannelInfo;
+import net.cjsah.bot.data.CommandInfo;
+import net.cjsah.bot.data.RoomInfo;
+import net.cjsah.bot.data.UserInfo;
 import net.cjsah.bot.event.Event;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class CommandEvent extends Event {
     private final int botId;
     private final String msgId;
-
-    private final String roomAvatar;
-    private final String roomId;
-    private final String roomName;
-
-    private final String channelId;
-    private final String channelName;
-    private final int channelType;
-
-    private final String senderAvatar;
-    private final int senderId;
-    private final String senderName;
-    private final int senderLevel;
-
-    private final String cmdId;
-    private final String cmdName;
-    private final Map<String, String> cmdOptions;
+    private final RoomInfo roomInfo;
+    private final ChannelInfo channelInfo;
+    private final UserInfo senderInfo;
+    private final CommandInfo commandInfo;
 
     public CommandEvent(JSONObject json) {
         this.botId = json.getIntValue("bot_id");
         this.msgId = json.getString("msg_id");
-        JSONObject room = json.getJSONObject("room_base_info");
-        this.roomAvatar = room.getString("room_avatar");
-        this.roomId = room.getString("room_id");
-        this.roomName = room.getString("room_name");
-        JSONObject channel = json.getJSONObject("channel_base_info");
-        this.channelId = channel.getString("channel_id");
-        this.channelName = channel.getString("channel_name");
-        this.channelType = channel.getIntValue("channel_type");
-        JSONObject sender = json.getJSONObject("sender_info");
-        this.senderAvatar = sender.getString("avatar");
-        this.senderId = sender.getIntValue("user_id");
-        this.senderName = sender.getString("nickname");
-        this.senderLevel = sender.getIntValue("level");
-        JSONObject command = json.getJSONObject("command_info");
-        this.cmdId = command.getString("id");
-        this.cmdName = command.getString("name").substring(1);
-        List<JSONObject> options = command.getList("options", JSONObject.class);
-        this.cmdOptions = options == null ? Collections.emptyMap() : options.stream().collect(Collectors.toMap(it -> it.getString("name"), it -> it.getString("value")));
+
+        this.roomInfo = new RoomInfo(json.getJSONObject("room_base_info"));
+        this.channelInfo = new ChannelInfo(json.getJSONObject("channel_base_info"));
+        this.senderInfo = new UserInfo(json.getJSONObject("sender_info"));
+        this.commandInfo = new CommandInfo(json.getJSONObject("command_info"));
     }
 
     public int getBotId() {
@@ -61,60 +33,31 @@ public class CommandEvent extends Event {
         return this.msgId;
     }
 
-    public String getRoomAvatar() {
-        return this.roomAvatar;
+    public RoomInfo getRoomInfo() {
+        return this.roomInfo;
     }
 
-    public String getRoomId() {
-        return this.roomId;
+    public ChannelInfo getChannelInfo() {
+        return this.channelInfo;
     }
 
-    public String getRoomName() {
-        return this.roomName;
+    public UserInfo getSenderInfo() {
+        return this.senderInfo;
     }
 
-    public String getChannelId() {
-        return this.channelId;
-    }
-
-    public String getChannelName() {
-        return this.channelName;
-    }
-
-    public int getChannelType() {
-        return this.channelType;
-    }
-
-    public String getSenderAvatar() {
-        return this.senderAvatar;
-    }
-
-    public int getSenderId() {
-        return this.senderId;
-    }
-
-    public String getSenderName() {
-        return this.senderName;
-    }
-
-    public int getSenderLevel() {
-        return this.senderLevel;
-    }
-
-    public String getCmdId() {
-        return this.cmdId;
-    }
-
-    public String getCmdName() {
-        return this.cmdName;
-    }
-
-    public Map<String, String> getCmdOptions() {
-        return this.cmdOptions;
+    public CommandInfo getCommandInfo() {
+        return this.commandInfo;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(botId, msgId, roomAvatar, roomId, roomName, channelId, channelName, channelType, senderAvatar, senderId, senderName, senderLevel, cmdId, cmdName, cmdOptions);
+    public String toString() {
+        return "CommandEvent{" +
+                "botId=" + botId +
+                ", msgId='" + msgId + '\'' +
+                ", roomInfo=" + roomInfo +
+                ", channelInfo=" + channelInfo +
+                ", senderInfo=" + senderInfo +
+                ", commandInfo=" + commandInfo +
+                '}';
     }
 }

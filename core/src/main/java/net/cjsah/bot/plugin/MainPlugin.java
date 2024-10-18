@@ -29,7 +29,7 @@ public class MainPlugin extends Plugin {
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
             CommandSource source = new CommandSource(event);
-            CommandManager.execute(event.getCmdName(), event.getCmdOptions(), source);
+            CommandManager.execute(event.getCommandInfo(), source);
         });
     }
 

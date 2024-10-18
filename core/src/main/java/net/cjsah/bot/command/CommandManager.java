@@ -8,6 +8,7 @@ import net.cjsah.bot.command.context.CommandNodeBuilder;
 import net.cjsah.bot.command.context.CommandParameter;
 import net.cjsah.bot.command.context.CommandParser;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.data.CommandInfo;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.PluginContext;
@@ -64,9 +65,10 @@ public class CommandManager {
         keys.forEach(COMMANDS::remove);
     }
 
-    public static void execute(String command, Map<String, String> options, CommandSource source) {
+    public static void execute(CommandInfo info, CommandSource source) {
         try {
-            CommandNode node = COMMANDS.get(command);
+            CommandNode node = COMMANDS.get(info.getCommand());
+            Map<String, String> options = info.getOptions();
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
             if (!source.hasPermission(node.getRole())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
             List<CommandParameter> parameters = node.getParameters();
@@ -99,7 +101,8 @@ public class CommandManager {
                 }
             });
         } catch (CommandException e) { // 命令导致的异常
-            log.warn("Failed to execute command: {}", e.getMessage());
+            source.sendFeedback(e.getMessage());
+            log.warn("Failed to execute command {}: {}", info.getCommand(), e.getMessage());
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) { // 开发者导致的异常
             log.error("Failed to execute command: {}", e.getMessage());
         }

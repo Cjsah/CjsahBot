@@ -14,5 +14,5 @@ public @interface Command {
 
     String description() default "";
 
-    RoleType role() default RoleType.USER;
+    RoleType role() default RoleType.ALL;
 }

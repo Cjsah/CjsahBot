@@ -23,7 +23,7 @@ public class TestPlugin extends Plugin {
 
     @Command("/jrrp")
     public static void jrrp(CommandSource source) {
-        int sender = source.sender().getSenderId();
+        int sender = source.sender().getSenderInfo().getId();
         String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
         Random random = new Random(date.hashCode() + sender);
         int rp = random.nextInt(500) % 101;
