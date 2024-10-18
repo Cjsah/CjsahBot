@@ -8,12 +8,12 @@ import net.cjsah.bot.event.Event;
 
 public class UserModifyEvent extends Event {
     private final RoomInfo roomInfo;
-    private final UserInfo senderInfo;
+    private final UserInfo userInfo;
     private final UserModifyState state;
 
     public UserModifyEvent(JSONObject json) {
         this.roomInfo = new RoomInfo(json.getJSONObject("room_base_info"));
-        this.senderInfo = new UserInfo(json.getJSONObject("sender_info"));
+        this.userInfo = new UserInfo(json.getJSONObject("sender_info"));
         this.state = UserModifyState.of(json.getIntValue("state"));
     }
 
@@ -21,8 +21,8 @@ public class UserModifyEvent extends Event {
         return this.roomInfo;
     }
 
-    public UserInfo getSenderInfo() {
-        return this.senderInfo;
+    public UserInfo getUserInfo() {
+        return this.userInfo;
     }
 
     public UserModifyState getState() {
@@ -33,7 +33,7 @@ public class UserModifyEvent extends Event {
     public String toString() {
         return "UserModifyEvent{" +
                 "roomInfo=" + roomInfo +
-                ", senderInfo=" + senderInfo +
+                ", senderInfo=" + userInfo +
                 ", state=" + state +
                 '}';
     }

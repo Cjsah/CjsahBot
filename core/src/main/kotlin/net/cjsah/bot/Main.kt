@@ -63,7 +63,7 @@ internal suspend fun tryConnect() {
         try {
             val content = FilePaths.ACCOUNT.read()
             val json = JsonUtil.deserialize(content)
-            val token = json.getString("token");
+            val token = json.getString("token")
             Api.setToken(token)
             session = client.webSocketSession("wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot") {
                 headers {

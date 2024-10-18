@@ -3,9 +3,14 @@ package net.cjsah.bot.ext;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.api.Api;
+import net.cjsah.bot.api.MsgBuilder;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.data.UserModifyState;
+import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.UserModifyEvent;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.util.DateUtil;
 import net.cjsah.bot.util.JsonUtil;
@@ -19,6 +24,20 @@ public class TestPlugin extends Plugin {
     @Override
     public void onLoad() {
         CommandManager.register(TestPlugin.class);
+
+//        EventManager.subscribe(UserModifyEvent.class, event -> {
+//            switch (event.getState()) {
+//                case IN -> {
+//                    Api.sendMsg(new MsgBuilder(event.getRoomInfo().getId(), "???", "欢迎@{id:" + event.getUserInfo().getId() + "}加入房间")
+//                            .at(event.getUserInfo().getId()));
+//                }
+//                case OUT -> {
+//                    Api.sendMsg(new MsgBuilder(event.getRoomInfo().getId(), "???", "@{id:" + event.getUserInfo().getId() + "}离开了房间")
+//                            .at(event.getUserInfo().getId()));
+//                }
+//            }
+//        });
+
     }
 
     @Command("/jrrp")
