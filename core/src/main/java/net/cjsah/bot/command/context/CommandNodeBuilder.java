@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.context;
 
-import net.cjsah.bot.permission.RoleType;
+import net.cjsah.bot.permission.Permission;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class CommandNodeBuilder {
     private final List<CommandParameter> parameters;
     private Method method;
     private String pluginId;
-    private RoleType role;
+    private Permission[] permissions;
 
     public CommandNodeBuilder(String name) {
         this.name = name;
@@ -35,11 +35,11 @@ public class CommandNodeBuilder {
         this.method = method;
     }
 
-    public void setRole(RoleType role) {
-        this.role = role;
+    public void setPermissions(Permission[] permissions) {
+        this.permissions = permissions;
     }
 
     public CommandNode build() {
-        return new CommandNode(this.name, this.method, Collections.unmodifiableList(this.parameters), this.pluginId, this.role);
+        return new CommandNode(this.name, this.method, Collections.unmodifiableList(this.parameters), this.pluginId, this.permissions);
     }
 }

@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import java.awt.*;
 import java.util.List;
 
-public class RoomRole {
+public class RoleInfo {
     private final String id;
     private final String name;
     private final String roomId;
@@ -20,7 +20,7 @@ public class RoomRole {
     private final long createTime;
 
 
-    public RoomRole(JSONObject json) {
+    public RoleInfo(JSONObject json) {
         this.id = json.getString("id");
         this.name = json.getString("name");
         this.roomId = json.getString("room_id");

@@ -42,7 +42,7 @@ public class CommandManager {
                 CommandParser parser = new CommandParser(cmd);
                 CommandNodeBuilder builder = parser.parse(method.getParameters());
                 builder.setMethod(method);
-                builder.setRole(annotation.role());
+                builder.setPermissions(annotation.permissions());
                 builder.setPlugin(PluginContext.getCurrentPluginInfo().getId());
                 CommandNode node = builder.build();
                 if (COMMANDS.containsKey(node.getName())) {
@@ -70,7 +70,7 @@ public class CommandManager {
             CommandNode node = COMMANDS.get(info.getCommand());
             Map<String, String> options = info.getOptions();
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
-            if (!source.hasPermission(node.getPluginId(), node.getRole())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
+            if (!source.hasPermission(node.getPermissions())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
             List<CommandParameter> parameters = node.getParameters();
             Object[] args = new Object[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {

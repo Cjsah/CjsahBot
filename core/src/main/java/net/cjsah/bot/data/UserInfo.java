@@ -1,6 +1,8 @@
 package net.cjsah.bot.data;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.cache.RoleCache;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -12,8 +14,13 @@ public class UserInfo {
     private final UserAvatar avatar;
     private final UserTag tag;
     private final List<UserMedal> medals;
+    private final List<RoleInfo> roles;
 
     public UserInfo(JSONObject json) {
+        this(json, null);
+    }
+
+    public UserInfo(JSONObject json, @Nullable String roomId) {
         this.id = json.getIntValue("user_id");
         this.nickname = json.getString("nickname");
         this.bot = json.getBoolean("bot");
@@ -23,6 +30,8 @@ public class UserInfo {
         this.tag = tag == null ? null : new UserTag(tag);
         List<JSONObject> medals = json.getList("medals", JSONObject.class);
         this.medals = medals == null ? List.of() : medals.stream().map(UserMedal::new).toList();
+        List<String> roles = json.getList("roles", String.class);
+        this.roles = (roomId == null || roles == null) ? List.of() : RoleCache.getRole(roomId, roles);
     }
 
     public int getId() {
@@ -51,6 +60,10 @@ public class UserInfo {
 
     public List<UserMedal> getMedals() {
         return this.medals;
+    }
+
+    public List<RoleInfo> getRoles() {
+        return this.roles;
     }
 
     @Override

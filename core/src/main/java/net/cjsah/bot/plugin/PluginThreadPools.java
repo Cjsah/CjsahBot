@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PluginThreadPools {
+public final class PluginThreadPools {
     private static final ExecutorService Executor = Executors.newCachedThreadPool();
     private static final Map<Plugin, PluginThread> Threads = new ConcurrentHashMap<>();
 

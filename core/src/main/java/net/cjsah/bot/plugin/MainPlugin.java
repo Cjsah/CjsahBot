@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
-public class MainPlugin extends Plugin {
+public final class MainPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger("Console");
     public static MainPlugin INSTANCE = new MainPlugin();
     public static PluginInfo PLUGIN_INFO = new PluginInfo("main", "Main", "Main", "1.0", Collections.singletonMap("authors", Collections.singletonList("Cjsah")));
@@ -35,6 +35,7 @@ public class MainPlugin extends Plugin {
 
     @Command("/botstop")
     public static void botStop(CommandSource source) {
+        log.info("{}", source.sender().getSenderInfo().getRoles());
         source.sendFeedback("bot正在关闭...");
         Signal.stop();
     }

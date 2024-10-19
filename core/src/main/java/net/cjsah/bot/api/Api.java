@@ -2,11 +2,14 @@ package net.cjsah.bot.api;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.http.Method;
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.data.MemeData;
-import net.cjsah.bot.data.RoomRole;
+import net.cjsah.bot.data.RoleInfo;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +21,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "DuplicatedCode"})
 public final class Api {
+    private static final Logger log = LoggerFactory.getLogger(Api.class);
     private static String TOKEN = "";
 
     public static String sendMsg(MsgBuilder builder) {
@@ -37,12 +41,12 @@ public final class Api {
         return res.getJSONObject("result").getString("msg_id");
     }
 
-    public static List<RoomRole> getRoomRoles(String roomId) {
+    public static List<RoleInfo> getRoomRoles(String roomId) {
         JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v2/room_role/roles", map -> map.put("room_id", roomId));
-        return res.getJSONObject("result").getList("roles", JSONObject.class).stream().map(RoomRole::new).toList();
+        return res.getJSONObject("result").getList("roles", JSONObject.class).stream().map(RoleInfo::new).toList();
     }
 
-    public static RoomRole createRoomRole(RoomRoleBuilder builder) {
+    public static RoleInfo createRoomRole(RoomRoleBuilder builder) {
         JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/create", json -> {
             json.put("room_id", builder.getRoomId());
             json.put("name", builder.getName());
@@ -58,10 +62,10 @@ public final class Api {
                 json.put("color_list", colors);
             }
         });
-        return new RoomRole(res.getJSONObject("result").getJSONObject("role"));
+        return new RoleInfo(res.getJSONObject("result").getJSONObject("role"));
     }
 
-    public static RoomRole updateRoomRole(RoomRoleBuilder builder) {
+    public static RoleInfo updateRoomRole(RoomRoleBuilder builder) {
         JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/update", json -> {
             json.put("id", builder.getId());
             json.put("room_id", builder.getRoomId());
@@ -79,7 +83,7 @@ public final class Api {
                 json.put("color_list", colors);
             }
         });
-        return new RoomRole(res.getJSONObject("result").getJSONObject("role"));
+        return new RoleInfo(res.getJSONObject("result").getJSONObject("role"));
     }
 
     public static void deleteRoomRole(String roleId, String roomId) {
@@ -106,7 +110,7 @@ public final class Api {
     }
 
     public static List<MemeData> getMemeList(String roomId) {
-        JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v3/msg/meme/room/list", map -> map.put("room_id", roomId));
+        JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v3/msg/meme/room/list", form -> form.put("room_id", roomId));
         JSONObject data = res.getJSONObject("result");
         List<MemeData> results = new ArrayList<>();
         appendToList(results, data, "emoji");
@@ -146,40 +150,37 @@ public final class Api {
     }
 
     private static JSONObject get(String url, Consumer<Map<String, String>> form) {
-        HttpRequest request = HttpRequest.post(url + "?chat_os_type=bot")
-                .header("Content-Type", "application/json;charset=UTF-8;")
-                .header("token", TOKEN)
-                .header("client_type", "heybox_chat")
-                .header("x_client_type", "web")
-                .header("os_type", "web")
-                .header("x_os_type", "bot")
-                .header("x_app", "heybox_chat")
-                .header("chat_version", "1.24.5")
-                .timeout(5000);
-        Map<String, String> headers = new HashMap<>();
-        form.accept(headers);
-        headers.forEach(request::form);
+        HttpRequest request = Api.genRequest(url, Method.GET);
+        Map<String, String> forms = new HashMap<>();
+        form.accept(forms);
+        forms.forEach(request::form);
         return Api.request(request);
     }
 
     private static JSONObject post(String url, Consumer<JSONObject> consumer) {
-        HttpRequest request = HttpRequest.post(url + "?chat_os_type=bot")
-                .header("Content-Type", "application/json;charset=UTF-8;")
-                .header("token", TOKEN)
-                .header("client_type", "heybox_chat")
-                .header("x_client_type", "web")
-                .header("os_type", "web")
-                .header("x_os_type", "bot")
-                .header("x_app", "heybox_chat")
-                .header("chat_version", "1.24.5")
-                .timeout(5000);
+        HttpRequest request = Api.genRequest(url, Method.POST);
         JSONObject body = new JSONObject();
         consumer.accept(body);
         request.body(JsonUtil.serialize(body));
         return Api.request(request);
     }
 
+    private static HttpRequest genRequest(String url, Method method) {
+        return HttpRequest.of(url + "?chat_os_type=bot")
+                .method(method)
+                .header("Content-Type", "application/json;charset=UTF-8;")
+                .header("token", TOKEN)
+                .header("client_type", "heybox_chat")
+                .header("x_client_type", "web")
+                .header("os_type", "web")
+                .header("x_os_type", "bot")
+                .header("x_app", "heybox_chat")
+                .header("chat_version", "1.24.5")
+                .timeout(5000);
+    }
+
     private static JSONObject request(HttpRequest request) {
+//        request.addRequestInterceptor(System.out::println); // log
         try (HttpResponse response = request.execute()) {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);

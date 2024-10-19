@@ -2,14 +2,23 @@ package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.api.Api;
 import net.cjsah.bot.api.MsgBuilder;
+import net.cjsah.bot.data.RoleInfo;
 import net.cjsah.bot.event.events.CommandEvent;
-import net.cjsah.bot.permission.PermissionManager;
-import net.cjsah.bot.permission.RoleType;
+import net.cjsah.bot.permission.Permission;
 
 public record CommandSource(CommandEvent sender) {
 
-    public boolean hasPermission(String pluginId, RoleType role) {
-        return PermissionManager.hasPermission(pluginId, this.sender.getRoomInfo().getId(), this.sender.getChannelInfo().getId(), this.sender.getSenderInfo().getId(), role);
+    public boolean hasPermission(Permission[] permissions) {
+        role:
+        for (RoleInfo role : sender.getSenderInfo().getRoles()) {
+            for (Permission permission : permissions) {
+                if ((role.getPermissions() & permission.getValue()) == 0) {
+                    continue role;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public void sendFeedback(String message) {

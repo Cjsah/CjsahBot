@@ -8,21 +8,21 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PluginContext {
+public final class PluginContext {
     private static final Logger log = LoggerFactory.getLogger("PluginContext");
-    protected static final ThreadLocal<Plugin> PLUGIN = new ThreadLocal<>();
-    protected static final ThreadLocal<PluginInfo> PLUGIN_INFO = new ThreadLocal<>();
+    static final ThreadLocal<Plugin> PLUGIN = new ThreadLocal<>();
+    static final ThreadLocal<PluginInfo> PLUGIN_INFO = new ThreadLocal<>();
 
-    protected static final Map<String, PluginData> PLUGINS = new ConcurrentHashMap<>();
-    protected static final Map<Plugin, PluginData> PLUGIN_MAP = new ConcurrentHashMap<>();
+    static final Map<String, PluginData> PLUGINS = new ConcurrentHashMap<>();
+    private static final Map<Plugin, PluginData> PLUGIN_MAP = new ConcurrentHashMap<>();
 
-    protected static void appendPlugin(Plugin plugin, PluginInfo info, PluginLoader loader) {
+    static void appendPlugin(Plugin plugin, PluginInfo info, PluginLoader loader) {
         PluginData data = new PluginData(plugin, info, loader);
         PLUGINS.put(info.getId(), data);
         PLUGIN_MAP.put(plugin, data);
     }
 
-    protected static PluginData removePlugin(Plugin plugin) {
+    static PluginData removePlugin(Plugin plugin) {
         PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
         if (data == null) return null;
         PluginContext.PLUGINS.remove(data.info().getId());

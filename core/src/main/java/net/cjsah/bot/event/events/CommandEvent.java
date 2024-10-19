@@ -21,7 +21,7 @@ public class CommandEvent extends Event {
 
         this.roomInfo = new RoomInfo(json.getJSONObject("room_base_info"));
         this.channelInfo = new ChannelInfo(json.getJSONObject("channel_base_info"));
-        this.senderInfo = new UserInfo(json.getJSONObject("sender_info"));
+        this.senderInfo = new UserInfo(json.getJSONObject("sender_info"), this.roomInfo.getId());
         this.commandInfo = new CommandInfo(json.getJSONObject("command_info"));
     }
 

@@ -1,6 +1,6 @@
 package net.cjsah.bot.command;
 
-import net.cjsah.bot.permission.RoleType;
+import net.cjsah.bot.permission.Permission;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,5 +14,5 @@ public @interface Command {
 
     String description() default "";
 
-    RoleType role() default RoleType.ALL;
+    Permission[] permissions() default Permission.USE_BOT_COMMAND;
 }
