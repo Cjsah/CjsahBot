@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    group = rootProject.group
+    version = rootProject.version
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    dependencies {
+        implementation "ch.qos.logback:logback-classic:$logback_version"
+        implementation "com.alibaba.fastjson2:fastjson2:$fastjson_version"
+        implementation "cn.hutool:hutool-all:$hutool_version"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+}

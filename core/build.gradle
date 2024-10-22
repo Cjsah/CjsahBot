@@ -1,11 +1,6 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-//    id("org.springframework.boot") version "3.3.2"
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
-
-val ktor_version: String by rootProject
-val quartz_version: String by rootProject
-val websocket_version: String by rootProject
 
 dependencies {
     implementation(project(":api"))
@@ -16,19 +11,19 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:$websocket_version")
 }
 
-tasks.withType<Jar> {
+jar {
     manifest {
-        attributes["Main-Class"] = "net.cjsah.bot.MainKt"
+        attributes('Main-Class': "net.cjsah.bot.Main")
     }
 }
 
-tasks.register<JavaExec>("runMain") {
+tasks.register('runMain', JavaExec) {
     group = "application"
     description = "Runs the main class"
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("net.cjsah.bot.MainKt") // 对于 Kotlin 文件，通常需要使用 MainKt 作为主类名称
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'net.cjsah.bot.Main'
 
-    val runDir = rootProject.file("run")
+    File runDir = rootProject.file("run")
 
     // 在任务执行之前检查并创建工作目录
     doFirst {
