@@ -3,14 +3,9 @@ package net.cjsah.bot.ext;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.api.Api;
-import net.cjsah.bot.api.MsgBuilder;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.data.UserModifyState;
-import net.cjsah.bot.event.EventManager;
-import net.cjsah.bot.event.events.UserModifyEvent;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.util.DateUtil;
 import net.cjsah.bot.util.JsonUtil;
@@ -42,7 +37,7 @@ public class TestPlugin extends Plugin {
 
     @Command("/jrrp")
     public static void jrrp(CommandSource source) {
-        int sender = source.sender().getSenderInfo().getId();
+        long sender = source.sender().getSenderInfo().getId();
         String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
         Random random = new Random(date.hashCode() + sender);
         int rp = random.nextInt(500) % 101;

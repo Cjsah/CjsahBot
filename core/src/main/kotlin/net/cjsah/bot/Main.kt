@@ -9,7 +9,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import net.cjsah.bot.api.Api
 import net.cjsah.bot.event.EventManager
-import net.cjsah.bot.permission.PermissionManager
 import net.cjsah.bot.plugin.PluginLoader
 import net.cjsah.bot.plugin.PluginThreadPools
 import net.cjsah.bot.util.CoroutineScopeUtil
@@ -32,17 +31,16 @@ internal val heart: HeartBeatTimer = HeartBeatTimer({ session?.outgoing?.trySend
 
 internal suspend fun main() {
     FilePaths.init()
-    PermissionManager.init()
     PluginLoader.loadPlugins()
 
     tryConnect()
 
     PluginLoader.onStarted()
 
-    Signal.waitStop()
+//    Signal.waitStop()
 
     PluginLoader.unloadPlugins()
-    PluginThreadPools.shutdown()
+    PluginThreadPools.awaitShutdown()
     heart.cancel()
     session?.close()
     session = null

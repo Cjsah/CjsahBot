@@ -26,17 +26,17 @@ public final class Api {
 
     public static String sendMsg(MsgBuilder builder) {
         JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
+            json.put("channel_type", 1);
+            json.put("msg_type", 10);
             json.put("room_id", builder.getRoomId());
             json.put("channel_id", builder.getChannelId());
             json.put("msg", builder.getMsg());
             json.put("reply_id", builder.getReplay());
-            json.put("at_user_id", builder.getAt());
-            json.put("msg_type", 10);
+            json.put("at_user_id", builder.getAtUsers());
+            json.put("at_role_id", builder.getAtRoles());
+            json.put("mention_channel_id", builder.getAtChannels());
             json.put("heychat_ack_id", builder.getUuid());
             json.put("addition", "{}");
-            json.put("at_role_id", "");
-            json.put("mention_channel_id", "");
-            json.put("channel_type", 1);
         });
         return res.getJSONObject("result").getString("msg_id");
     }

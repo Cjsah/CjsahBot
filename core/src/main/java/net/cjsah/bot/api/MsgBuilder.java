@@ -2,12 +2,17 @@ package net.cjsah.bot.api;
 
 import cn.hutool.core.util.IdUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MsgBuilder {
     private final String uuid;
     private final String roomId;
     private final String channelId;
     private final String msg;
-    private String at;
+    private final List<String> atUsers;
+    private final List<String> atRoles;
+    private final List<String> atChannels;
     private String replay;
 
     public MsgBuilder(String roomId, String channelId, String msg) {
@@ -15,12 +20,24 @@ public class MsgBuilder {
         this.roomId = roomId;
         this.channelId = channelId;
         this.msg = msg;
-        this.at = "";
+        this.atUsers = new ArrayList<>();
+        this.atRoles = new ArrayList<>();
+        this.atChannels = new ArrayList<>();
         this.replay = "";
     }
 
-    public MsgBuilder at(int at) {
-        this.at = String.valueOf(at);
+    public MsgBuilder atUser(long at) {
+        this.atUsers.add(String.valueOf(at));
+        return this;
+    }
+
+    public MsgBuilder atRole(String at) {
+        this.atRoles.add(at);
+        return this;
+    }
+
+    public MsgBuilder atChannel(String at) {
+        this.atChannels.add(at);
         return this;
     }
 
@@ -45,8 +62,16 @@ public class MsgBuilder {
         return this.msg;
     }
 
-    public String getAt() {
-        return this.at;
+    public String getAtUsers() {
+        return String.join(",", this.atUsers);
+    }
+
+    public String getAtRoles() {
+        return String.join(",", this.atRoles);
+    }
+
+    public String getAtChannels() {
+        return String.join(",", this.atChannels);
     }
 
     public String getReplay() {
@@ -56,10 +81,13 @@ public class MsgBuilder {
     @Override
     public String toString() {
         return "MsgBuilder{" +
-                "roomId='" + roomId + '\'' +
+                "uuid='" + uuid + '\'' +
+                ", roomId='" + roomId + '\'' +
                 ", channelId='" + channelId + '\'' +
                 ", msg='" + msg + '\'' +
-                ", at='" + at + '\'' +
+                ", atUsers=" + atUsers +
+                ", atRoles=" + atRoles +
+                ", atChannels=" + atChannels +
                 ", replay='" + replay + '\'' +
                 '}';
     }

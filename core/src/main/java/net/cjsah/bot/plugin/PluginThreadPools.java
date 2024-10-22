@@ -11,36 +11,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public final class PluginThreadPools {
     private static final ExecutorService Executor = Executors.newCachedThreadPool();
-    private static final Map<Plugin, PluginThread> Threads = new ConcurrentHashMap<>();
+    private static final Map<String, PluginThread> Threads = new ConcurrentHashMap<>();
 
-    public static synchronized void execute(Plugin plugin, Runnable runnable) {
-        PluginThread thread = Threads.get(plugin);
+    public static synchronized void execute(String pluginId, Runnable runnable) {
+        PluginThread thread = Threads.get(pluginId);
         if (thread == null) {
-            thread = new PluginThread(plugin);
-            Threads.put(plugin, thread);
+            thread = new PluginThread(pluginId);
+            Threads.put(pluginId, thread);
             Executor.submit(thread);
         }
         thread.submitTask(runnable);
     }
 
-    public static synchronized void execute(String pluginId, Runnable runnable) {
-        Plugin plugin = PluginContext.getPlugin(pluginId);
-        execute(plugin, runnable);
-    }
-
     public static synchronized void execute(Runnable runnable) {
-        Plugin plugin = PluginContext.PLUGIN.get();
-        if (plugin == null) plugin = MainPlugin.INSTANCE;
-        execute(plugin, runnable);
+        PluginInfo info = PluginContext.PLUGIN_INFO.get();
+        if (info == null) info = MainPlugin.PLUGIN_INFO;
+        PluginThreadPools.execute(info.getId(), runnable);
     }
 
-    public static synchronized void unloadPlugin(Plugin plugin) {
-        PluginThread thread = Threads.get(plugin);
+    public static synchronized void unloadPlugin(String pluginId) {
+        PluginThread thread = Threads.get(pluginId);
         if (thread != null) {
-            PluginInfo info = PluginContext.getPluginInfo(plugin);
+            PluginInfo info = PluginContext.getPluginInfo(pluginId);
             assert info != null;
             thread.terminate();
             try {
@@ -49,7 +45,7 @@ public final class PluginThreadPools {
                         thread.lock.wait();
                     }
                 }
-                PluginContext.PluginData data = PluginContext.removePlugin(plugin);
+                PluginContext.PluginData data = PluginContext.removePlugin(pluginId);
                 if (data == null || data.loader() == null) return;
                 try {
                     data.loader().close();
@@ -64,8 +60,10 @@ public final class PluginThreadPools {
         }
     }
 
-    public static void shutdown() {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void awaitShutdown() throws InterruptedException {
         Executor.shutdown();
+        Executor.awaitTermination(1, TimeUnit.MINUTES);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -75,15 +73,16 @@ public final class PluginThreadPools {
         private volatile boolean running = true;
         private volatile boolean cancelled = false;
         protected final Object lock = new Object();
-        private final Plugin plugin;
+        private final String pluginId;
 
-        public PluginThread(Plugin plugin) {
-            this.plugin = plugin;
+        public PluginThread(String pluginId) {
+            this.pluginId = pluginId;
         }
 
         @Override
         public void run() {
-            PluginContext.PLUGIN.set(this.plugin);
+            Plugin plugin = PluginContext.getPlugin(this.pluginId);
+            PluginContext.PLUGIN.set(plugin);
             while (this.running || !this.tasks.isEmpty()) {
                 try {
                     Runnable task = tasks.take();

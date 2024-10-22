@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class UserInfo {
-    private final int id;
+    private final long id;
     private final String nickname;
     private final boolean bot;
     private final int level;
@@ -21,7 +21,7 @@ public class UserInfo {
     }
 
     public UserInfo(JSONObject json, @Nullable String roomId) {
-        this.id = json.getIntValue("user_id");
+        this.id = json.getLongValue("user_id");
         this.nickname = json.getString("nickname");
         this.bot = json.getBoolean("bot");
         this.level = json.getIntValue("level");
@@ -34,7 +34,7 @@ public class UserInfo {
         this.roles = (roomId == null || roles == null) ? List.of() : RoleCache.getRole(roomId, roles);
     }
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 

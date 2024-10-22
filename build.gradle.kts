@@ -6,8 +6,6 @@ plugins {
 }
 
 val logback_version: String by project
-val jackson_version: String by project
-val lombok_version: String by project
 val fastjson_version: String by project
 val hutool_version: String by project
 

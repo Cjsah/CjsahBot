@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class FilePaths {
         return file;
     }
 
-    public static void init() throws IOException {
+    public static void init() {
         for (Path path : Paths) {
             File file = path.toFile();
             if (file.exists() && file.isDirectory()) continue;

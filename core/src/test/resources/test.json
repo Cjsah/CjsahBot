@@ -1,36 +1,67 @@
 {
-  "bot_id": 72163540,
-  "channel_base_info": {
-    "channel_id": "3595194642524176386",
-    "channel_name": "吹水频道",
-    "channel_type": 1
+  "addition": "{}",
+  "avatar": "https://imgheybox.max-c.com/heybox/avatar/wx/2024/05/27/6084c29edaf2121f451c2aec6f6ebdfa.jpg",
+  "avatar_decoration": {
+    "src_type": "",
+    "src_url": ""
   },
-  "command_info": {
-    "id": "1831971473287163904",
-    "name": "/jrrp",
-    "type": 0
+  "bot": false,
+  "channel_id": "3595194642524176386",
+  "channel_name": "吹水频道",
+  "channel_type": 1,
+  "chatmobile_ack_id": "",
+  "heybox_ack_id": "",
+  "heychat_ack_id": "11",
+  "im_seq": "1847509356536213504",
+  "img": "",
+  "img_info": {
+    "fsize": 0,
+    "height": 0,
+    "mimetype": "",
+    "original_url": "",
+    "url": "",
+    "width": 0
   },
-  "msg": "/jrrp",
-  "msg_id": "1847449802712625152",
-  "room_base_info": {
-    "room_avatar": "https://imgheybox.max-c.com/web/bbs/2024/06/03/28f89b7c4684ae75270cf9e2ace19a3f.png",
-    "room_id": "3595194642503450624",
-    "room_name": "Cjsah的房间"
-  },
-  "send_time": 1729301331588,
-  "sender_info": {
-    "avatar": "https://imgheybox.max-c.com/heybox/avatar/wx/2024/05/27/6084c29edaf2121f451c2aec6f6ebdfa.jpg",
-    "avatar_decoration": {
-      "src_type": "",
-      "src_url": ""
+  "level": 4,
+  "msg": "/111",
+  "msg_id": "1847509356536213504",
+  "msg_type": 4,
+  "nickname": "Cjsah",
+  "on_risk": false,
+  "online_desc": "",
+  "online_state": 0,
+  "receive_type": 0,
+  "roles": [
+    "3595194642557722626"
+  ],
+  "room_id": "3595194642503450624",
+  "room_nickname": "",
+  "send_time": 1729315530324,
+  "state": 0,
+  "user_id": 66956739,
+  "user_info": {
+    "remarks": "",
+    "user_base_info": {
+      "avatar": "https://imgheybox.max-c.com/heybox/avatar/wx/2024/05/27/6084c29edaf2121f451c2aec6f6ebdfa.jpg",
+      "avatar_decoration": {
+        "src_type": "",
+        "src_url": ""
+      },
+      "bot": false,
+      "level": 4,
+      "nickname": "Cjsah",
+      "roles": [
+        "3595194642557722626"
+      ],
+      "room_nickname": "",
+      "user_id": 66956739
     },
-    "bot": false,
-    "level": 4,
-    "nickname": "Cjsah",
-    "roles": [
-      "3595194642557722626"
-    ],
-    "room_nickname": "",
-    "user_id": 66956739
+    "user_mute_info": {
+      "earphone_state": 1,
+      "mute": 0,
+      "mute_earphone": false,
+      "mute_room": false,
+      "mute_state": 0
+    }
   }
 }

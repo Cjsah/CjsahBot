@@ -14,19 +14,14 @@ public final class PluginContext {
     static final ThreadLocal<PluginInfo> PLUGIN_INFO = new ThreadLocal<>();
 
     static final Map<String, PluginData> PLUGINS = new ConcurrentHashMap<>();
-    private static final Map<Plugin, PluginData> PLUGIN_MAP = new ConcurrentHashMap<>();
 
     static void appendPlugin(Plugin plugin, PluginInfo info, PluginLoader loader) {
         PluginData data = new PluginData(plugin, info, loader);
         PLUGINS.put(info.getId(), data);
-        PLUGIN_MAP.put(plugin, data);
     }
 
-    static PluginData removePlugin(Plugin plugin) {
-        PluginData data = PluginContext.PLUGIN_MAP.remove(plugin);
-        if (data == null) return null;
-        PluginContext.PLUGINS.remove(data.info().getId());
-        return data;
+    static PluginData removePlugin(String pluginId) {
+        return PluginContext.PLUGINS.remove(pluginId);
     }
 
     public static Plugin getPlugin(String id) {
@@ -61,8 +56,8 @@ public final class PluginContext {
         return info;
     }
 
-    public static PluginInfo getPluginInfo(Plugin plugin) {
-        PluginData data = PLUGIN_MAP.get(plugin);
+    public static PluginInfo getPluginInfo(String pluginId) {
+        PluginData data = PLUGINS.get(pluginId);
         if (data == null) {
             log.warn("Plugin info not found");
             return null;
