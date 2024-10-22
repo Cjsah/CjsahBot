@@ -5,10 +5,10 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONReader;
-import kotlin.text.Charsets;
 
 import java.io.File;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class JsonUtil {
@@ -31,7 +31,7 @@ public class JsonUtil {
 
     public static JSONObject deserializePath(String path) {
         File file = new File(path);
-        String str = FileUtil.readString(file, Charsets.UTF_8);
+        String str = FileUtil.readString(file, StandardCharsets.UTF_8);
         return JSON.parseObject(str, JSONReader.Feature.SupportSmartMatch);
     }
 
