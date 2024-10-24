@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public final class Api {
     private static String TOKEN = "";
 
     public static String sendMsg(MsgBuilder builder) {
-        JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
+        JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
             json.put("channel_type", 1);
             json.put("msg_type", 10);
             json.put("room_id", builder.getRoomId());
@@ -41,13 +42,23 @@ public final class Api {
         return res.getJSONObject("result").getString("msg_id");
     }
 
+    public static String uploadMedia(File file) {
+        JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", file));
+        return res.getJSONObject("result").getString("url");
+    }
+
+    public static String uploadMedia(String filename, byte[] data) {
+        JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", data, filename));
+        return res.getJSONObject("result").getString("url");
+    }
+
     public static List<RoleInfo> getRoomRoles(String roomId) {
         JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v2/room_role/roles", map -> map.put("room_id", roomId));
         return res.getJSONObject("result").getList("roles", JSONObject.class).stream().map(RoleInfo::new).toList();
     }
 
     public static RoleInfo createRoomRole(RoomRoleBuilder builder) {
-        JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/create", json -> {
+        JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/create", json -> {
             json.put("room_id", builder.getRoomId());
             json.put("name", builder.getName());
             json.put("icon", builder.getIconUrl());
@@ -66,7 +77,7 @@ public final class Api {
     }
 
     public static RoleInfo updateRoomRole(RoomRoleBuilder builder) {
-        JSONObject res = post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/update", json -> {
+        JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/update", json -> {
             json.put("id", builder.getId());
             json.put("room_id", builder.getRoomId());
             json.put("name", builder.getName());
@@ -87,14 +98,14 @@ public final class Api {
     }
 
     public static void deleteRoomRole(String roleId, String roomId) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/delete", json -> {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/delete", json -> {
             json.put("role_id", roleId);
             json.put("room_id", roomId);
         });
     }
 
     public static void userGiveRole(int userId, String roomId, String roleId) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/grant", json -> {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/grant", json -> {
             json.put("to_user_id", userId);
             json.put("role_id", roleId);
             json.put("room_id", roomId);
@@ -102,7 +113,7 @@ public final class Api {
     }
 
     public static void userRevokeRole(int userId, String roomId, String roleId) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/room_role/revoke", json -> {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/revoke", json -> {
             json.put("to_user_id", userId);
             json.put("role_id", roleId);
             json.put("room_id", roomId);
@@ -126,7 +137,7 @@ public final class Api {
 
     @Deprecated
     public static void deleteMeme(String roomId, String path) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/del", json -> {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/del", json -> {
             json.put("room_id", roomId);
             json.put("path", path);
         });
@@ -134,7 +145,7 @@ public final class Api {
 
     @Deprecated
     public static void updateMeme(String roomId, String path, String name) {
-        post("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/edit", json -> {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/edit", json -> {
             json.put("room_id", roomId);
             json.put("path", path);
             json.put("name", name);
@@ -157,11 +168,18 @@ public final class Api {
         return Api.request(request);
     }
 
-    private static JSONObject post(String url, Consumer<JSONObject> consumer) {
+    private static JSONObject postJson(String url, Consumer<JSONObject> consumer) {
         HttpRequest request = Api.genRequest(url, Method.POST);
         JSONObject body = new JSONObject();
         consumer.accept(body);
         request.body(JsonUtil.serialize(body));
+        return Api.request(request);
+    }
+
+    private static JSONObject postForm(String url, Consumer<HttpRequest> consumer) {
+        HttpRequest request = Api.genRequest(url, Method.POST);
+        request.header("Content-Type", "multipart/form-data", true);
+        consumer.accept(request);
         return Api.request(request);
     }
 
