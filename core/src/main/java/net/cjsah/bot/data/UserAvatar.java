@@ -2,8 +2,6 @@ package net.cjsah.bot.data;
 
 import com.alibaba.fastjson2.JSONObject;
 
-import java.awt.*;
-
 public class UserAvatar {
     private final String avatarUrl;
     private final String decorationUrl;
