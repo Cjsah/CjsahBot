@@ -39,6 +39,11 @@ public class WebSocketClientImpl extends WebSocketClient {
         this.heart.stop();
     }
 
+    public void shutdown() throws InterruptedException {
+        this.closeBlocking();
+        this.heart.cancel();
+    }
+
     @Override
     public void onOpen(ServerHandshake handshake) {
         log.info("连接成功!");
@@ -63,8 +68,9 @@ public class WebSocketClientImpl extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+        if (code == CloseFrame.NORMAL) return;
         log.warn("连接断开: [{}]{}", code, reason);
-        if (Main.isRunning() && code != CloseFrame.NORMAL) {
+        if (Main.isRunning()) {
             Main.sendSignal(SignalType.RE_CONNECT);
         }
     }

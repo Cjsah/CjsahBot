@@ -7,7 +7,7 @@ import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CommandEvent;
-import net.cjsah.bot.event.events.MessageEvent;
+import net.cjsah.bot.permission.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,19 +24,25 @@ public final class MainPlugin extends Plugin {
 
         String pluginId = PLUGIN_INFO.getId();
 
-        EventManager.subscribe(pluginId, MessageEvent.class, event ->
-                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
-        );
+//        EventManager.subscribe(pluginId, MessageEvent.class, event ->
+//                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
+//        );
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
+            log.info("执行命令: [{}] [{}] [{}({})] => {}",
+                    event.getRoomInfo().getName(),
+                    event.getChannelInfo().getName(),
+                    event.getSenderInfo().getNickname(),
+                    event.getSenderInfo().getId(),
+                    event.getCommandInfo().getCommand()
+            );
             CommandSource source = new CommandSource(event);
             CommandManager.execute(event.getCommandInfo(), source);
         });
     }
 
-    @Command("/botstop")
+    @Command(value = "/botstop", permissions = Permission.ADMIN)
     public static void botStop(CommandSource source) {
-        log.info("{}", source.sender().getSenderInfo().getRoles());
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }

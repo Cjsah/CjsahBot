@@ -48,6 +48,8 @@ public class Main {
         PluginLoader.unloadPlugins();
         log.info("等待插件线程关闭...");
         PluginThreadPools.awaitShutdown();
+        log.info("正在断开连接...");
+        WebSocketClient.shutdown();
         log.info("已关闭");
     }
 
@@ -79,6 +81,9 @@ public class Main {
             }
             log.warn("连接失败, 将在 3 秒后重试...");
             TimeUnit.SECONDS.sleep(3);
+        }
+        if (!Main.isRunning()) {
+            log.info("程序关闭中, 停止连接");
         }
     }
 
