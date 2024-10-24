@@ -7,7 +7,7 @@ import com.alibaba.fastjson2.JSONReader;
 import java.io.Reader;
 import java.util.List;
 
-public class JsonUtil {
+public final class JsonUtil {
 
     public static <T> String serialize(T data) {
         return JSON.toJSONString(data);

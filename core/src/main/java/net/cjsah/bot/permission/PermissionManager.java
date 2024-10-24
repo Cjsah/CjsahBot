@@ -3,7 +3,7 @@ package net.cjsah.bot.permission;
 import net.cjsah.bot.data.RoleInfo;
 import net.cjsah.bot.data.UserInfo;
 
-public class PermissionManager {
+public final class PermissionManager {
     public static boolean hasPermission(UserInfo user, Permission[] permissions) {
         role:
         for (RoleInfo role : user.getRoles()) {

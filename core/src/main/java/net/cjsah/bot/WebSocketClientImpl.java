@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class WebSocketClientImpl extends WebSocketClient {
+public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
     private final HeartBeatTimer heart;
 

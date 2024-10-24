@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class RoleCache {
+public final class RoleCache {
     private static final Map<String, Map<String, RoleInfo>> RoleCaches = new HashMap<>();
 
     public static List<RoleInfo> getRole(String roomId, List<String> roleIds) {

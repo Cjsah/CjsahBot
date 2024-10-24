@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilePaths {
+public final class FilePaths {
     private static final Logger log = LoggerFactory.getLogger("FilePath");
     private static final List<Path> Paths = new ArrayList<>();
     private static final List<AppFile> Files = new ArrayList<>();

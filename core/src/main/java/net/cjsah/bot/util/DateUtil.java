@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-public class DateUtil {
+public final class DateUtil {
     public static ZonedDateTime nowDate() {
         LocalDateTime ldt = LocalDateTime.now();
         return ldt.atZone(ZoneId.of("GMT+8"));
