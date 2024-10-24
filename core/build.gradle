@@ -2,6 +2,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+archivesBaseName = rootProject.name
+
 dependencies {
     implementation project(":api")
     implementation("org.java-websocket:Java-WebSocket:$websocket_version") {
