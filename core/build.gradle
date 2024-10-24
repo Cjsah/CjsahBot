@@ -1,6 +1,5 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'application'
 }
 
 archivesBaseName = rootProject.name
@@ -44,8 +43,4 @@ tasks.register('runMain', JavaExec) {
     // 如果需要传递 JVM 参数或程序参数，可以在这里添加
     // jvmArgs = listOf("-Xmx512m")
     // args = listOf("arg1", "arg2")
-}
-
-application {
-    mainClass = 'net.cjsah.bot.Main'
 }
