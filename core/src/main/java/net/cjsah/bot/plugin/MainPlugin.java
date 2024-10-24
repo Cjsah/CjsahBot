@@ -24,12 +24,13 @@ public final class MainPlugin extends Plugin {
 
         String pluginId = PLUGIN_INFO.getId();
 
+//        @Deprecated
 //        EventManager.subscribe(pluginId, MessageEvent.class, event ->
 //                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
 //        );
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
-            log.info("执行命令: [{}] [{}] [{}({})] => {}",
+            log.info("执行命令: [{}] [{}] [{}({})] => /{}",
                     event.getRoomInfo().getName(),
                     event.getChannelInfo().getName(),
                     event.getSenderInfo().getNickname(),
