@@ -2,6 +2,8 @@ package net.cjsah.bot;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.Api;
+import net.cjsah.bot.event.CancelableEvent;
+import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.plugin.PluginLoader;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.JsonUtil;
@@ -17,6 +19,7 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger("Main");
     private static final WebSocketClientImpl WebSocketClient;
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
+    private static boolean Stop = false;
 
     public static void main(String[] args) throws InterruptedException {
         log.info("初始化文件系统...");
@@ -40,6 +43,7 @@ public class Main {
         }
 
         log.info("执行关闭命令...");
+        Main.Stop = true;
         log.info("正在卸载所有插件...");
         PluginLoader.unloadPlugins();
         log.info("等待插件线程关闭...");
@@ -66,7 +70,7 @@ public class Main {
 
     public static void tryConnect() throws InterruptedException {
         log.info("正在连接到服务器...");
-        while (Signal.isRunning()) {
+        while (Main.isRunning()) {
             if (WebSocketClient.getReadyState() == ReadyState.NOT_YET_CONNECTED ?
                     WebSocketClient.connectBlocking() :
                     WebSocketClient.reconnectBlocking()
@@ -79,8 +83,22 @@ public class Main {
     }
 
     public static void sendSignal(SignalType signal) {
+        log.info("触发信号: {}", signal);
+        CancelableEvent event = signal.getEvent().get();
+        if (event != null) {
+            EventManager.broadcast(event);
+            if (event.isCancel()) {
+                log.info("取消触发: {}", signal);
+                return;
+            }
+        }
         if (!SignalQueue.offer(signal)) {
             log.warn("触发 {} 失败, 请重试!", signal);
         }
     }
+
+    public static boolean isRunning() {
+        return !Stop;
+    }
+
 }

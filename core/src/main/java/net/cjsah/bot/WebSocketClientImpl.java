@@ -64,7 +64,7 @@ public class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         log.warn("连接断开: [{}]{}", code, reason);
-        if (Signal.isRunning() && code != CloseFrame.NORMAL) {
+        if (Main.isRunning() && code != CloseFrame.NORMAL) {
             Main.sendSignal(SignalType.RE_CONNECT);
         }
     }
@@ -72,7 +72,7 @@ public class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         log.error("出现错误", e);
-        if (Signal.isRunning()) {
+        if (Main.isRunning()) {
             Main.sendSignal(SignalType.RE_CONNECT);
         }
     }

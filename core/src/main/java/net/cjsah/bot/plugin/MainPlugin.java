@@ -1,6 +1,7 @@
 package net.cjsah.bot.plugin;
 
-import net.cjsah.bot.Signal;
+import net.cjsah.bot.Main;
+import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
@@ -37,7 +38,7 @@ public final class MainPlugin extends Plugin {
     public static void botStop(CommandSource source) {
         log.info("{}", source.sender().getSenderInfo().getRoles());
         source.sendFeedback("bot正在关闭...");
-        Signal.stop();
+        Main.sendSignal(SignalType.STOP);
     }
 
 }
