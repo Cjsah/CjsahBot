@@ -59,7 +59,7 @@ public final class PermissionManager {
         if (nodes != null && !nodes.isEmpty() && matchRole(validator, nodes, roomId, channelId, userId)) {
             return false;
         }
-        nodes = commands.get(command);
+        nodes = commands.get('/' + command);
         if (nodes != null && !nodes.isEmpty() && matchRole(validator, nodes, roomId, channelId, userId)) {
             return false;
         }
