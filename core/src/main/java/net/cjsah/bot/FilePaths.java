@@ -15,11 +15,10 @@ public final class FilePaths {
     private static final List<Path> Paths = new ArrayList<>();
     private static final List<AppFile> Files = new ArrayList<>();
 
-    public static final Path IMAGE_LOGS = regPath("logs/image");
     public static final Path PLUGIN = regPath("plugins");
     public static final Path CONFIG = regPath("config");
     public static final AppFile ACCOUNT = regFile("account.json", "{\"token\":\"\"}");
-    public static final AppFile PERMISSION = regFile(CONFIG.resolve("permission.json"), "{\"global\":[],\"plugins\":[]}");
+    public static final AppFile PERMISSION = regFile(CONFIG.resolve("permission.json"), "{\"global\":[],\"plugins\":[],\"commands\":[]}");
 
     public static Path regPath(String path) {
         Path p = new File(path).toPath();

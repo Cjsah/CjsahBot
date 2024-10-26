@@ -11,6 +11,7 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.data.CommandInfo;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
+import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import org.slf4j.Logger;
@@ -40,10 +41,9 @@ public final class CommandManager {
                 Command annotation = method.getAnnotation(Command.class);
                 String cmd = annotation.value();
                 CommandParser parser = new CommandParser(cmd);
-                CommandNodeBuilder builder = parser.parse(method.getParameters());
-                builder.setMethod(method);
-                builder.setPermissions(annotation.permissions());
-                builder.setPlugin(PluginContext.getCurrentPluginInfo().getId());
+                CommandNodeBuilder builder = parser.parse(method.getParameters())
+                        .setMethod(method).setPermissions(annotation.permissions())
+                        .setPlugin(PluginContext.getCurrentPluginInfo().getId());
                 CommandNode node = builder.build();
                 if (COMMANDS.containsKey(node.getName())) {
                     throw BuiltExceptions.REPEAT_COMMAND.create();
@@ -70,7 +70,9 @@ public final class CommandManager {
             CommandNode node = COMMANDS.get(info.getCommand());
             Map<String, String> options = info.getOptions();
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
-            if (!source.hasPermission(node.getPermissions())) throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
+            if (!PermissionManager.hasCommandPermission(source.sender(), node)) {
+                throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
+            }
             List<CommandParameter> parameters = node.getParameters();
             Object[] args = new Object[parameters.size()];
             for (int i = 0; i < parameters.size(); i++) {

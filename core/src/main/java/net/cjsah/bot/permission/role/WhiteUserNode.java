@@ -4,14 +4,16 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.permission.PermissionNodeType;
 import net.cjsah.bot.permission.PermissionRoleNode;
 
+import java.util.List;
+
 public class WhiteUserNode extends PermissionNode {
     public WhiteUserNode(JSONObject json) {
         super(json);
     }
 
     @Override
-    public boolean isConflict(PermissionNode node) {
-        return node instanceof BlackUserNode;
+    public boolean isConflict(List<PermissionNodeType> types) {
+        return types.contains(PermissionNodeType.BLACK_USER);
     }
 
     @Override

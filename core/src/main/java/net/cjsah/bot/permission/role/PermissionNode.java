@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.permission.PermissionNodeType;
 import net.cjsah.bot.permission.PermissionRoleNode;
 
+import java.util.List;
+
 public abstract class PermissionNode {
     private final JSONArray list;
 
@@ -13,6 +15,10 @@ public abstract class PermissionNode {
     }
 
     public boolean isConflict(PermissionNode node) {
+        return false;
+    }
+
+    public boolean isConflict(List<PermissionNodeType> types) {
         return false;
     }
 

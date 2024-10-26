@@ -4,14 +4,16 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.permission.PermissionNodeType;
 import net.cjsah.bot.permission.PermissionRoleNode;
 
+import java.util.List;
+
 public class WhiteChannelNode extends PermissionNode {
     public WhiteChannelNode(JSONObject json) {
         super(json);
     }
 
     @Override
-    public boolean isConflict(PermissionNode node) {
-        return node instanceof BlackChannelNode;
+    public boolean isConflict(List<PermissionNodeType> types) {
+        return types.contains(PermissionNodeType.BLACK_CHANNEL);
     }
 
     @Override

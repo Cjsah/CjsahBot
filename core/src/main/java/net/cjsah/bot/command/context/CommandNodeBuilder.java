@@ -1,6 +1,7 @@
 package net.cjsah.bot.command.context;
 
 import net.cjsah.bot.permission.HeyboxPermission;
+import net.cjsah.bot.permission.PermissionRole;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,33 +14,45 @@ public class CommandNodeBuilder {
     private Method method;
     private String pluginId;
     private HeyboxPermission[] permissions;
+    private PermissionRole role;
 
     public CommandNodeBuilder(String name) {
         this.name = name;
         this.parameters = new ArrayList<>();
+        this.role = PermissionRole.USER;
     }
 
-    public void appendParameter(CommandParameter parameter) {
+    public CommandNodeBuilder appendParameter(CommandParameter parameter) {
         this.parameters.add(parameter);
+        return this;
     }
 
-    public void setPlugin(String pluginId) {
+    public CommandNodeBuilder setPlugin(String pluginId) {
         this.pluginId = pluginId;
+        return this;
     }
 
-    public void setName(String name) {
+    public CommandNodeBuilder setName(String name) {
         this.name = name;
+        return this;
     }
 
-    public void setMethod(Method method) {
+    public CommandNodeBuilder setMethod(Method method) {
         this.method = method;
+        return this;
     }
 
-    public void setPermissions(HeyboxPermission[] permissions) {
+    public CommandNodeBuilder setPermissions(HeyboxPermission[] permissions) {
         this.permissions = permissions;
+        return this;
+    }
+
+    public CommandNodeBuilder setRole(PermissionRole role) {
+        this.role = role;
+        return this;
     }
 
     public CommandNode build() {
-        return new CommandNode(this.name, this.method, Collections.unmodifiableList(this.parameters), this.pluginId, this.permissions);
+        return new CommandNode(this.name, this.method, Collections.unmodifiableList(this.parameters), this.pluginId, this.permissions, this.role);
     }
 }

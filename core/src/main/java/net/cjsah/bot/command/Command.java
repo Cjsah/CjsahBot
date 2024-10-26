@@ -1,6 +1,7 @@
 package net.cjsah.bot.command;
 
 import net.cjsah.bot.permission.HeyboxPermission;
+import net.cjsah.bot.permission.PermissionRole;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,4 +16,6 @@ public @interface Command {
     String description() default "";
 
     HeyboxPermission[] permissions() default HeyboxPermission.USE_BOT_COMMAND;
+
+    PermissionRole role() default PermissionRole.USER;
 }

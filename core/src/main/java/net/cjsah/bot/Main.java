@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.CancelableEvent;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginLoader;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.JsonUtil;
@@ -24,6 +25,8 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         log.info("初始化文件系统...");
         FilePaths.init();
+        log.info("初始化权限系统...");
+        PermissionManager.init();
         log.info("正在加载插件...");
         PluginLoader.loadPlugins();
 

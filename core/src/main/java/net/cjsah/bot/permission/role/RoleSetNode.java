@@ -17,11 +17,6 @@ public class RoleSetNode extends PermissionNode {
     }
 
     @Override
-    public boolean isConflict(PermissionNode node) {
-        return node instanceof BlackChannelNode;
-    }
-
-    @Override
     public PermissionNodeType getType() {
         return PermissionNodeType.USER_SET;
     }
