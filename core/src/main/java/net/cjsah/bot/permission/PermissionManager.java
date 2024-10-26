@@ -5,6 +5,10 @@ import net.cjsah.bot.data.UserInfo;
 
 public final class PermissionManager {
     public static boolean hasPermission(UserInfo user, HeyboxPermission[] permissions) {
+        return PermissionManager.hasHeyboxPermission(user, permissions);
+    }
+
+    public static boolean hasHeyboxPermission(UserInfo user, HeyboxPermission[] permissions) {
         role:
         for (RoleInfo role : user.getRoles()) {
             long rolePermission = role.getPermissions();
@@ -17,6 +21,5 @@ public final class PermissionManager {
             return true;
         }
         return false;
-
     }
 }
