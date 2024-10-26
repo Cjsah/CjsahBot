@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.context;
 
-import net.cjsah.bot.permission.Permission;
+import net.cjsah.bot.permission.HeyboxPermission;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class CommandNodeBuilder {
     private final List<CommandParameter> parameters;
     private Method method;
     private String pluginId;
-    private Permission[] permissions;
+    private HeyboxPermission[] permissions;
 
     public CommandNodeBuilder(String name) {
         this.name = name;
@@ -35,7 +35,7 @@ public class CommandNodeBuilder {
         this.method = method;
     }
 
-    public void setPermissions(Permission[] permissions) {
+    public void setPermissions(HeyboxPermission[] permissions) {
         this.permissions = permissions;
     }
 

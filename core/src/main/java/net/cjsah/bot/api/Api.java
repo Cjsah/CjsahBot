@@ -26,6 +26,11 @@ public final class Api {
     private static String TOKEN = "";
 
     public static String sendMsg(MsgBuilder builder) {
+        return Api.sendMsg(builder, true);
+    }
+
+    public static String sendMsg(MsgBuilder builder, boolean log) {
+        if (log) Api.log.info("[{}] [{}] <== {}", builder.getRoomId(), builder.getChannelId(), builder.getMsg());
         JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
             json.put("channel_type", 1);
             json.put("msg_type", 10);
@@ -43,11 +48,13 @@ public final class Api {
     }
 
     public static String uploadMedia(File file) {
+        log.info("上传文件: {}", file.getAbsolutePath());
         JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", file));
         return res.getJSONObject("result").getString("url");
     }
 
     public static String uploadMedia(String filename, byte[] data) {
+        log.info("上传文件: {}", filename);
         JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", data, filename));
         return res.getJSONObject("result").getString("url");
     }

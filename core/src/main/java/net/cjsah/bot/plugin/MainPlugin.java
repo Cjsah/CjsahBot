@@ -7,7 +7,7 @@ import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CommandEvent;
-import net.cjsah.bot.permission.Permission;
+import net.cjsah.bot.permission.HeyboxPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public final class MainPlugin extends Plugin {
 //        );
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
-            log.info("执行命令: [{}] [{}] [{}({})] => /{}",
+            log.info("[{}] [{}] [{}({})] ==> 触发命令: /{}",
                     event.getRoomInfo().getName(),
                     event.getChannelInfo().getName(),
                     event.getSenderInfo().getNickname(),
@@ -42,10 +42,17 @@ public final class MainPlugin extends Plugin {
         });
     }
 
-    @Command(value = "/botstop", permissions = Permission.ADMIN)
+    @Command(value = "/botstop", permissions = HeyboxPermission.ADMIN)
     public static void botStop(CommandSource source) {
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }
+//
+//    @Command(value = "/test", permissions = Permission.ADMIN)
+//    public static void test(CommandSource source) {
+//        File file = new File("/home/cjsah/桌面/Cjsah.png");
+//        String url = Api.uploadMedia(file);
+//        source.sendFeedback("![Cjsah](" + url + ")");
+//    }
 
 }

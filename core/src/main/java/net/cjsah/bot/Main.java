@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    private static final Logger log = LoggerFactory.getLogger("Main");
+    private static final Logger log = LoggerFactory.getLogger("Console");
     private static final WebSocketClientImpl WebSocketClient;
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
     private static boolean Stop = false;
@@ -26,11 +26,11 @@ public class Main {
         FilePaths.init();
         log.info("正在加载插件...");
         PluginLoader.loadPlugins();
-//
+
         Main.tryConnect();
-//
+
         PluginLoader.onStarted();
-//
+
         running:
         while (true) {
             switch (SignalQueue.take()) {

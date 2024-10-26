@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.context;
 
-import net.cjsah.bot.permission.Permission;
+import net.cjsah.bot.permission.HeyboxPermission;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -10,9 +10,9 @@ public class CommandNode {
     private final Method method;
     private final List<CommandParameter> parameters;
     private final String pluginId;
-    private final Permission[] permissions;
+    private final HeyboxPermission[] permissions;
 
-    public CommandNode(String node, Method method, List<CommandParameter> parameters, String pluginId, Permission[] permissions) {
+    public CommandNode(String node, Method method, List<CommandParameter> parameters, String pluginId, HeyboxPermission[] permissions) {
         this.name = node;
         this.method = method;
         this.parameters = parameters;
@@ -36,7 +36,7 @@ public class CommandNode {
         return this.pluginId;
     }
 
-    public Permission[] getPermissions() {
+    public HeyboxPermission[] getPermissions() {
         return this.permissions;
     }
 }

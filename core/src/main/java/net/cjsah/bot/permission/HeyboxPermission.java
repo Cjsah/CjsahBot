@@ -1,6 +1,6 @@
 package net.cjsah.bot.permission;
 
-public enum Permission {
+public enum HeyboxPermission {
     ADMIN,
     CHANNEL_VIEW,
     CHANNEL_MANAGE,
@@ -42,7 +42,7 @@ public enum Permission {
 
     private final long value;
 
-    Permission() {
+    HeyboxPermission() {
         this.value = 1L << this.ordinal();
     }
 
