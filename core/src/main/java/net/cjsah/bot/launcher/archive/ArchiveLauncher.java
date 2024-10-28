@@ -9,6 +9,10 @@ import java.security.ProtectionDomain;
 public class ArchiveLauncher {
     private final JarFileArchive archive;
 
+    public static void main(String[] args) {
+        ArchiveLauncher launcher = new ArchiveLauncher();
+    }
+
     public ArchiveLauncher() {
         try {
             this.archive = this.createArchive();
@@ -22,6 +26,7 @@ public class ArchiveLauncher {
         CodeSource codeSource = protectionDomain.getCodeSource();
         URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
         String path = (location == null ? null : location.getSchemeSpecificPart());
+        System.out.println(path);
         if (path == null) {
             throw new IllegalStateException("Unable to determine code source archive");
         }
