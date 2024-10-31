@@ -98,16 +98,17 @@ public final class CommandManager {
             PluginThreadPools.execute(node.getPluginId(), () -> {
                 try {
                     node.getMethod().invoke(null, args);
-                } catch (CommandException e) {
-                    source.sendFeedback(e.getMessage());
-                    log.error("Failed to execute command", e);
-                } catch (Exception e) {
-                    log.error("Failed to execute command", e);
-                }
+                } catch (InvocationTargetException e) {
+                    Throwable target = e.getTargetException();
+                    if (target instanceof CommandException) {
+                        source.sendFeedback(target.getMessage());
+                    } else {
+                        log.error("Failed to execute command", e);
+                    }
+                } catch (IllegalAccessException ignored) {}
             });
         } catch (CommandException e) { // 命令导致的异常
             source.sendFeedback(e.getMessage());
-            log.warn("Failed to execute command {}: {}", info.getCommand(), e.getMessage());
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) { // 开发者导致的异常
             log.error("Failed to execute command: {}", e.getMessage());
         }

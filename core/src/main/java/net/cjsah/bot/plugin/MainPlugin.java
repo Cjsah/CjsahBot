@@ -30,9 +30,11 @@ public final class MainPlugin extends Plugin {
 //        );
 
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
-            log.info("[{}] [{}] [{}({})] ==> 触发命令: /{}",
+            log.info("[{}({})] [{}({})] [{}({})] ==> 触发命令: /{}",
                     event.getRoomInfo().getName(),
+                    event.getRoomInfo().getId(),
                     event.getChannelInfo().getName(),
+                    event.getChannelInfo().getId(),
                     event.getSenderInfo().getNickname(),
                     event.getSenderInfo().getId(),
                     event.getCommandInfo().getCommand()

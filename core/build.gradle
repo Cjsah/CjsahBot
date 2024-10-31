@@ -1,6 +1,6 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
 }
 
 archivesBaseName = rootProject.name
@@ -15,12 +15,34 @@ dependencies {
         exclude group: 'com.mchange'
         exclude group: 'org.slf4j'
     }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
+tasks.register('copyJar', Copy) {
+    from configurations.runtimeClasspath
+    into 'build/libs/lib'
+}
+
+tasks.register('sourcesJar', Jar) {
+    dependsOn classes
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+tasks.register('docJar', Jar) {
+    dependsOn javadoc
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+jar.dependsOn([copyJar])
+
 jar {
+    from("LICENSE")
     manifest {
-        attributes('Main-Class': "net.cjsah.bot.Main")
+        attributes([
+                "Main-Class": "net.cjsah.bot.Main",
+                "Class-Path": configurations.runtimeClasspath.files.collect { "lib/$it.name" }.join(' ')
+        ])
     }
 }
 
@@ -49,6 +71,25 @@ tasks.register('runMain', JavaExec) {
 repositories {
     mavenCentral()
 }
-kotlin {
-    jvmToolchain(21)
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            from components.java
+            artifact sourcesJar
+            artifact docJar
+        }
+    }
+
+    def ENV = System.getenv()
+    if (ENV.MAVEN_URL) {
+        repositories.maven {
+            url ENV.MAVEN_URL
+            credentials {
+                username ENV.MAVEN_USERNAME
+                password ENV.MAVEN_PASSWORD
+            }
+        }
+    }
 }
