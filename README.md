@@ -1,5 +1,11 @@
 ### 黑盒语音bot框架 - Java
 
+# 插件开发
+
+> Maven仓库 https://server.cjsah.net:1002/maven
+
+> 依赖 `net.cjsah.bot:HeyBoxBotConsole:1.0.0`
+
 # 命令注册
 
 ```java
