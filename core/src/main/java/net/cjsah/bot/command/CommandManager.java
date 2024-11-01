@@ -103,7 +103,7 @@ public final class CommandManager {
                     if (target instanceof CommandException) {
                         source.sendFeedback(target.getMessage());
                     } else {
-                        log.error("Failed to execute command", e);
+                        log.error("Failed to execute command", target);
                     }
                 } catch (IllegalAccessException ignored) {}
             });
