@@ -157,8 +157,14 @@ public final class Api {
         });
     }
 
-    public static void meme(String roomId, String channelId, String msgId, String emoji, boolean append) {
-        
+    public static void msgReplyEmoji(String roomId, String channelId, String msgId, String emoji, boolean append) {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/emoji/reply", json -> {
+            json.put("room_id", roomId);
+            json.put("channel_id", channelId);
+            json.put("msg_id", msgId);
+            json.put("emoji", emoji);
+            json.put("is_add", append ? 1 : 2);
+        });
     }
 
     public static String getToken() {
