@@ -6,11 +6,11 @@ plugins {
 archivesBaseName = rootProject.name
 
 dependencies {
-    implementation project(":api")
-    implementation("org.java-websocket:Java-WebSocket:$websocket_version") {
+//    implementation project(":api")
+    api("org.java-websocket:Java-WebSocket:$websocket_version") {
         exclude group: 'org.slf4j'
     }
-    implementation("org.quartz-scheduler:quartz:$quartz_version") {
+    api("org.quartz-scheduler:quartz:$quartz_version") {
         exclude group: 'com.zaxxer'
         exclude group: 'com.mchange'
         exclude group: 'org.slf4j'

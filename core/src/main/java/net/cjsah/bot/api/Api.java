@@ -142,7 +142,6 @@ public final class Api {
         results.addAll(array.stream().map(MemeData::new).toList());
     }
 
-    @Deprecated
     public static void deleteMeme(String roomId, String path) {
         postJson("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/del", json -> {
             json.put("room_id", roomId);
@@ -150,13 +149,16 @@ public final class Api {
         });
     }
 
-    @Deprecated
     public static void updateMeme(String roomId, String path, String name) {
         postJson("https://chat.xiaoheihe.cn/chatroom/v2/msg/meme/room/edit", json -> {
             json.put("room_id", roomId);
             json.put("path", path);
             json.put("name", name);
         });
+    }
+
+    public static void meme(String roomId, String channelId, String msgId, String emoji, boolean append) {
+        
     }
 
     public static String getToken() {

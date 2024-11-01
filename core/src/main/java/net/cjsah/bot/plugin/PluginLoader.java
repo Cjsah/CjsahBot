@@ -72,7 +72,7 @@ public class PluginLoader extends URLClassLoader {
                         log.info("插件 {} {} 已加载", info.getName(), info.getVersion());
                     }catch (Exception e) {
                         PluginContext.removePlugin(info.getId());
-                        throw e;
+                        log.error("插件 {} 卸载失败", info.getId(), e);
                     } finally {
                         counter.completed();
                     }

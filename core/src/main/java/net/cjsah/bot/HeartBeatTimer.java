@@ -78,7 +78,7 @@ public class HeartBeatTimer {
 
     public void cancel() {
         try {
-            this.scheduler.shutdown();
+            this.scheduler.shutdown(true);
         } catch (SchedulerException e) {
             log.error("Error stopping heartbeat timer", e);
         }
