@@ -2,7 +2,7 @@
   "id": "test-plugin",
   "name": "TestPlugin",
   "description": "Test Plugin",
-  "version": "0.1",
+  "version": "${version}",
   "info": {
     "authors": ["Cjsah"]
   },

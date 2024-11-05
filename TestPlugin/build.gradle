@@ -1,3 +1,9 @@
 dependencies {
     implementation(project(":core"))
 }
+
+processResources {
+    filesMatching("plugin.json") {
+        expand "version": rootProject.version
+    }
+}

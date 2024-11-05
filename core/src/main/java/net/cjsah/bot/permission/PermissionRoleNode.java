@@ -21,7 +21,7 @@ public class PermissionRoleNode {
 
     public PermissionRole getRole() {
         if (this.allow) return this.role == null ? PermissionRole.USER : this.role;
-        return this.role == null ? PermissionRole.ALL : this.role;
+        return this.role == null ? PermissionRole.USER : this.role;
     }
 
     public void setRole(PermissionRole role) {

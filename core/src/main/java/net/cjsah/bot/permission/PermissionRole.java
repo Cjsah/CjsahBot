@@ -5,7 +5,6 @@ public enum PermissionRole {
     ADMIN("admin", 100),
     HELPER("helper", 10),
     USER("user", 5),
-    ALL("all", 1),
     DENY("deny", 0),
     ;
 

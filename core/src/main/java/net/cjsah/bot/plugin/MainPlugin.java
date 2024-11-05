@@ -2,6 +2,7 @@ package net.cjsah.bot.plugin;
 
 import net.cjsah.bot.Main;
 import net.cjsah.bot.SignalType;
+import net.cjsah.bot.api.Api;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
@@ -29,6 +30,10 @@ public final class MainPlugin extends Plugin {
 //                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
 //        );
 
+//        EventManager.subscribe(pluginId, MessageEmojiPinEvent.class, event -> {
+//            log.info("{} {} {} {}", event.getUserId(), event.getEmoji(), event.getChannelId(), event.getMsgId());
+//        });
+//
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
             log.info("[{}({})] [{}({})] [{}({})] ==> 触发命令: /{}",
                     event.getRoomInfo().getName(),
@@ -41,6 +46,7 @@ public final class MainPlugin extends Plugin {
             );
             CommandSource source = new CommandSource(event);
             CommandManager.execute(event.getCommandInfo(), source);
+            Api.msgReplyEmoji(event.getRoomInfo().getId(), event.getChannelInfo().getId(), event.getMsgId(), "[1_\uD83D\uDC4C]", true);
         });
     }
 
