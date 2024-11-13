@@ -36,4 +36,7 @@ public final class BuiltExceptions{
     public static final CustomExceptionFactory<?> CONFLICT_MERGE_PERMISSION = new CustomExceptionFactory<>("%s已为 %s模式, 但受到了 %s 数据", PermissionException::new);
     public static final CustomExceptionFactory<?> UNKNOWN_PERMISSION_TYPE = new CustomExceptionFactory<>("未知的权限类型: %s", PermissionException::new);
 
+    public static final CustomExceptionFactory<?> MSG_TOO_MANY_DATA = new CustomExceptionFactory<>("数据量过多, 最多允许 %d 条数据", MessageException::new);
+    public static final CustomExceptionFactory<?> MSG_EMPTY_DATA = new CustomExceptionFactory<>("还未填入数据, 请填入数据后返回", MessageException::new);
+
 }
