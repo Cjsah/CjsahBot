@@ -7,25 +7,29 @@ import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.event.events.UserModifyEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public enum EventType {
     @Deprecated
-    MESSAGE(5, MessageEvent::new),
-    COMMAND(50, CommandEvent::new),
-    USER_MODIFY(3001, UserModifyEvent::create),
-    MSG_EMOJI(5003, MessageEmojiEvent::create),
+    MESSAGE("5", MessageEvent::new),
+    COMMAND("50", CommandEvent::new),
+    USER_MODIFY("3001", UserModifyEvent::create),
+    MSG_EMOJI("5003", MessageEmojiEvent::create),
+    CARD_BUTTON("card_message_btn_click", null),
     ;
 
-    EventType(int type, Function<JSONObject, Event> factory) {
+    EventType(String type, Function<JSONObject, Event> factory) {
         this.type = type;
         this.factory = factory;
+        InnerClass.EVENT_TYPE_MAP.put(type, this);
     }
 
-    private final int type;
+    private final String type;
     private final Function<JSONObject, Event> factory;
 
-    public int getType() {
+    public String getType() {
         return this.type;
     }
 
@@ -34,10 +38,11 @@ public enum EventType {
     }
 
     @Nullable
-    public static EventType getByType(int type) {
-        for (EventType eventType : values()) {
-            if (eventType.type == type) return eventType;
-        }
-        return null;
+    public static EventType getByType(String type) {
+        return InnerClass.EVENT_TYPE_MAP.get(type);
+    }
+
+    private static class InnerClass {
+        private static final Map<String, EventType> EVENT_TYPE_MAP = new HashMap<>();
     }
 }

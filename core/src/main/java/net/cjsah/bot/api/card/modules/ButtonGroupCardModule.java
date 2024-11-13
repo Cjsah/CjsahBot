@@ -20,7 +20,7 @@ public class ButtonGroupCardModule extends AbstractCardModule {
         this.buttons = new ArrayList<>(3);
     }
 
-    private ButtonGroupCardModule button(String text, String value, boolean isLink, Theme theme) {
+    public ButtonGroupCardModule button(String text, String value, boolean isLink, Theme theme) {
         CardBuilder.checkMaxSize(this.buttons, 3);
         JSONObject node = JSONObject.of("type", "button");
         node.put("event", isLink ? "link-to" : "server");

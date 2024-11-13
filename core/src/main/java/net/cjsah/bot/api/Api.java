@@ -47,6 +47,23 @@ public final class Api {
         return res.getJSONObject("result").getString("msg_id");
     }
 
+    public static void sendCardMsg(CardBuilder builder) {
+        Api.sendCardMsg(builder, true);
+    }
+    public static void sendCardMsg(CardBuilder builder, boolean log) {
+        if (log) Api.log.info("[{}] [{}] <== 卡片消息({})", builder.getRoomId(), builder.getChannelId(), builder.getUuid());
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
+            json.put("channel_type", 1);
+            json.put("msg_type", 20);
+            json.put("room_id", builder.getRoomId());
+            json.put("channel_id", builder.getChannelId());
+            json.put("msg", builder.genMsg());
+            json.put("reply_id", builder.getReplay());
+            json.put("heychat_ack_id", builder.getUuid());
+            json.put("addition", "{}");
+        });
+    }
+
     public static String uploadMedia(File file) {
         log.info("上传文件: {}", file.getAbsolutePath());
         JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", file));

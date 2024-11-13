@@ -7,6 +7,7 @@ import net.cjsah.bot.api.card.CardItem;
 import net.cjsah.bot.data.Size;
 import net.cjsah.bot.data.TextType;
 import net.cjsah.bot.data.Theme;
+import net.cjsah.bot.exception.BuiltExceptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,9 @@ public class SectionCardModule extends AbstractCardModule {
     @Override
     public CardItem end() {
         CardBuilder.checkEmpty(this.paragraph);
+        if (this.types.size() == 1 && !this.types.get(0)) {
+            throw BuiltExceptions.MSG_UNSUPPORTED_DATA.create();
+        }
         return super.end();
     }
 }

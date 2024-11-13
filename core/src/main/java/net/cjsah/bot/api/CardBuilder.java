@@ -49,7 +49,7 @@ public class CardBuilder {
     public String genMsg() {
         checkEmpty(this.cards);
         List<JSONObject> list = this.cards.stream().parallel().map(CardItem::generate).toList();
-        return JsonUtil.serialize(list);
+        return JsonUtil.serialize(JSONObject.of("data", list));
     }
 
     public CardItem card() {

@@ -145,7 +145,7 @@ public final class EventManager {
     }
 
     public static void parseEvent(JSONObject raw) {
-        int type = raw.getIntValue("type");
+        String type = raw.getString("type");
         EventType eventType = EventType.getByType(type);
         if (eventType == null) {
             log.warn("Unknown event type: {}, {}", type, raw);
