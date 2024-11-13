@@ -32,8 +32,8 @@ public class PluginLoader extends URLClassLoader {
     public static void loadPlugins() throws InterruptedException {
         Counter counter = new Counter();
         PluginContext.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null);
+        counter.increment();
         PluginThreadPools.execute(MainPlugin.PLUGIN_INFO.getId(), () -> {
-            counter.increment();
             log.info("正在加载核心插件");
             PluginContext.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO);
             MainPlugin.INSTANCE.onLoad();
