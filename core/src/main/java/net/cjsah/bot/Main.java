@@ -35,6 +35,7 @@ public class Main {
         Main.tryConnect();
 
         PluginLoader.onStarted();
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             Main.sendSignal(SignalType.STOP);
             try {
