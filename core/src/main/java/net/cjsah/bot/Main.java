@@ -36,7 +36,6 @@ public class Main {
 
         PluginLoader.onStarted();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Shutting down...");
             Main.sendSignal(SignalType.STOP);
             try {
                 mainThread.join();
