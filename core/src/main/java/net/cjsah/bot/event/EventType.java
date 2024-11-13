@@ -1,6 +1,7 @@
 package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.event.events.CardButtonClickEvent;
 import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.event.events.MessageEmojiEvent;
 import net.cjsah.bot.event.events.MessageEvent;
@@ -17,7 +18,7 @@ public enum EventType {
     COMMAND("50", CommandEvent::new),
     USER_MODIFY("3001", UserModifyEvent::create),
     MSG_EMOJI("5003", MessageEmojiEvent::create),
-    CARD_BUTTON("card_message_btn_click", null),
+    CARD_BUTTON("card_message_btn_click", CardButtonClickEvent::new),
     ;
 
     EventType(String type, Function<JSONObject, Event> factory) {

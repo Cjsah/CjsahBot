@@ -43,7 +43,7 @@ public class PluginLoader extends URLClassLoader {
         counter.await();
         List<File> jars = PluginLoader.getPluginJars();
         if (jars.isEmpty()) {
-            log.info("没有插件被加载");
+            log.info("没有第三方插件被加载");
             return;
         }
         log.info("正在加载 {} 个插件", jars.size());
@@ -72,7 +72,7 @@ public class PluginLoader extends URLClassLoader {
                         log.info("插件 {} {} 已加载", info.getName(), info.getVersion());
                     }catch (Exception e) {
                         PluginContext.removePlugin(info.getId());
-                        log.error("插件 {} 卸载失败", info.getId(), e);
+                        log.error("插件 {} 加载失败", info.getId(), e);
                     } finally {
                         counter.completed();
                     }

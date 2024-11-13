@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "DuplicatedCode"})
 public final class Api {
-    private static final Logger log = LoggerFactory.getLogger(Api.class);
+    private static final Logger log = LoggerFactory.getLogger("Console");
     private static String TOKEN = "";
 
     public static String sendMsg(MsgBuilder builder) {
