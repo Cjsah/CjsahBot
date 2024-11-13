@@ -62,8 +62,12 @@ public final class WebSocketClientImpl extends WebSocketClient {
             this.heart.heartPong();
             return;
         }
-        JSONObject json = JsonUtil.deserialize(msg);
-        EventManager.parseEvent(json);
+        try {
+            JSONObject json = JsonUtil.deserialize(msg);
+            EventManager.parseEvent(json);
+        } catch (Throwable e) {
+            log.error("出现错误!", e);
+        }
     }
 
     @Override
