@@ -21,8 +21,10 @@ public class Main {
     private static final WebSocketClientImpl WebSocketClient;
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
     private static boolean Stop = false;
+    private static Thread mainThread;
 
     public static void main(String[] args) throws InterruptedException {
+        mainThread = Thread.currentThread();
         log.info("初始化文件系统...");
         FilePaths.init();
         log.info("初始化权限系统...");
@@ -33,6 +35,15 @@ public class Main {
         Main.tryConnect();
 
         PluginLoader.onStarted();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down...");
+            Main.sendSignal(SignalType.STOP);
+            try {
+                mainThread.join();
+            } catch (InterruptedException e) {
+                log.error("Error while shutting down", e);
+            }
+        }));
 
         running:
         while (true) {
@@ -40,7 +51,7 @@ public class Main {
                 case STOP -> {
                     break running;
                 }
-                case RESTART -> {}
+                case RESTART -> log.warn("未完成, 请手动重启!");
                 case RE_CONNECT -> Main.tryConnect();
             }
         }
