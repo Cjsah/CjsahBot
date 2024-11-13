@@ -47,14 +47,13 @@ public class CardBuilder {
     }
 
     public String genMsg() {
+        checkEmpty(this.cards);
         List<JSONObject> list = this.cards.stream().parallel().map(CardItem::generate).toList();
         return JsonUtil.serialize(list);
     }
 
     public CardItem card() {
-        if (this.cards.size() >= 3) {
-            throw BuiltExceptions.MSG_TOO_MANY_CARDS.create();
-        }
+        checkMaxSize(this.cards, 3);
         CardItem card = new CardItem(this);
         this.cards.add(card);
         return card;
@@ -62,6 +61,12 @@ public class CardBuilder {
 
     public static void checkMaxSize(Collection<?> list, int size) {
         if (list.size() >= size) {
+            throw BuiltExceptions.MSG_TOO_MANY_DATA.create(size);
+        }
+    }
+
+    public static void checkMaxSize(Object[] list, int size) {
+        if (list.length >= size) {
             throw BuiltExceptions.MSG_TOO_MANY_DATA.create(size);
         }
     }

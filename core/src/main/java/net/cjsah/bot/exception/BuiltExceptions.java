@@ -38,5 +38,7 @@ public final class BuiltExceptions{
 
     public static final CustomExceptionFactory<?> MSG_TOO_MANY_DATA = new CustomExceptionFactory<>("数据量过多, 最多允许 %d 条数据", MessageException::new);
     public static final CustomExceptionFactory<?> MSG_EMPTY_DATA = new CustomExceptionFactory<>("还未填入数据, 请填入数据后返回", MessageException::new);
+    public static final CustomExceptionFactory<?> COUNTDOWN_LESS_NOW = new CustomExceptionFactory<>("定时结束时间小于当前系统时间", MessageException::new);
+    public static final CustomExceptionFactory<?> COUNTDOWN_OVER_COUNT = new CustomExceptionFactory<>("定时时长超过了范围", MessageException::new);
 
 }
