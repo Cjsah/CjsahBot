@@ -32,11 +32,11 @@ jobs:
       run: |
         output="$(find core/build/libs/ -maxdepth 1 -name "*.jar" -type f -printf "%f\n")"
         output=${output%????}
-        echo "::set-output name=jarname::$output"
+        echo "jarname=$output" >> $GITHUB_ENV
     - name: Package application
       run: |
         cd core/build/libs
-        zip -r ${{ steps.getjar.outputs.jarname }}.zip ./*
+        zip -r $jarname.zip ./*
         ls -al
     - name: Upload to Github release
       uses: actions/upload-release-asset@v1
@@ -44,8 +44,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: core/build/libs/${{ steps.file.outputs.jarname }}.zip
-        asset_name: ${{ steps.file.outputs.jarname }}.zip
+        asset_path: core/build/libs/$jarname.zip
+        asset_name: $jarname.zip
         asset_content_type: application/zip
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
