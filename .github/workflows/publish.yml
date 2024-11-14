@@ -45,7 +45,7 @@ jobs:
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: core/build/libs/${{ steps.file.outputs.jarname }}.zip
-        asset_name: ${{ steps.file.outputs.jarname }}.zip
+        asset_name: ${{ steps.file.outputs.jarname }}+build.${{ github.run_number }}.zip
         asset_content_type: application/zip
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
