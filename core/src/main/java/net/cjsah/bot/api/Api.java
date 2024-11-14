@@ -64,6 +64,30 @@ public final class Api {
         });
     }
 
+    public static void updateMsg(String msgId, MsgBuilder builder) {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/update", json -> {
+            json.put("msg_id", msgId);
+            json.put("msg_type", 10);
+            json.put("room_id", builder.getRoomId());
+            json.put("channel_id", builder.getChannelId());
+            json.put("msg", builder.getMsg());
+            json.put("reply_id", builder.getReplay());
+            json.put("at_user_id", builder.getAtUsers());
+            json.put("at_role_id", builder.getAtRoles());
+            json.put("mention_channel_id", builder.getAtChannels());
+            json.put("heychat_ack_id", builder.getUuid());
+            json.put("addition", "{}");
+        });
+    }
+
+    public static void deleteMsg(String roomId, String channelId, String msgId) {
+        postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/delete", json -> {
+            json.put("room_id", roomId);
+            json.put("channel_id", channelId);
+            json.put("msg_id", msgId);
+        });
+    }
+
     public static String uploadMedia(File file) {
         log.info("上传文件: {}", file.getAbsolutePath());
         JSONObject res = postForm("https://chat-upload.xiaoheihe.cn/upload", request -> request.form("file", file));
