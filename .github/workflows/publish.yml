@@ -37,6 +37,7 @@ jobs:
       run: |
         cd core/build/libs
         zip -r ${{ steps.getjar.outputs.jarname }}.zip ./*
+        ls -al
     - name: Upload to Github release
       uses: actions/upload-release-asset@v1
       env:
