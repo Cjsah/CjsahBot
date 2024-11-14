@@ -47,10 +47,9 @@ jobs:
         asset_path: core/build/libs/${{ steps.file.outputs.jarname }}.zip
         asset_name: ${{ steps.file.outputs.jarname }}+build.${{ github.run_number }}.zip
         asset_content_type: application/zip
-    # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-    # the publishing section of your build.gradle
-    # - name: Publish to GitHub Packages
-    #   run: ./gradlew publish
-    #   env:
-    #     USERNAME: ${{ github.actor }}
-    #     TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish Artifact
+      run: ./gradlew :core:publish
+      env:
+        MAVEN_URL: ${{ secrets.MAVEN_URL }}
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
