@@ -3,11 +3,9 @@ package net.cjsah.bot.api.card;
 import com.alibaba.fastjson2.JSONObject;
 
 public abstract class AbstractCardModule {
-    private final CardItem parent;
     private final String type;
 
-    protected AbstractCardModule(CardItem parent, String type) {
-        this.parent = parent;
+    protected AbstractCardModule(String type) {
         this.type = type;
     }
 
@@ -15,7 +13,5 @@ public abstract class AbstractCardModule {
         return JSONObject.of("type", this.type);
     }
 
-    public CardItem end() {
-        return this.parent;
-    }
+    public void endCheck() {}
 }

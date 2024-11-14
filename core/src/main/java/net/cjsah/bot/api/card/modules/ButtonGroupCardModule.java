@@ -3,20 +3,16 @@ package net.cjsah.bot.api.card.modules;
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.CardBuilder;
 import net.cjsah.bot.api.card.AbstractCardModule;
-import net.cjsah.bot.api.card.CardItem;
-import net.cjsah.bot.data.Size;
-import net.cjsah.bot.data.TextType;
 import net.cjsah.bot.data.Theme;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class ButtonGroupCardModule extends AbstractCardModule {
     private final List<JSONObject> buttons;
 
-    public ButtonGroupCardModule(CardItem parent) {
-        super(parent, "button-group");
+    public ButtonGroupCardModule() {
+        super("button-group");
         this.buttons = new ArrayList<>(3);
     }
 
@@ -39,8 +35,7 @@ public class ButtonGroupCardModule extends AbstractCardModule {
     }
 
     @Override
-    public CardItem end() {
+    public void endCheck() {
         CardBuilder.checkEmpty(this.buttons);
-        return super.end();
     }
 }

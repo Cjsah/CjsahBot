@@ -9,6 +9,7 @@ import net.cjsah.bot.util.JsonUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CardBuilder {
     private final String uuid;
@@ -52,11 +53,13 @@ public class CardBuilder {
         return JsonUtil.serialize(JSONObject.of("data", list));
     }
 
-    public CardItem card() {
+    public CardBuilder card(Consumer<CardItem> factory) {
         checkMaxSize(this.cards, 3);
-        CardItem card = new CardItem(this);
+        CardItem card = new CardItem();
+        factory.accept(card);
+        card.endCheck();
         this.cards.add(card);
-        return card;
+        return this;
     }
 
     public static void checkMaxSize(Collection<?> list, int size) {
@@ -65,7 +68,10 @@ public class CardBuilder {
         }
     }
 
-    public static void checkMaxSize(Object[] list, int size) {
+    public static void checkArraySize(Object[] list, int size) {
+        if (list.length == 0) {
+            throw BuiltExceptions.MSG_EMPTY_DATA.create();
+        }
         if (list.length >= size) {
             throw BuiltExceptions.MSG_TOO_MANY_DATA.create(size);
         }
