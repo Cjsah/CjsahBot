@@ -32,12 +32,12 @@ jobs:
     # - name: Grant execute permission
     #   run: chmod +x gradlew
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
+      run: ./gradlew :core:build
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.4.3
       with:
         name: Artifacts for ${{ github.sha }}
-        path: build/libs/
+        path: core/build/libs/
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
