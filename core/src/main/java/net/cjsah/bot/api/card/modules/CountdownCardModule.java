@@ -2,7 +2,6 @@ package net.cjsah.bot.api.card.modules;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.card.AbstractCardModule;
-import net.cjsah.bot.api.card.CardItem;
 import net.cjsah.bot.data.CountdownMode;
 import net.cjsah.bot.exception.BuiltExceptions;
 
@@ -11,8 +10,8 @@ public class CountdownCardModule extends AbstractCardModule {
     private final CountdownMode mode;
     private final long time;
 
-    public CountdownCardModule(CardItem parent, CountdownMode mode, long time) {
-        super(parent, "countdown");
+    public CountdownCardModule(CountdownMode mode, long time) {
+        super("countdown");
         long current = System.currentTimeMillis() / 1000;
         long after99 = current + day99;
         if (time < current) {

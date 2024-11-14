@@ -14,13 +14,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CardItem {
     private final List<AbstractCardModule> modules;
-    private final CardBuilder parent;
 
-    public CardItem(CardBuilder parent) {
-        this.parent = parent;
+    public CardItem() {
         this.modules = new ArrayList<>(10);
     }
 
@@ -30,33 +29,61 @@ public class CardItem {
         return JSONObject.of("type", "card", "modules", modules);
     }
 
-    public SectionCardModule section() {
+    public CardItem section(Consumer<SectionCardModule> factory) {
         CardBuilder.checkMaxSize(this.modules, 10);
-        SectionCardModule module = new SectionCardModule(this);
-        this.modules.add(module);
-        return module;
-    }
-
-    public CardItem header(TextType type, String text) {
-        CardBuilder.checkMaxSize(this.modules, 10);
-        HeaderCardModule module = new HeaderCardModule(this, type, text);
+        SectionCardModule module = new SectionCardModule();
+        factory.accept(module);
+        module.endCheck();
         this.modules.add(module);
         return this;
     }
 
-    public ImagesCardModule images(String... urls) {
+    public CardItem header(TextType type, String text) {
         CardBuilder.checkMaxSize(this.modules, 10);
-        CardBuilder.checkMaxSize(urls, 18);
-        ImagesCardModule module = new ImagesCardModule(this, urls);
+        HeaderCardModule module = new HeaderCardModule(type, text);
         this.modules.add(module);
-        return module;
+        return this;
     }
 
-    public ButtonGroupCardModule buttons() {
+    public CardItem images(String... urls) {
         CardBuilder.checkMaxSize(this.modules, 10);
-        ButtonGroupCardModule module = new ButtonGroupCardModule(this);
+        ImagesCardModule module = new ImagesCardModule(urls);
         this.modules.add(module);
-        return module;
+        return this;
+    }
+
+    public CardItem images(List<String> urls) {
+        CardBuilder.checkMaxSize(this.modules, 10);
+        ImagesCardModule module = new ImagesCardModule(urls);
+        this.modules.add(module);
+        return this;
+    }
+
+    public CardItem images(List<String> urls, Consumer<ImagesCardModule> factory) {
+        CardBuilder.checkMaxSize(this.modules, 10);
+        ImagesCardModule module = new ImagesCardModule(urls);
+        factory.accept(module);
+        module.endCheck();
+        this.modules.add(module);
+        return this;
+    }
+
+    public CardItem images(Consumer<ImagesCardModule> factory) {
+        CardBuilder.checkMaxSize(this.modules, 10);
+        ImagesCardModule module = new ImagesCardModule();
+        factory.accept(module);
+        module.endCheck();
+        this.modules.add(module);
+        return this;
+    }
+
+    public CardItem buttons(Consumer<ButtonGroupCardModule> factory) {
+        CardBuilder.checkMaxSize(this.modules, 10);
+        ButtonGroupCardModule module = new ButtonGroupCardModule();
+        factory.accept(module);
+        module.endCheck();
+        this.modules.add(module);
+        return this;
     }
 
     public CardItem divider() {
@@ -65,20 +92,19 @@ public class CardItem {
 
     public CardItem divider(@Nullable String text) {
         CardBuilder.checkMaxSize(this.modules, 10);
-        DividerCardModule module = new DividerCardModule(this, text);
+        DividerCardModule module = new DividerCardModule(text);
         this.modules.add(module);
         return this;
     }
 
     public CardItem countdown(CountdownMode mode, long time) {
         CardBuilder.checkMaxSize(this.modules, 10);
-        CountdownCardModule module = new CountdownCardModule(this, mode, time);
+        CountdownCardModule module = new CountdownCardModule(mode, time);
         this.modules.add(module);
         return this;
     }
 
-    public CardBuilder end() {
+    public void endCheck() {
         CardBuilder.checkEmpty(this.modules);
-        return this.parent;
     }
 }
