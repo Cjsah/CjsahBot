@@ -2,7 +2,9 @@ package net.cjsah.bot.plugin;
 
 import com.alibaba.fastjson2.JSONObject;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class PluginInfo {
     private final String id;
@@ -22,7 +24,14 @@ public final class PluginInfo {
     PluginInfo(JSONObject json) {
         this.id = json.getString("id");
         this.name = json.getString("name");
-        this.description = json.getString("description");
+        Object descriptionOrigin = json.get("description");
+        if (descriptionOrigin instanceof String str) {
+            this.description = str;
+        } else if (descriptionOrigin instanceof Collection<?> list) {
+            this.description = list.stream().map(Object::toString).collect(Collectors.joining("\n"));
+        } else {
+            this.description = "";
+        }
         this.version = json.getString("version");
         this.info = json.getJSONObject("info");
     }
