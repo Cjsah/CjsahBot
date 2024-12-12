@@ -2,8 +2,11 @@ dependencies {
     implementation(project(":core"))
 }
 
+archivesBaseName = "McCrawler"
+version = plugin_version
+
 processResources {
     filesMatching("plugin.json") {
-        expand "version": rootProject.version
+        expand "version": project.version
     }
 }

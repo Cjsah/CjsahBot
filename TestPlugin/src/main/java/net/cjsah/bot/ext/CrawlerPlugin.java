@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class TestPlugin extends Plugin {
+public class CrawlerPlugin extends Plugin {
 
     @Override
     public void onLoad() {
-        CommandManager.register(TestPlugin.class);
+        CommandManager.register(CrawlerPlugin.class);
 
 //        EventManager.subscribe(UserModifyEvent.class, event -> {
 //            switch (event.getState()) {

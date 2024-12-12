@@ -1,10 +1,10 @@
 {
-  "id": "test-plugin",
-  "name": "TestPlugin",
-  "description": "Test Plugin",
+  "id": "mc-crawler",
+  "name": "McCrawler",
+  "description": "Some Minecraft Crawler",
   "version": "${version}",
   "info": {
     "authors": ["Cjsah"]
   },
-  "main": "net.cjsah.bot.ext.TestPlugin"
+  "main": "net.cjsah.bot.ext.CrawlerPlugin"
 }
