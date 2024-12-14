@@ -20,7 +20,8 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static final WebSocketClientImpl WebSocketClient;
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
-    private static boolean Stop = false;
+    private static volatile boolean Stop = false;
+    private static volatile boolean Connecting = false;
     private static Thread mainThread;
 
     public static void main(String[] args) throws InterruptedException {
@@ -37,7 +38,7 @@ public class Main {
         PluginLoader.onStarted();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            Main.sendSignal(SignalType.STOP);
+            if (!Main.Stop) Main.sendSignal(SignalType.STOP);
             try {
                 mainThread.join();
             } catch (InterruptedException e) {
@@ -86,6 +87,7 @@ public class Main {
 
     public static void tryConnect() throws InterruptedException {
         log.info("正在连接到服务器...");
+        Connecting = true;
         while (Main.isRunning()) {
             if (WebSocketClient.getReadyState() == ReadyState.NOT_YET_CONNECTED ?
                     WebSocketClient.connectBlocking() :
@@ -96,6 +98,7 @@ public class Main {
             log.warn("连接失败, 将在 3 秒后重试...");
             TimeUnit.SECONDS.sleep(3);
         }
+        Connecting = false;
         if (!Main.isRunning()) {
             log.info("程序关闭中, 停止连接");
         }
@@ -114,6 +117,10 @@ public class Main {
         if (!SignalQueue.offer(signal)) {
             log.warn("触发 {} 失败, 请重试!", signal);
         }
+    }
+
+    public static boolean isConnecting() {
+        return Connecting;
     }
 
     public static boolean isRunning() {

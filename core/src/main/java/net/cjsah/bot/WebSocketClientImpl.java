@@ -82,8 +82,8 @@ public final class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onError(Exception e) {
         log.error("出现错误", e);
-        if (Main.isRunning()) {
-            Main.sendSignal(SignalType.RE_CONNECT);
-        }
+//        if (Main.isRunning()) {
+//            Main.sendSignal(SignalType.RE_CONNECT);
+//        }
     }
 }
