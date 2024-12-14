@@ -56,8 +56,7 @@ public final class MainPlugin extends Plugin {
 
     @Command(value = "/test", permissions = HeyboxPermission.ADMIN)
     public static void test(CommandSource source) {
-        source.sendFeedback("bot正在关闭...");
-        Main.sendSignal(SignalType.STOP);
+        Main.sendSignal(SignalType.RESTART);
     }
 
 }

@@ -6,6 +6,6 @@ import net.cjsah.bot.event.CancelableEvent;
 public class AppReconnectEvent extends CancelableEvent {
 
     public AppReconnectEvent() {
-        if (Main.isConnecting()) this.cancel();
+        if (!Main.isRunning() || Main.isConnecting()) this.cancel();
     }
 }

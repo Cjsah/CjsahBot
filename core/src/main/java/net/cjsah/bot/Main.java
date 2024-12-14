@@ -18,89 +18,43 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     private static final Logger log = LoggerFactory.getLogger("Console");
-    private static final WebSocketClientImpl WebSocketClient;
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
-    private static volatile boolean Stop = false;
-    private static volatile boolean Connecting = false;
-    private static Thread mainThread;
+    private static volatile MainThread CurrentMainThread;
 
-    public static void main(String[] args) throws InterruptedException {
-        mainThread = Thread.currentThread();
-        log.info("初始化文件系统...");
-        FilePaths.init();
-        log.info("初始化权限系统...");
-        PermissionManager.init();
-        log.info("正在加载插件...");
-        PluginLoader.loadPlugins();
-
-        Main.tryConnect();
-
-        PluginLoader.onStarted();
-
+    public static void main(String[] args) throws Exception {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (!Main.Stop) Main.sendSignal(SignalType.STOP);
+            if (!CurrentMainThread.stop) Main.sendSignal(SignalType.STOP);
             try {
-                mainThread.join();
+                CurrentMainThread.join();
             } catch (InterruptedException e) {
                 log.error("Error while shutting down", e);
             }
         }));
 
+        CurrentMainThread = new MainThread();
+        CurrentMainThread.start();
+
         running:
         while (true) {
             switch (SignalQueue.take()) {
                 case STOP -> {
+                    Main.sendAppSignal(SignalType.STOP);
                     break running;
                 }
-                case RESTART -> log.warn("未完成, 请手动重启!");
-                case RE_CONNECT -> Main.tryConnect();
+                case RE_CONNECT -> Main.sendAppSignal(SignalType.RE_CONNECT);
+                case RESTART -> {
+                    Main.sendAppSignal(SignalType.STOP);
+                    CurrentMainThread.join();
+                    CurrentMainThread = new MainThread();
+                    CurrentMainThread.start();
+                }
             }
-        }
-
-        log.info("执行关闭命令...");
-        Main.Stop = true;
-        log.info("正在卸载所有插件...");
-        PluginLoader.unloadPlugins();
-        log.info("等待插件线程关闭...");
-        PluginThreadPools.awaitShutdown();
-        log.info("正在断开连接...");
-        WebSocketClient.shutdown();
-        log.info("已关闭");
-    }
-
-    static {
-        try {
-            String content = FilePaths.ACCOUNT.read();
-            JSONObject json = JsonUtil.deserialize(content);
-            String token = json.getString("token");
-            if (token == null || token.isEmpty()) {
-                log.error("token为空，请先设置token");
-                throw new IllegalArgumentException("token为空，请先设置token");
-            }
-            Api.setToken(token);
-            WebSocketClient = new WebSocketClientImpl(token);
-        } catch (Throwable e) {
-            log.error("初始化失败!", e);
-            throw new RuntimeException(e);
         }
     }
 
-    public static void tryConnect() throws InterruptedException {
-        log.info("正在连接到服务器...");
-        Connecting = true;
-        while (Main.isRunning()) {
-            if (WebSocketClient.getReadyState() == ReadyState.NOT_YET_CONNECTED ?
-                    WebSocketClient.connectBlocking() :
-                    WebSocketClient.reconnectBlocking()
-            ) {
-                break;
-            }
-            log.warn("连接失败, 将在 3 秒后重试...");
-            TimeUnit.SECONDS.sleep(3);
-        }
-        Connecting = false;
-        if (!Main.isRunning()) {
-            log.info("程序关闭中, 停止连接");
+    private static void sendAppSignal(SignalType signal) throws InterruptedException {
+        while (!CurrentMainThread.signals.offer(signal)) {
+            TimeUnit.MICROSECONDS.sleep(100);
         }
     }
 
@@ -120,11 +74,103 @@ public class Main {
     }
 
     public static boolean isConnecting() {
-        return Connecting;
+        return CurrentMainThread.connecting;
     }
 
     public static boolean isRunning() {
-        return !Stop;
+        return !CurrentMainThread.stop;
+    }
+
+    private static class MainThread extends Thread {
+        private static final Logger log = LoggerFactory.getLogger("Console");
+        private final WebSocketClientImpl wsc;
+        private final BlockingQueue<SignalType> signals;
+        private volatile boolean stop;
+        private volatile boolean connecting;
+
+        public MainThread() throws Exception {
+            try {
+                String content = FilePaths.ACCOUNT.read();
+                JSONObject json = JsonUtil.deserialize(content);
+                String token = json.getString("token");
+                if (token == null || token.isEmpty()) {
+                    log.error("token为空，请先设置token");
+                    throw new IllegalArgumentException("token为空，请先设置token");
+                }
+                Api.setToken(token);
+                this.wsc = new WebSocketClientImpl(token);
+            } catch (Throwable e) {
+                log.error("初始化失败!", e);
+                throw e;
+            }
+            this.stop = false;
+            this.connecting = false;
+            this.signals = new LinkedBlockingQueue<>();
+        }
+
+        private void runApp() throws InterruptedException {
+            log.info("初始化文件系统...");
+            FilePaths.init();
+            log.info("初始化权限系统...");
+            PermissionManager.init();
+            log.info("初始化插件系统...");
+            PluginThreadPools.init();
+            log.info("正在加载插件...");
+            PluginLoader.loadPlugins();
+
+            this.tryConnect();
+
+            PluginLoader.onStarted();
+
+            running:
+            while (true) {
+                switch (signals.take()) {
+                    case STOP -> {
+                        break running;
+                    }
+                    case RE_CONNECT -> this.tryConnect();
+                }
+            }
+
+            log.info("执行关闭命令...");
+            this.stop = true;
+            log.info("正在卸载所有插件...");
+            PluginLoader.unloadPlugins();
+            log.info("等待插件线程关闭...");
+            PluginThreadPools.awaitShutdown();
+            log.info("正在断开连接...");
+            this.wsc.shutdown();
+            log.info("已关闭");
+        }
+
+        private void tryConnect() throws InterruptedException {
+            log.info("正在连接到服务器...");
+            this.connecting = true;
+            while (!this.stop) {
+                if (this.wsc.getReadyState() == ReadyState.NOT_YET_CONNECTED ?
+                        this.wsc.connectBlocking() :
+                        this.wsc.reconnectBlocking()
+                ) {
+                    break;
+                }
+                log.warn("连接失败, 将在 3 秒后重试...");
+                TimeUnit.SECONDS.sleep(3);
+            }
+            this.connecting = false;
+            if (this.stop) {
+                log.info("程序关闭中, 停止连接");
+            }
+        }
+
+        @Override
+        public void run() {
+            try {
+                this.runApp();
+            } catch (InterruptedException e) {
+                Main.sendSignal(SignalType.STOP);
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

@@ -14,8 +14,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public final class PluginThreadPools {
-    private static final ExecutorService Executor = Executors.newCachedThreadPool();
+    private static ExecutorService Executor;
     private static final Map<String, PluginThread> Threads = new ConcurrentHashMap<>();
+
+    public static void init() {
+        Executor = Executors.newCachedThreadPool();
+    }
 
     public static synchronized void execute(String pluginId, Runnable runnable) {
         PluginThread thread = Threads.get(pluginId);
@@ -46,6 +50,7 @@ public final class PluginThreadPools {
                     }
                 }
                 PluginContext.PluginData data = PluginContext.removePlugin(pluginId);
+                Threads.remove(pluginId);
                 if (data == null || data.loader() == null) return;
                 try {
                     data.loader().close();
@@ -104,7 +109,7 @@ public final class PluginThreadPools {
             if (this.running) {
                 tasks.offer(task);
             } else {
-                log.warn("Plugin thread is still running");
+                log.warn("Plugin thread is closed");
             }
         }
 

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public enum SignalType {
     STOP(AppStopEvent::new),
-    RESTART, //TODO 未实现
+    RESTART,
     RE_CONNECT(AppReconnectEvent::new),
     ;
 
