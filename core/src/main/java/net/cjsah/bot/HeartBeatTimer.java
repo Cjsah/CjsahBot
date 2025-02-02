@@ -17,24 +17,23 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HeartBeatTimer {
     private static final Logger log = LoggerFactory.getLogger(HeartBeatTimer.class);
     private final Scheduler scheduler;
-    private final AtomicInteger count;
     private final JobDataMap jobMap;
-    private final Runnable heartTask;
-    private final Runnable failTask;
+    private final AtomicInteger count;
+    private final AtomicBoolean hearted;
 
-    public HeartBeatTimer(Runnable heart, Runnable fail) throws SchedulerException {
+    public HeartBeatTimer() throws SchedulerException {
         SchedulerFactory factory = new StdSchedulerFactory();
         this.scheduler = factory.getScheduler();
         this.count = new AtomicInteger(0);
         this.jobMap = new JobDataMap();
         this.jobMap.put("this", this);
-        this.heartTask = heart;
-        this.failTask = fail;
+        this.hearted = new AtomicBoolean(false);
     }
 
     public void start() throws SchedulerException {
@@ -50,6 +49,7 @@ public class HeartBeatTimer {
                 .build();
         this.scheduler.scheduleJob(job, trigger);
         this.count.set(0);
+        this.hearted.set(false);
         if (!this.scheduler.isStarted()) {
             this.scheduler.start();
         }
@@ -67,12 +67,16 @@ public class HeartBeatTimer {
         }
     }
 
-    private synchronized void heartPing() {
-        this.heartTask.run();
-        int count = this.count.incrementAndGet();
-        if (count >= 3) {
+    public void heart() {
+        this.hearted.set(true);
+    }
+
+    private synchronized void heartCheck() {
+        if (this.hearted.get()) {
+            this.count.set(0);
+        } else if (this.count.incrementAndGet() >= 3) {
             this.stop();
-            this.failTask.run();
+            Main.sendSignal(SignalType.RE_CONNECT);
         }
     }
 
@@ -84,16 +88,12 @@ public class HeartBeatTimer {
         }
     }
 
-    public synchronized void heartPong() {
-        this.count.set(0);
-    }
-
     public static class HeartBeatJob implements Job {
         @Override
         public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             HeartBeatTimer timer = (HeartBeatTimer) map.get("this");
-            timer.heartPing();
+            timer.heartCheck();
         }
     }
 }

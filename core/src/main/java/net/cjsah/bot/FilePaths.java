@@ -17,7 +17,7 @@ public final class FilePaths {
 
     public static final Path PLUGIN = regPath("plugins");
     public static final Path CONFIG = regPath("config");
-    public static final AppFile ACCOUNT = regFile("account.json", "{\"token\":\"\"}");
+    public static final AppFile ACCOUNT = regFile("account.json", "{\"url\":\"\",\"token\":\"\"}");
     public static final AppFile PERMISSION = regFile(CONFIG.resolve("permission.json"), "{\"global\":[],\"plugins\":[],\"commands\":[]}");
 
     public static Path regPath(String path) {

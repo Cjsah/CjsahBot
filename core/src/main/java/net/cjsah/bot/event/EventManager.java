@@ -1,6 +1,8 @@
 package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.event.events.Event;
+import net.cjsah.bot.event.type.PostType;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
@@ -128,6 +130,7 @@ public final class EventManager {
     public static <T extends Event> void broadcast(@Nullable T event) {
         // 检查事件对象是否为null
         if (event == null) return;
+        log.debug("触发事件: {}", event);
 
         // 使用并行流过滤并执行匹配的事件处理函数
         events.stream().parallel().filter(it -> it.event.isAssignableFrom(event.getClass())).forEach(it -> {
@@ -145,17 +148,9 @@ public final class EventManager {
     }
 
     public static void parseEvent(JSONObject raw) {
-        String type = raw.getString("type");
-        EventType eventType = EventType.getByType(type);
-        if (eventType == null) {
-            log.warn("Unknown event type: {}, {}", type, raw);
-            return;
-        }
-        JSONObject data = raw.getJSONObject("data");
-        Event event = eventType.getFactory().apply(data);
+        Event event = PostType.toEvent(raw);
         EventManager.broadcast(event);
     }
-
 
     record EventNode<T extends Event>(String pluginId, Class<T> event, Consumer<T> handler) {
     }

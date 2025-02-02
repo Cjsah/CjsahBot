@@ -1,4 +1,4 @@
-rootProject.name = "HeyBoxBotConsole"
+rootProject.name = "QQNTBotConsole"
 include 'api'
 include 'core'
-include 'TestPlugin'
+include 'McPlugin'

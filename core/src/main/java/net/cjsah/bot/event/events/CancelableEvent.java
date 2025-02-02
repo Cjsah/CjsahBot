@@ -1,4 +1,4 @@
-package net.cjsah.bot.event;
+package net.cjsah.bot.event.events;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

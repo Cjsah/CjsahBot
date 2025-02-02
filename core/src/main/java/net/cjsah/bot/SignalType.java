@@ -1,6 +1,6 @@
 package net.cjsah.bot;
 
-import net.cjsah.bot.event.CancelableEvent;
+import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.events.AppReconnectEvent;
 import net.cjsah.bot.event.events.AppStopEvent;
 

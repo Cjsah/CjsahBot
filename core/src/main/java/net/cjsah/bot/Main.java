@@ -1,8 +1,9 @@
 package net.cjsah.bot;
 
+import cn.hutool.core.lang.Validator;
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.Api;
-import net.cjsah.bot.event.CancelableEvent;
+import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginLoader;
@@ -92,13 +93,18 @@ public class Main {
             try {
                 String content = FilePaths.ACCOUNT.read();
                 JSONObject json = JsonUtil.deserialize(content);
+                String url = json.getString("url");
                 String token = json.getString("token");
-                if (token == null || token.isEmpty()) {
+                if (Validator.isEmpty(url)) {
+                    log.error("url为空，请先设置url");
+                    throw new IllegalArgumentException("url为空，请先设置url");
+                }
+                if (Validator.isEmpty(token)) {
                     log.error("token为空，请先设置token");
                     throw new IllegalArgumentException("token为空，请先设置token");
                 }
                 Api.setToken(token);
-                this.wsc = new WebSocketClientImpl(token);
+                this.wsc = new WebSocketClientImpl(url, token);
             } catch (Throwable e) {
                 log.error("初始化失败!", e);
                 throw e;

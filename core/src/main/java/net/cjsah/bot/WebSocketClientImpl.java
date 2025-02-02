@@ -15,22 +15,10 @@ import java.net.URISyntaxException;
 
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
-    private final HeartBeatTimer heart;
+    private final HeartBeatTimer heart = new HeartBeatTimer();
 
-    public WebSocketClientImpl(String token) throws URISyntaxException, SchedulerException {
-        super(new URI("wss://chat.xiaoheihe.cn/chatroom/ws/connect?chat_os_type=bot"));
-        this.addHeader("client_type", "heybox_chat");
-        this.addHeader("x_client_type", "web");
-        this.addHeader("os_type", "web");
-        this.addHeader("x_os_type", "bot");
-        this.addHeader("x_app", "heybox_chat");
-        this.addHeader("chat_version", "1.24.5");
-        this.addHeader("token", token);
-        this.heart = new HeartBeatTimer(() -> {
-            if (this.isOpen()) {
-                this.send("PING");
-            }
-        }, () -> Main.sendSignal(SignalType.RE_CONNECT));
+    public WebSocketClientImpl(String url, String token) throws URISyntaxException, SchedulerException {
+        super(new URI(url + "?access_token=" + token));
     }
 
     @Override
@@ -58,10 +46,6 @@ public final class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onMessage(String msg) {
         log.debug("收到消息: {}", msg);
-        if ("PONG".equals(msg)) {
-            this.heart.heartPong();
-            return;
-        }
         try {
             JSONObject json = JsonUtil.deserialize(msg);
             EventManager.parseEvent(json);

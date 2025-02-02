@@ -5,7 +5,6 @@ import net.cjsah.bot.data.ChannelInfo;
 import net.cjsah.bot.data.CommandInfo;
 import net.cjsah.bot.data.RoomInfo;
 import net.cjsah.bot.data.UserInfo;
-import net.cjsah.bot.event.Event;
 
 public class CommandEvent extends Event {
     private final int botId;
