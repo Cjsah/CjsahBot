@@ -2,8 +2,13 @@ package net.cjsah.bot.event.type;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.events.Event;
+import net.cjsah.bot.event.events.FriendAppendedEvent;
+import net.cjsah.bot.event.events.FriendRecallEvent;
+import net.cjsah.bot.event.events.GroupMemberJoinEvent;
+import net.cjsah.bot.event.events.GroupMemberLeaveEvent;
+import net.cjsah.bot.event.events.GroupMuteEvent;
+import net.cjsah.bot.event.events.GroupRecallEvent;
 import net.cjsah.bot.event.events.GroupUploadEvent;
-import net.cjsah.bot.event.events.LifecycleEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +20,12 @@ import java.util.function.Function;
 public enum NoticeEventType {
     GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
     GROUP_ADMIN("group_admin", GroupAdminChangeEventType::toEvent),
-    GROUP_DECREASE("group_decrease", LifecycleEvent::new),
-    GROUP_INCREASE("group_increase", LifecycleEvent::new),
-    GROUP_BAN("group_ban", LifecycleEvent::new),
-    FRIEND_ADD("friend_add", LifecycleEvent::new),
-    GROUP_RECALL("group_recall", LifecycleEvent::new),
-    FRIEND_RECALL("friend_recall", LifecycleEvent::new),
+    GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent::new),
+    GROUP_INCREASE("group_increase", GroupMemberJoinEvent::new),
+    GROUP_BAN("group_ban", GroupMuteEvent::new),
+    FRIEND_ADD("friend_add", FriendAppendedEvent::new),
+    GROUP_RECALL("group_recall", GroupRecallEvent::new),
+    FRIEND_RECALL("friend_recall", FriendRecallEvent::new),
     NOTIFY("notify", NotifyEventType::toEvent),
     ;
 
