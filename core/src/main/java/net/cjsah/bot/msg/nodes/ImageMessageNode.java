@@ -49,9 +49,7 @@ public class ImageMessageNode extends MessageNode {
     public String toString() {
         return this.toString("image", Map.of(
                 "file", this.file,
-                "flash", this.isFlash,
-                "url", this.url,
-                "local", this.local
+                "flash", this.isFlash
         ));
     }
 
