@@ -1,0 +1,27 @@
+package net.cjsah.bot.msg.nodes;
+
+import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.msg.MessageNodeType;
+
+public class XMLMessageNode extends MessageNode {
+    private final String xml;
+
+    public XMLMessageNode(String xml) {
+        super(MessageNodeType.XML);
+        this.xml = xml;
+    }
+
+    public XMLMessageNode(JSONObject json) {
+        this(json.getString("data"));
+    }
+
+    @Override
+    public void serializeData(JSONObject json) {
+        json.put("data", this.xml);
+    }
+
+    @Override
+    public String toString() {
+        return this.toString("xml", this.xml);
+    }
+}

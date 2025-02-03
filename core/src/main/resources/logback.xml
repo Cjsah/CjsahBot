@@ -38,7 +38,7 @@
     <!--    <logger name="net.cjsah" level="debug" />-->
 
     <!--系统操作日志-->
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="console" />
         <appender-ref ref="file_console" />
     </root>

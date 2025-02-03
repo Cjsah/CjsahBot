@@ -32,6 +32,11 @@ public final class WebSocketClientImpl extends WebSocketClient {
         this.heart.cancel();
     }
 
+    public void lifecycle(boolean heart, long addition) {
+        if (heart) this.heart.heart(addition);
+        else this.heart.lifecycle();
+    }
+
     @Override
     public void onOpen(ServerHandshake handshake) {
         log.info("连接成功!");
@@ -39,6 +44,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
             this.heart.start();
         } catch (SchedulerException e) {
             log.error("无法启动心跳服务!", e);
+            this.heart.stop();
             Main.sendSignal(SignalType.RE_CONNECT);
         }
     }

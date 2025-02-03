@@ -4,19 +4,14 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.MemeData;
-import net.cjsah.bot.data.RoleInfo;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -47,22 +42,6 @@ public final class Api {
         return res.getJSONObject("result").getString("msg_id");
     }
 
-    public static void sendCardMsg(CardBuilder builder) {
-        Api.sendCardMsg(builder, true);
-    }
-    public static void sendCardMsg(CardBuilder builder, boolean log) {
-        if (log) Api.log.info("[{}] [{}] <== 卡片消息({})", builder.getRoomId(), builder.getChannelId(), builder.getUuid());
-        postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/send", json -> {
-            json.put("channel_type", 1);
-            json.put("msg_type", 20);
-            json.put("room_id", builder.getRoomId());
-            json.put("channel_id", builder.getChannelId());
-            json.put("msg", builder.genMsg());
-            json.put("reply_id", builder.getReplay());
-            json.put("heychat_ack_id", builder.getUuid());
-            json.put("addition", "{}");
-        });
-    }
 
     public static void updateMsg(String msgId, MsgBuilder builder) {
         postJson("https://chat.xiaoheihe.cn/chatroom/v2/channel_msg/update", json -> {
@@ -100,51 +79,6 @@ public final class Api {
         return res.getJSONObject("result").getString("url");
     }
 
-    public static List<RoleInfo> getRoomRoles(String roomId) {
-        JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v2/room_role/roles", map -> map.put("room_id", roomId));
-        return res.getJSONObject("result").getList("roles", JSONObject.class).stream().map(RoleInfo::new).toList();
-    }
-
-    public static RoleInfo createRoomRole(RoomRoleBuilder builder) {
-        JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/create", json -> {
-            json.put("room_id", builder.getRoomId());
-            json.put("name", builder.getName());
-            json.put("icon", builder.getIconUrl());
-            json.put("permissions", builder.getPermissions());
-            json.put("type", 0);
-            json.put("hoist", builder.isHoist());
-            json.put("nonce", builder.getUuid());
-            List<Color> colors = builder.getColors();
-            if (colors.size() == 1) {
-                json.put("color", colors.getFirst().getRGB());
-            } else if (colors.size() > 1) {
-                json.put("color_list", colors);
-            }
-        });
-        return new RoleInfo(res.getJSONObject("result").getJSONObject("role"));
-    }
-
-    public static RoleInfo updateRoomRole(RoomRoleBuilder builder) {
-        JSONObject res = postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/update", json -> {
-            json.put("id", builder.getId());
-            json.put("room_id", builder.getRoomId());
-            json.put("name", builder.getName());
-            json.put("icon", builder.getIconUrl());
-            json.put("permissions", builder.getPermissions());
-            json.put("type", 0);
-            json.put("position", builder.getPosition());
-            json.put("hoist", builder.isHoist());
-            json.put("nonce", builder.getUuid());
-            List<Color> colors = builder.getColors();
-            if (colors.size() == 1) {
-                json.put("color", colors.getFirst().getRGB());
-            } else if (colors.size() > 1) {
-                json.put("color_list", colors);
-            }
-        });
-        return new RoleInfo(res.getJSONObject("result").getJSONObject("role"));
-    }
-
     public static void deleteRoomRole(String roleId, String roomId) {
         postJson("https://chat.xiaoheihe.cn/chatroom/v2/room_role/delete", json -> {
             json.put("role_id", roleId);
@@ -166,21 +100,6 @@ public final class Api {
             json.put("role_id", roleId);
             json.put("room_id", roomId);
         });
-    }
-
-    public static List<MemeData> getMemeList(String roomId) {
-        JSONObject res = get("https://chat.xiaoheihe.cn/chatroom/v3/msg/meme/room/list", form -> form.put("room_id", roomId));
-        JSONObject data = res.getJSONObject("result");
-        List<MemeData> results = new ArrayList<>();
-        appendToList(results, data, "emoji");
-        appendToList(results, data, "sticker");
-        return results;
-    }
-
-    private static void appendToList(List<MemeData> results, JSONObject json, String key) {
-        List<JSONObject> array = json.getList(key, JSONObject.class);
-        if (array == null || array.isEmpty()) return;
-        results.addAll(array.stream().map(MemeData::new).toList());
     }
 
     public static void deleteMeme(String roomId, String path) {

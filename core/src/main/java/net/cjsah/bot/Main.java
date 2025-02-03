@@ -82,6 +82,10 @@ public class Main {
         return !CurrentMainThread.stop;
     }
 
+    public static void lifecycle(boolean heart, long addition) {
+        CurrentMainThread.wsc.lifecycle(heart, addition);
+    }
+
     private static class MainThread extends Thread {
         private static final Logger log = LoggerFactory.getLogger("Console");
         private final WebSocketClientImpl wsc;

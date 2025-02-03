@@ -37,11 +37,11 @@ public class CrawlerPlugin extends Plugin {
 
     @Command("/jrrp")
     public static void jrrp(CommandSource source) {
-        long sender = source.sender().getSenderInfo().getId();
-        String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
-        Random random = new Random(date.hashCode() + sender);
-        int rp = random.nextInt(101);
-        source.sendFeedback("@{id:" + sender + "} 您今日的人品值为: " + rp);
+//        long sender = source.sender().getSenderInfo().getId();
+//        String date = DateUtil.format(DateUtil.now(),"yyyy-MM-dd");
+//        Random random = new Random(date.hashCode() + sender);
+//        int rp = random.nextInt(101);
+//        source.sendFeedback("@{id:" + sender + "} 您今日的人品值为: " + rp);
     }
 
     @Command("/mcv")

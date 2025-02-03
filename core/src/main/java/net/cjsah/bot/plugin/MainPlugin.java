@@ -7,6 +7,8 @@ import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CommandEvent;
+import net.cjsah.bot.event.events.HeartbeatEvent;
+import net.cjsah.bot.event.events.LifecycleEvent;
 import net.cjsah.bot.permission.HeyboxPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +34,23 @@ public final class MainPlugin extends Plugin {
 //        EventManager.subscribe(pluginId, MessageEmojiPinEvent.class, event -> {
 //            log.info("{} {} {} {}", event.getUserId(), event.getEmoji(), event.getChannelId(), event.getMsgId());
 //        });
-//
+
+        EventManager.subscribe(pluginId, LifecycleEvent.class, event -> {
+            if (event.getStatus() == LifecycleEvent.Status.CONNECT) {
+                Main.lifecycle(false, 0);
+            }
+        });
+
+        EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> Main.lifecycle(true, event.getInterval()));
+
         EventManager.subscribe(pluginId, CommandEvent.class, event -> {
-            log.info("[{}({})] [{}({})] [{}({})] ==> 触发命令: /{}",
-                    event.getRoomInfo().getName(),
-                    event.getRoomInfo().getId(),
-                    event.getChannelInfo().getName(),
-                    event.getChannelInfo().getId(),
-                    event.getSenderInfo().getNickname(),
-                    event.getSenderInfo().getId(),
-                    event.getCommandInfo().getCommand()
-            );
+//            log.info("[{}({})] [{}({})] ==> 触发命令: /{}",
+//                    event.getRoomInfo().getName(),
+//                    event.getRoomInfo().getId(),
+//                    event.getSenderInfo().getNickname(),
+//                    event.getSenderInfo().getId(),
+//                    event.getCommandInfo().getCommand()
+//            );
             CommandSource source = new CommandSource(event);
             CommandManager.execute(event.getCommandInfo(), source);
         });
