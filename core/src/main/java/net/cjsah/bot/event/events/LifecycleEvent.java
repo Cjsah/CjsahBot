@@ -1,14 +1,14 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.util.EnumUtil;
 
 public class LifecycleEvent extends BotEvent {
     private final Status status;
 
     public LifecycleEvent(JSONObject raw) {
         super(raw);
-        String subType = raw.getString("sub_type");
-        this.status = Status.valueOf(subType.toUpperCase());
+        this.status = EnumUtil.ofName(Status.class, raw.getString("sub_type"));
     }
 
     public Status getStatus() {

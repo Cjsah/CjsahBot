@@ -10,8 +10,10 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
