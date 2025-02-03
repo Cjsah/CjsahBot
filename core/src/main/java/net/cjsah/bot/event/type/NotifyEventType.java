@@ -2,7 +2,6 @@ package net.cjsah.bot.event.type;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.events.GroupUploadEvent;
 import net.cjsah.bot.event.events.LifecycleEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -12,21 +11,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public enum NoticeEventType {
-    GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
-    GROUP_ADMIN("group_admin", GroupAdminChangeEventType::toEvent),
-    GROUP_DECREASE("group_decrease", LifecycleEvent::new),
-    GROUP_INCREASE("group_increase", LifecycleEvent::new),
-    GROUP_BAN("group_ban", LifecycleEvent::new),
-    FRIEND_ADD("friend_add", LifecycleEvent::new),
-    GROUP_RECALL("group_recall", LifecycleEvent::new),
-    FRIEND_RECALL("friend_recall", LifecycleEvent::new),
-    NOTIFY("notify", NotifyEventType::toEvent),
+public enum NotifyEventType {
+    POKE("poke", LifecycleEvent::new),
+    LUCKY_KING("lucky_king", LifecycleEvent::new),
+    HONOR("honor", LifecycleEvent::new),
     ;
 
     private static final Logger log = LoggerFactory.getLogger("EventManager");
 
-    NoticeEventType(String type, Function<JSONObject, Event> handler) {
+    NotifyEventType(String type, Function<JSONObject, Event> handler) {
         this.type = type;
         this.handler = handler;
         InnerClass.TYPE_MAP.put(type, this);
@@ -42,13 +35,13 @@ public enum NoticeEventType {
     @Nullable
     public static Event toEvent(JSONObject raw) {
         String typeKey = raw.getString("notice_type");
-        NoticeEventType type = InnerClass.TYPE_MAP.get(typeKey);
+        NotifyEventType type = InnerClass.TYPE_MAP.get(typeKey);
         if (type != null) return type.handler.apply(raw);
         log.warn("Unknown event type: {}, {}", typeKey, raw);
         return null;
     }
 
     private static class InnerClass {
-        private static final Map<String, NoticeEventType> TYPE_MAP = new HashMap<>();
+        private static final Map<String, NotifyEventType> TYPE_MAP = new HashMap<>();
     }
 }
