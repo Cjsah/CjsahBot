@@ -40,18 +40,4 @@ public class GroupUserData extends UserData {
         return this.title;
     }
 
-    @Override
-    public String toString() {
-        return "GroupUserData{" +
-                "userId=" + userId +
-                ", nickname='" + nickname + '\'' +
-                ", sex=" + sex +
-                ", age=" + age +
-                ", card='" + card + '\'' +
-                ", area='" + area + '\'' +
-                ", level='" + level + '\'' +
-                ", role='" + role + '\'' +
-                ", title='" + title + '\'' +
-                '}';
-    }
 }

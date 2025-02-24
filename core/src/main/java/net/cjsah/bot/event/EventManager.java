@@ -2,7 +2,7 @@ package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.type.PostType;
+import net.cjsah.bot.event.type.Opcode;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
@@ -16,12 +16,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public final class EventManager {
     private static final Logger log = LoggerFactory.getLogger("EventManager");
 
     private static final List<EventNode<?>> events = new ArrayList<>();
+    private static final AtomicInteger eventNumber = new AtomicInteger(-1);
 
     /**
      * 订阅给定类型的事件。
@@ -119,6 +121,9 @@ public final class EventManager {
         events.removeIf(it -> Objects.equals(it.pluginId, info.getId()) && it.event == event);
     }
 
+    public static void unsubscribeAll() {
+        events.clear();
+    }
 
     /**
      * 广播事件
@@ -148,8 +153,18 @@ public final class EventManager {
     }
 
     public static void parseEvent(JSONObject raw) {
-        Event event = PostType.toEvent(raw);
+        int s = raw.getIntValue("s");
+        if (s != 0) updateEventNum(s);
+        Event event = Opcode.toEvent(raw);
         EventManager.broadcast(event);
+    }
+
+    private static void updateEventNum(int num) {
+        eventNumber.set(num);
+    }
+
+    public static int getEventNum() {
+        return eventNumber.get();
     }
 
     record EventNode<T extends Event>(String pluginId, Class<T> event, Consumer<T> handler) {

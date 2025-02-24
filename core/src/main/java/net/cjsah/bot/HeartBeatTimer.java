@@ -1,5 +1,7 @@
 package net.cjsah.bot;
 
+import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.event.type.Opcode;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -17,43 +19,29 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class HeartBeatTimer {
-    private static final Logger log = LoggerFactory.getLogger(HeartBeatTimer.class);
+    private static final Logger log = LoggerFactory.getLogger("HeartBeat");
     private final Scheduler scheduler;
+    private final Consumer<JSONObject> sendFunc;
     private final AtomicInteger count;
-    private final AtomicBoolean lifecycle;
     private final JobDataMap jobMap;
+    private long heartTime;
 
-    public HeartBeatTimer() throws SchedulerException {
+    public HeartBeatTimer(Consumer<JSONObject> send) throws SchedulerException {
         SchedulerFactory factory = new StdSchedulerFactory();
         this.scheduler = factory.getScheduler();
         this.count = new AtomicInteger(0);
-        this.lifecycle = new AtomicBoolean(false);
         this.jobMap = new JobDataMap();
         this.jobMap.put("this", this);
+        this.sendFunc = send;
+        this.heartTime = 0;
     }
 
-    private void waitLifeCycle() throws SchedulerException {
-        if (lifecycle.get()) return;
-        JobDetail job = JobBuilder
-                .newJob(LifeCycleJob.class)
-                .withIdentity("Job", "LifeCycle")
-                .usingJobData(this.jobMap)
-                .build();
-        Trigger trigger = TriggerBuilder
-                .newTrigger()
-                .withIdentity("Trigger", "LifeCycle")
-                .startAt(new Date(System.currentTimeMillis() + 3000L))
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
-                .build();
-        this.scheduler.scheduleJob(job, trigger);
-    }
-
-    private void appendHeartJob(long time) throws SchedulerException {
+    public void start() throws SchedulerException {
+        log.debug("正在启动心跳服务...");
         TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
         JobKey jobKey = new JobKey("Job", "Heart");
         JobDetail job = JobBuilder
@@ -64,16 +52,11 @@ public class HeartBeatTimer {
         Trigger trigger = TriggerBuilder
                 .newTrigger()
                 .withIdentity(triggerKey)
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(time).repeatForever())
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(this.heartTime).repeatForever())
                 .build();
         this.scheduler.pauseTrigger(triggerKey);
         this.scheduler.deleteJob(jobKey);
         this.scheduler.scheduleJob(job, trigger);
-    }
-
-    public void start() throws SchedulerException {
-        this.waitLifeCycle();
-        this.appendHeartJob(30000L);
         this.count.set(0);
         if (!this.scheduler.isStarted()) {
             this.scheduler.start();
@@ -83,39 +66,32 @@ public class HeartBeatTimer {
     public synchronized void stop() {
         TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
         JobKey heartJobKey = new JobKey("Job", "Heart");
-        JobKey lifecycleJobKey = new JobKey("Job", "LifeCycle");
         try {
             this.scheduler.pauseTrigger(triggerKey);
-            this.scheduler.deleteJob(lifecycleJobKey);
             this.scheduler.deleteJob(heartJobKey);
         } catch (SchedulerException e) {
             log.error("Error stopping heartbeat timer", e);
         }
     }
 
-    public void lifecycle() {
-        this.lifecycle.set(true);
-        try {
-            JobKey jobKey = new JobKey("Job", "LifeCycle");
-            this.scheduler.deleteJob(jobKey);
-        } catch (SchedulerException e) {
-            log.error("Error stopping lifeCycle timer", e);
-        }
+    public void setHeartTime(long time) {
+        this.heartTime = time;
     }
 
-    public void heart(long nextTime) {
-        try {
-            this.appendHeartJob(nextTime + 1000L);
-            this.count.set(0);
-        } catch (SchedulerException e) {
-            log.error("Error stopping lifeCycle timer", e);
-        }
+    public synchronized void hearted() {
+        log.debug("收到心跳, 当前计数器: {}", this.count.get());
+        this.count.set(0);
     }
 
-    private synchronized void heartCheck() {
+    private synchronized void heartbeat() {
+        log.debug("发送心跳, 当前计数器: {}", this.count.get());
         if (this.count.incrementAndGet() >= 3) {
+            log.warn("连接断开: 心跳超时");
             this.stop();
             Main.sendSignal(SignalType.RE_CONNECT);
+        } else {
+            JSONObject payload = Opcode.HEARTBEAT.generate(true, null);
+            this.sendFunc.accept(payload);
         }
     }
 
@@ -132,19 +108,7 @@ public class HeartBeatTimer {
         public void execute(JobExecutionContext context) {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             HeartBeatTimer timer = (HeartBeatTimer) map.get("this");
-            timer.heartCheck();
-        }
-    }
-
-    public static class LifeCycleJob implements Job {
-        @Override
-        public void execute(JobExecutionContext context) {
-            JobDataMap map = context.getJobDetail().getJobDataMap();
-            HeartBeatTimer timer = (HeartBeatTimer) map.get("this");
-            if (timer.lifecycle.get()) return;
-            log.warn("未收到生命周期事件, 连接已丢失.");
-            timer.stop();
-            Main.sendSignal(SignalType.RE_CONNECT);
+            timer.heartbeat();
         }
     }
 }

@@ -5,41 +5,46 @@ import net.cjsah.bot.data.enums.Sex;
 import net.cjsah.bot.util.EnumUtil;
 
 public class UserData {
-    protected final long userId;
-    protected final String nickname;
-    protected final Sex sex;
-    protected final int age;
+    protected final String id;
+    protected final String username;
+    protected final String avatar;
+    protected final boolean bot;
+    protected final String unionOpenid;
+    protected final String unionUserAccount;
+
 
     public UserData(JSONObject raw) {
-        this.userId = raw.getLongValue("user_id");
-        this.nickname = raw.getString("nickname");
-        this.sex = EnumUtil.ofName(Sex.class, raw.getString("sex"), Sex.UNKNOWN);
-        this.age = raw.getIntValue("age");
+        this.id = raw.getString("id");
+        this.username = raw.getString("username");
+        this.avatar = raw.getString("avatar");
+        this.bot = raw.getBooleanValue("bot");
+        this.unionOpenid = raw.getString("union_openid");
+        this.unionUserAccount = raw.getString("union_user_account");
     }
 
-    public long getUserId() {
-        return this.userId;
+    public String getId() {
+        return this.id;
     }
 
-    public String getNickname() {
-        return this.nickname;
+    public String getUsername() {
+        return this.username;
     }
 
-    public Sex getSex() {
-        return this.sex;
+    public String getAvatar() {
+        return this.avatar;
     }
 
-    public int getAge() {
-        return this.age;
+    public boolean isBot() {
+        return this.bot;
     }
 
     @Override
     public String toString() {
         return "UserData{" +
-                "userId=" + userId +
-                ", nickname='" + nickname + '\'' +
-                ", sex=" + sex +
-                ", age=" + age +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", bot=" + bot +
                 '}';
     }
 }

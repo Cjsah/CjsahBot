@@ -35,10 +35,10 @@
 
     <logger name="*" level="info"/>
     <logger name="org.quartz" level="warn"/>
-    <!--    <logger name="net.cjsah" level="debug" />-->
+<!--    <logger name="net.cjsah" level="debug" />-->
 
     <!--系统操作日志-->
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="console" />
         <appender-ref ref="file_console" />
     </root>

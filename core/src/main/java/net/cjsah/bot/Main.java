@@ -2,13 +2,13 @@ package net.cjsah.bot;
 
 import cn.hutool.core.lang.Validator;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginLoader;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.JsonUtil;
+import net.cjsah.bot.util.RequestUtil;
 import org.java_websocket.enums.ReadyState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
     private static volatile MainThread CurrentMainThread;
+    private static final String url = "https://sandbox.api.sgroup.qq.com";
 
     public static void main(String[] args) throws Exception {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -82,10 +83,6 @@ public class Main {
         return !CurrentMainThread.stop;
     }
 
-    public static void lifecycle(boolean heart, long addition) {
-        CurrentMainThread.wsc.lifecycle(heart, addition);
-    }
-
     private static class MainThread extends Thread {
         private static final Logger log = LoggerFactory.getLogger("Console");
         private final WebSocketClientImpl wsc;
@@ -97,18 +94,19 @@ public class Main {
             try {
                 String content = FilePaths.ACCOUNT.read();
                 JSONObject json = JsonUtil.deserialize(content);
-                String url = json.getString("url");
-                String token = json.getString("token");
-                if (Validator.isEmpty(url)) {
-                    log.error("url为空，请先设置url");
-                    throw new IllegalArgumentException("url为空，请先设置url");
+                String appId = json.getString("appId");
+                String secret = json.getString("secret");
+                if (Validator.isEmpty(appId)) {
+                    log.error("appId为空，请先设置appId");
+                    throw new IllegalArgumentException("appId为空，请先设置appId");
                 }
-                if (Validator.isEmpty(token)) {
-                    log.error("token为空，请先设置token");
-                    throw new IllegalArgumentException("token为空，请先设置token");
+                if (Validator.isEmpty(secret)) {
+                    log.error("secret为空，请先设置secret");
+                    throw new IllegalArgumentException("secret为空，请先设置secret");
                 }
-                Api.setToken(token);
-                this.wsc = new WebSocketClientImpl(url, token);
+                String token = "Bot %s.%s".formatted(appId, secret);
+                JSONObject body = RequestUtil.request(RequestUtil.get(Main.url + "/gateway").header("Authorization", token));
+                this.wsc = new WebSocketClientImpl(body.getString("url"), token);
             } catch (Throwable e) {
                 log.error("初始化失败!", e);
                 throw e;
@@ -150,6 +148,8 @@ public class Main {
             PluginThreadPools.awaitShutdown();
             log.info("正在断开连接...");
             this.wsc.shutdown();
+            log.info("正在取消注册所有事件...");
+            EventManager.unsubscribeAll();
             log.info("已关闭");
         }
 
@@ -181,6 +181,8 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
+
+
     }
 
 }

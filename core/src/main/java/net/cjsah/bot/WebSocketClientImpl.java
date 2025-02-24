@@ -2,6 +2,11 @@ package net.cjsah.bot;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.ConnectionHelloEvent;
+import net.cjsah.bot.event.events.ConnectionReadyEvent;
+import net.cjsah.bot.event.events.HeartbeatEvent;
+import net.cjsah.bot.event.type.Opcode;
+import net.cjsah.bot.plugin.MainPlugin;
 import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
@@ -10,45 +15,70 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
-    private final HeartBeatTimer heart = new HeartBeatTimer();
+    private final HeartBeatTimer heart = new HeartBeatTimer(this::sendMsg);
 
     public WebSocketClientImpl(String url, String token) throws URISyntaxException, SchedulerException {
-        super(new URI(url + "?access_token=" + token));
+        super(new URI(url));
+        String pluginId = MainPlugin.PLUGIN_INFO.getId();
+        EventManager.subscribe(pluginId, ConnectionHelloEvent.class, event -> {
+            log.info("正在进行鉴权认证...");
+            this.heart.setHeartTime(event.getHeartbeatInterval());
+            JSONObject payload = Opcode.IDENTIFY.generate(false, json -> {
+                json.put("token", token);
+                json.put("intents",
+                        1 << 0 |
+                        1 << 1 |
+//                        1 << 9 |
+                        1 << 10 |
+                        1 << 12 |
+                        1 << 18 |
+                        1 << 19 |
+                        1 << 26 |
+                        1 << 27 |
+//                        1 << 28 |
+                        1 << 29 |
+                        1 << 30
+                );
+            });
+            this.send(payload.toString());
+        });
+        EventManager.subscribe(pluginId, ConnectionReadyEvent.class, event -> { // TODO 如果是resume, 需要记录session
+            try {
+                log.info("连接成功, 正在启动心跳服务...");
+                this.heart.start();
+                log.info("启动成功!");
+            } catch (SchedulerException e) {
+                log.error("无法启动心跳服务!", e);
+                this.heart.stop();
+                Main.sendSignal(SignalType.RE_CONNECT);
+            }
+        });
+        EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> this.heart.hearted());
+    }
+
+    private void sendMsg(JSONObject payload) {
+        this.send(payload.toString());
     }
 
     @Override
     public void close() {
-        super.close();
         this.heart.stop();
+        super.close();
     }
 
     public void shutdown() throws InterruptedException {
-        this.closeBlocking();
         this.heart.cancel();
-    }
-
-    public void lifecycle(boolean heart, long addition) {
-        if (heart) this.heart.heart(addition);
-        else this.heart.lifecycle();
+        this.closeBlocking();
     }
 
     @Override
     public void onOpen(ServerHandshake handshake) {
-        log.info("连接成功!");
-        try {
-            this.heart.start();
-        } catch (SchedulerException e) {
-            log.error("无法启动心跳服务!", e);
-            this.heart.stop();
-            Main.sendSignal(SignalType.RE_CONNECT);
-        }
+        log.info("成功建立连接, 等待下一步操作...");
     }
 
     @Override
@@ -67,7 +97,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
         if (code == CloseFrame.NORMAL) return;
         log.warn("连接断开: [{}]{}", code, reason);
         if (Main.isRunning()) {
-            Main.sendSignal(SignalType.RE_CONNECT);
+            Main.sendSignal(SignalType.STOP);
         }
     }
 
