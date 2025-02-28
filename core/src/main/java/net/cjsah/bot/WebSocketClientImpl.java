@@ -31,17 +31,17 @@ public final class WebSocketClientImpl extends WebSocketClient {
             JSONObject payload = Opcode.IDENTIFY.generate(false, json -> {
                 json.put("token", token);
                 json.put("intents",
-                        1 << 0 |
+//                        1 << 0 |
                         1 << 1 |
 //                        1 << 9 |
                         1 << 10 |
                         1 << 12 |
-                        1 << 18 |
-                        1 << 19 |
+//                        1 << 18 |
+//                        1 << 19 |
                         1 << 26 |
-                        1 << 27 |
+//                        1 << 27 |
 //                        1 << 28 |
-                        1 << 29 |
+//                        1 << 29 |
                         1 << 30
                 );
             });
@@ -62,7 +62,9 @@ public final class WebSocketClientImpl extends WebSocketClient {
     }
 
     private void sendMsg(JSONObject payload) {
-        this.send(payload.toString());
+        String value = payload.toString();
+        log.debug("发送消息: {}", value);
+        this.send(value);
     }
 
     @Override

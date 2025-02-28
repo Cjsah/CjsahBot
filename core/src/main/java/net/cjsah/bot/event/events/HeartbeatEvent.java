@@ -4,4 +4,9 @@ public class HeartbeatEvent extends Event {
 
     public HeartbeatEvent() {
     }
+
+    @Override
+    public String toString() {
+        return "HeartbeatEvent";
+    }
 }
