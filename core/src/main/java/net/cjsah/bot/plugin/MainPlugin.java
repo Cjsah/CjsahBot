@@ -5,6 +5,9 @@ import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.data.CommandInfo;
+import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.HeyboxPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,13 @@ public final class MainPlugin extends Plugin {
         CommandManager.register(MainPlugin.class);
 
         String pluginId = PLUGIN_INFO.getId();
+
+        EventManager.subscribe(pluginId, MessageEvent.class, event -> {
+            String content = event.getContent();
+            if (content.startsWith("/")) {
+                CommandManager.execute(new CommandInfo(content), new CommandSource(event));
+            }
+        });
 
 //        @Deprecated
 //        EventManager.subscribe(pluginId, MessageEvent.class, event ->

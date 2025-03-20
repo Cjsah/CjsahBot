@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class HeartBeatTimer {
+public final class HeartBeatTimer {
     private static final Logger log = LoggerFactory.getLogger("HeartBeat");
     private final Scheduler scheduler;
     private final Consumer<JSONObject> sendFunc;

@@ -7,7 +7,7 @@ import com.alibaba.fastjson2.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 
-public class RequestUtil {
+public final class RequestUtil {
 
     public static HttpRequest get(String url) {
         return request(url, Method.GET);

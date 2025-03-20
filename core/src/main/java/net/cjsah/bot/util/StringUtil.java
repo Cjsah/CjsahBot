@@ -3,7 +3,7 @@ package net.cjsah.bot.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StringUtil {
+public final class StringUtil {
     private static final Map<String, String> NetMap = new HashMap<>();
 
     static {
