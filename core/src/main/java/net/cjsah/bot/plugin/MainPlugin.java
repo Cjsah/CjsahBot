@@ -5,7 +5,6 @@ import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.data.CommandInfo;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.HeyboxPermission;
@@ -28,7 +27,7 @@ public final class MainPlugin extends Plugin {
         EventManager.subscribe(pluginId, MessageEvent.class, event -> {
             String content = event.getContent();
             if (content.startsWith("/")) {
-                CommandManager.execute(new CommandInfo(content), new CommandSource(event));
+                CommandManager.execute(content.substring(1), event.genCommandSource());
             }
         });
 
@@ -65,14 +64,14 @@ public final class MainPlugin extends Plugin {
     }
 
     @Command(value = "/botstop", permissions = HeyboxPermission.ADMIN)
-    public static void botStop(CommandSource source) {
+    public static void botStop(CommandSource<?> source) {
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }
 
     @Command(value = "/test", permissions = HeyboxPermission.ADMIN)
-    public static void test(CommandSource source) {
-        Main.sendSignal(SignalType.RESTART);
+    public static void test(CommandSource<?> source) {
+        source.sendFeedback("test");
     }
 
 }

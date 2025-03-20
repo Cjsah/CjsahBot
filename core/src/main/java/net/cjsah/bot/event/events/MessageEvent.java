@@ -1,12 +1,13 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.data.UserData;
 import net.cjsah.bot.util.DateUtil;
 
 import java.util.List;
 
-public class MessageEvent extends Event {
+public abstract class MessageEvent extends Event {
     private final UserData sender;
     private final String content;
     private final String id;
@@ -20,6 +21,8 @@ public class MessageEvent extends Event {
         this.timestamp = DateUtil.parseRFC3339(raw.getString("timestamp"));
         this.attachments = raw.getList("attachments", JSONObject.class);
     }
+
+    public abstract CommandSource<?> genCommandSource();
 
     public UserData getSender() {
         return this.sender;

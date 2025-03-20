@@ -21,8 +21,9 @@ import java.net.URISyntaxException;
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
     private final HeartBeatTimer heart = new HeartBeatTimer(this::sendMsg);
+    private String token;
 
-    public WebSocketClientImpl(String url, String token) throws URISyntaxException, SchedulerException {
+    public WebSocketClientImpl(String url) throws URISyntaxException, SchedulerException {
         super(new URI(url));
         String pluginId = MainPlugin.PLUGIN_INFO.getId();
         EventManager.subscribe(pluginId, ConnectionHelloEvent.class, event -> {
