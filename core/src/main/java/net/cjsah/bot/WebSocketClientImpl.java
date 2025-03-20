@@ -38,6 +38,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
                         1 << 12 |
 //                        1 << 18 |
 //                        1 << 19 |
+                        1 << 25 |
                         1 << 26 |
 //                        1 << 27 |
 //                        1 << 28 |
