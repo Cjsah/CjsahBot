@@ -153,16 +153,18 @@ public class MainApplication extends Thread {
         String content = FilePaths.ACCOUNT.read();
         JSONObject json = JsonUtil.deserialize(content);
         String appId = json.getString("appId");
+        String token = json.getString("token");
         String secret = json.getString("secret");
         if (Validator.isEmpty(appId)) {
-            log.error("appId为空，请先设置appId");
             throw new IllegalArgumentException("appId为空，请先设置appId");
         }
+        if (Validator.isEmpty(token)) {
+            throw new IllegalArgumentException("token为空，请先设置token");
+        }
         if (Validator.isEmpty(secret)) {
-            log.error("secret为空，请先设置secret");
             throw new IllegalArgumentException("secret为空，请先设置secret");
         }
-        this.wsConnect(appId, secret);
+        this.wsConnect(appId, token);
         this.apiConnect(appId, secret);
     }
 
@@ -195,7 +197,7 @@ public class MainApplication extends Thread {
         JobDataMap map = new JobDataMap();
         map.put("appId", appId);
         map.put("secret", secret);
-        map.put("expires", 0);
+        map.put("expires", 0L);
         JobDetail job = JobBuilder
                 .newJob(ApiTokenRefresherJob.class)
                 .withIdentity(jobKey)
@@ -217,14 +219,21 @@ public class MainApplication extends Thread {
             JobDataMap map = context.getJobDetail().getJobDataMap();
             long expires = map.getLong("expires");
             if (expires > DateUtil.nowTimeStamp() + 30) return;
+            log.info("正在获取API Token...");
             String appId = map.getString("appId");
             String secret = map.getString("secret");
             JSONObject payload = JSONObject.of("appId", appId, "clientSecret", secret);
             JSONObject response = RequestUtil.request(RequestUtil.post("https://bots.qq.com/app/getAppAccessToken").body(payload.toJSONString()));
+            int code = response.getIntValue("code");
+            if (code > 0) {
+                log.error("Token获取失败: [{}]{}", code, response.getString("message"));
+                return;
+            }
             String token = response.getString("access_token");
             expires = response.getLongValue("expires_in") + DateUtil.nowTimeStamp();
             Api.setToken(token);
             map.put("expires", expires);
+            log.info("Token获取成功");
         }
     }
 

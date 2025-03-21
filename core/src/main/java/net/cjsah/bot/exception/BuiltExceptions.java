@@ -31,6 +31,7 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory UNSUPPORTED_TYPE  = new CommandExceptionFactory("不支持的类型: %s");
 
     public static final CustomExceptionFactory<?> REQUEST_FAILED = new CustomExceptionFactory<>("请求失败: %s", RequestException::new);
+    public static final CustomExceptionFactory<?> INVALID_TOKEN = new CustomExceptionFactory<>("Token无效", RequestException::new);
 
     public static final CustomExceptionFactory<?> CONFLICT_PERMISSION = new CustomExceptionFactory<>("%s 与已有权限冲突", PermissionException::new);
     public static final CustomExceptionFactory<?> CONFLICT_MERGE_PERMISSION = new CustomExceptionFactory<>("%s已为 %s模式, 但受到了 %s 数据", PermissionException::new);

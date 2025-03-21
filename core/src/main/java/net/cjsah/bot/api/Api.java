@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "UnusedReturnValue", "DuplicatedCode"})
+@SuppressWarnings("UnusedReturnValue")
 public final class Api {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static String TOKEN = "";
@@ -27,15 +27,13 @@ public final class Api {
                 json.put("msg_id", callbackMsgId);
             }
         });
+        System.out.println(res);
         return "";
     }
 
-    public static String getToken() {
-        return TOKEN;
-    }
-
-    public static void setToken(String TOKEN) {
-        Api.TOKEN = TOKEN;
+    public static void setToken(String token) {
+        if (token == null || token.isEmpty()) return;
+        Api.TOKEN = token;
     }
 
     private static JSONObject get(String url, Consumer<Map<String, String>> form) {
@@ -55,15 +53,18 @@ public final class Api {
     }
 
     private static HttpRequest genRequest(String url, Method method) {
+        if (TOKEN == null || TOKEN.isEmpty()) {
+            throw BuiltExceptions.INVALID_TOKEN.create();
+        }
         return HttpRequest.of("https://api.sgroup.qq.com" + url)
                 .method(method)
-                .header("Authorization", TOKEN)
-                .header("Content-Type", "application/json;charset=UTF-8;")
+                .header("Authorization", "QQBot " + TOKEN)
+                .header("Content-Type", "application/json")
                 .timeout(5000);
     }
 
     private static JSONObject request(HttpRequest request) {
-//        request.addRequestInterceptor(System.out::println); // log
+        request.addRequestInterceptor(System.out::println); // log
         try (HttpResponse response = request.execute()) {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);

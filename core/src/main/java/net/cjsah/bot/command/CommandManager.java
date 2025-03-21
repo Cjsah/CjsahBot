@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class CommandManager {
     private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
@@ -66,7 +67,7 @@ public final class CommandManager {
 
     public static void execute(String cmd, CommandSource<?> source) {
         try {
-            List<String> nodes = Arrays.stream(cmd.split(" ")).map(String::trim).filter(it -> !it.isEmpty()).toList();
+            List<String> nodes = Arrays.stream(cmd.split(" ")).map(String::trim).filter(it -> !it.isEmpty()).collect(Collectors.toList());
             if (nodes.isEmpty()) return;
             CommandNode node = COMMANDS.get(nodes.removeFirst());
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
