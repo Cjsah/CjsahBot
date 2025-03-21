@@ -40,7 +40,7 @@ jar {
     from("LICENSE")
     manifest {
         attributes([
-                "Main-Class": "net.cjsah.bot.Main",
+                "Main-Class": "net.cjsah.bot.MainApplication",
                 "Class-Path": configurations.runtimeClasspath.files.collect { "lib/$it.name" }.join(' ')
         ])
     }
