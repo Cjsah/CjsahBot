@@ -11,6 +11,7 @@ import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +21,15 @@ import java.net.URISyntaxException;
 
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
-    private final HeartBeatTimer heart = new HeartBeatTimer(this::sendMsg);
-    private String token;
+    private final HeartBeatTimer heart;
 
-    public WebSocketClientImpl(String url) throws URISyntaxException, SchedulerException {
-        super(new URI(url));
+    public WebSocketClientImpl(Scheduler scheduler) throws URISyntaxException {
+        super(new URI("http://127.0.0.1"));
+        this.heart = new HeartBeatTimer(scheduler, this::sendMsg);
+    }
+
+    public void init(String url, String token) throws URISyntaxException {
+        this.uri = new URI(url);
         String pluginId = MainPlugin.PLUGIN_INFO.getId();
         EventManager.subscribe(pluginId, ConnectionHelloEvent.class, event -> {
             log.info("正在进行鉴权认证...");
@@ -57,7 +62,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
             } catch (SchedulerException e) {
                 log.error("无法启动心跳服务!", e);
                 this.heart.stop();
-                Main.sendSignal(SignalType.RE_CONNECT);
+                MainApplication.sendSignal(SignalType.RE_CONNECT);
             }
         });
         EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> this.heart.hearted());
@@ -100,8 +105,8 @@ public final class WebSocketClientImpl extends WebSocketClient {
     public void onClose(int code, String reason, boolean remote) {
         if (code == CloseFrame.NORMAL) return;
         log.warn("连接断开: [{}]{}", code, reason);
-        if (Main.isRunning()) {
-            Main.sendSignal(SignalType.STOP);
+        if (MainApplication.isRunning()) {
+            MainApplication.sendSignal(SignalType.STOP);
         }
     }
 

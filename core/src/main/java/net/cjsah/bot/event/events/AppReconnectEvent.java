@@ -1,10 +1,10 @@
 package net.cjsah.bot.event.events;
 
-import net.cjsah.bot.Main;
+import net.cjsah.bot.MainApplication;
 
 public class AppReconnectEvent extends CancelableEvent {
 
     public AppReconnectEvent() {
-        if (!Main.isRunning() || Main.isConnecting()) this.cancel();
+        if (!MainApplication.isRunning() || MainApplication.isConnecting()) this.cancel();
     }
 }

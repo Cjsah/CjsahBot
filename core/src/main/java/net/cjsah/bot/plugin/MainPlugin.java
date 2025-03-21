@@ -1,6 +1,6 @@
 package net.cjsah.bot.plugin;
 
-import net.cjsah.bot.Main;
+import net.cjsah.bot.MainApplication;
 import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
@@ -66,7 +66,7 @@ public final class MainPlugin extends Plugin {
     @Command(value = "/botstop", permissions = HeyboxPermission.ADMIN)
     public static void botStop(CommandSource<?> source) {
         source.sendFeedback("bot正在关闭...");
-        Main.sendSignal(SignalType.STOP);
+        MainApplication.sendSignal(SignalType.STOP);
     }
 
     @Command(value = "/test", permissions = HeyboxPermission.ADMIN)

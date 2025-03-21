@@ -2,15 +2,30 @@ package net.cjsah.bot;
 
 import cn.hutool.core.lang.Validator;
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginLoader;
 import net.cjsah.bot.plugin.PluginThreadPools;
+import net.cjsah.bot.util.DateUtil;
 import net.cjsah.bot.util.JsonUtil;
 import net.cjsah.bot.util.RequestUtil;
 import org.java_websocket.enums.ReadyState;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
+import org.quartz.PersistJobDataAfterExecution;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +35,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class MainApplication implements Runnable {
+public class MainApplication extends Thread {
     private static final Logger log = LoggerFactory.getLogger("Console");
+    private static volatile MainApplication INSTANCE = null;
+    private static volatile boolean RESTART = false;
     private final WebSocketClientImpl wsc;
     private final Scheduler scheduler;
     private final BlockingQueue<SignalType> signals;
@@ -29,14 +46,65 @@ public class MainApplication implements Runnable {
     private volatile boolean connecting;
 
     public MainApplication() throws SchedulerException, URISyntaxException {
-        this.wsc = new WebSocketClientImpl("http://127.0.0.1");
         this.scheduler = new StdSchedulerFactory().getScheduler();
+        this.wsc = new WebSocketClientImpl(this.scheduler);
         this.stop = false;
         this.connecting = false;
         this.signals = new LinkedBlockingQueue<>();
     }
 
-    private void runApp() throws InterruptedException, SchedulerException {
+    public static void main(String[] args) throws SchedulerException, URISyntaxException, InterruptedException {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (!INSTANCE.stop) MainApplication.sendSignal(SignalType.STOP);
+            try {
+                INSTANCE.join();
+            } catch (InterruptedException e) {
+                log.error("Error while shutting down", e);
+            }
+        }));
+
+        do {
+            RESTART = false;
+            INSTANCE = new MainApplication();
+            INSTANCE.start();
+            INSTANCE.join();
+        } while (!INSTANCE.stop || RESTART);
+    }
+
+    public static void sendSignal(SignalType signal) {
+        log.info("触发信号: {}", signal);
+        CancelableEvent event = signal.getEvent().get();
+        if (event != null) {
+            EventManager.broadcast(event);
+            if (event.isCancel()) {
+                log.info("取消触发: {}", signal);
+                return;
+            }
+        }
+        if (!INSTANCE.signals.offer(signal)) {
+            log.warn("触发 {} 失败, 请重试!", signal);
+        }
+    }
+
+    public static boolean isConnecting() {
+        return INSTANCE.connecting;
+    }
+
+    public static boolean isRunning() {
+        return !INSTANCE.stop;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.runApp();
+        } catch (InterruptedException | SchedulerException | URISyntaxException e) {
+            MainApplication.sendSignal(SignalType.STOP);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void runApp() throws InterruptedException, SchedulerException, URISyntaxException {
         log.info("初始化文件系统...");
         FilePaths.init();
         log.info("初始化系统定时器...");
@@ -55,10 +123,13 @@ public class MainApplication implements Runnable {
         running:
         while (true) {
             switch (signals.take()) {
-                case STOP -> {
+                case RESTART:
+                    RESTART = true;
+                case STOP:
                     break running;
-                }
-                case RE_CONNECT -> this.tryConnect();
+                case RE_CONNECT:
+                    this.tryConnect();
+                    break;
             }
         }
 
@@ -77,7 +148,7 @@ public class MainApplication implements Runnable {
         log.info("已关闭");
     }
 
-    private void tryConnect() throws InterruptedException {
+    private void tryConnect() throws InterruptedException, URISyntaxException, SchedulerException {
         log.info("正在获取服务器地址...");
         String content = FilePaths.ACCOUNT.read();
         JSONObject json = JsonUtil.deserialize(content);
@@ -91,10 +162,14 @@ public class MainApplication implements Runnable {
             log.error("secret为空，请先设置secret");
             throw new IllegalArgumentException("secret为空，请先设置secret");
         }
+        this.wsConnect(appId, secret);
+        this.apiConnect(appId, secret);
+    }
+
+    private void wsConnect(String appId, String secret) throws URISyntaxException, InterruptedException {
         String token = "Bot %s.%s".formatted(appId, secret);
         JSONObject body = RequestUtil.request(RequestUtil.get("https://sandbox.api.sgroup.qq.com/gateway").header("Authorization", token));
-
-
+        this.wsc.init(body.getString("url"), token);
         log.info("正在连接到服务器...");
         this.connecting = true;
         while (!this.stop) {
@@ -113,13 +188,43 @@ public class MainApplication implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        try {
-            this.runApp();
-        } catch (InterruptedException | SchedulerException e) {
-            Main.sendSignal(SignalType.STOP);
-            throw new RuntimeException(e);
+    private void apiConnect(String appId, String secret) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey("Trigger", "API_TOKEN");
+        JobKey jobKey = new JobKey("Job", "API_TOKEN");
+        if (this.scheduler.checkExists(triggerKey)) return;
+        JobDataMap map = new JobDataMap();
+        map.put("appId", appId);
+        map.put("secret", secret);
+        map.put("expires", 0);
+        JobDetail job = JobBuilder
+                .newJob(ApiTokenRefresherJob.class)
+                .withIdentity(jobKey)
+                .usingJobData(map)
+                .build();
+        Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .withIdentity(triggerKey)
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(30).repeatForever())
+                .build();
+        this.scheduler.scheduleJob(job, trigger);
+    }
+
+    @PersistJobDataAfterExecution
+    @DisallowConcurrentExecution
+    public static class ApiTokenRefresherJob implements Job {
+        @Override
+        public void execute(JobExecutionContext context) {
+            JobDataMap map = context.getJobDetail().getJobDataMap();
+            long expires = map.getLong("expires");
+            if (expires > DateUtil.nowTimeStamp() + 30) return;
+            String appId = map.getString("appId");
+            String secret = map.getString("secret");
+            JSONObject payload = JSONObject.of("appId", appId, "clientSecret", secret);
+            JSONObject response = RequestUtil.request(RequestUtil.post("https://bots.qq.com/app/getAppAccessToken").body(payload.toJSONString()));
+            String token = response.getString("access_token");
+            expires = response.getLongValue("expires_in") + DateUtil.nowTimeStamp();
+            Api.setToken(token);
+            map.put("expires", expires);
         }
     }
 

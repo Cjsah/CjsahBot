@@ -14,7 +14,7 @@ public final class RequestUtil {
     }
 
     public static HttpRequest post(String url) {
-        return request(url, Method.POST).header("Content-Type", "application/json;charset=UTF-8;");
+        return request(url, Method.POST).header("Content-Type", "application/json");
     }
 
     public static HttpRequest request(String url, Method method) {

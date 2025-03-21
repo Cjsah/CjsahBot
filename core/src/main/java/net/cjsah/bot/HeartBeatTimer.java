@@ -10,12 +10,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +28,8 @@ public final class HeartBeatTimer {
     private final JobDataMap jobMap;
     private long heartTime;
 
-    public HeartBeatTimer(Consumer<JSONObject> send) throws SchedulerException {
-        SchedulerFactory factory = new StdSchedulerFactory();
-        this.scheduler = factory.getScheduler();
+    public HeartBeatTimer(Scheduler scheduler, Consumer<JSONObject> send) {
+        this.scheduler = scheduler;
         this.count = new AtomicInteger(0);
         this.jobMap = new JobDataMap();
         this.jobMap.put("this", this);
@@ -88,7 +85,7 @@ public final class HeartBeatTimer {
         if (this.count.incrementAndGet() >= 3) {
             log.warn("连接断开: 心跳超时");
             this.stop();
-            Main.sendSignal(SignalType.RE_CONNECT);
+            MainApplication.sendSignal(SignalType.RE_CONNECT);
         } else {
             JSONObject payload = Opcode.HEARTBEAT.generate(true, null);
             this.sendFunc.accept(payload);

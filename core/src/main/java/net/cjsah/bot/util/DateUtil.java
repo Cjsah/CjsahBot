@@ -17,13 +17,17 @@ public final class DateUtil {
         return Date.from(nowDate().toInstant());
     }
 
+    public static long nowTimeStamp() {
+        return System.currentTimeMillis() / 1000L;
+    }
+
     public static String format(Date date, String format) {
         SimpleDateFormat sfd = new SimpleDateFormat(format);
         return sfd.format(date);
     }
 
     public static long parseRFC3339(String time) {
-        return OffsetDateTime.parse("2025-03-20T15:08:07+08:00").toEpochSecond();
+        return OffsetDateTime.parse(time).toEpochSecond();
     }
 
 }
