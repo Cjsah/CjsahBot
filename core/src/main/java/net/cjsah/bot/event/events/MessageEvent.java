@@ -1,6 +1,7 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.data.UserData;
 import net.cjsah.bot.data.enums.MessageType;
 import net.cjsah.bot.msg.MessageChain;
@@ -8,7 +9,7 @@ import net.cjsah.bot.util.StringUtil;
 
 import java.util.function.Function;
 
-public class MessageEvent<T extends UserData> extends BotEvent {
+public abstract class MessageEvent<T extends UserData> extends BotEvent {
     protected final MessageType msgType;
     protected final int msgId;
     protected final long userId;
@@ -27,6 +28,8 @@ public class MessageEvent<T extends UserData> extends BotEvent {
         this.message = MessageChain.parse(raw.getJSONArray("message"));
         this.sender = factory.apply(raw.getJSONObject("sender"));
     }
+
+    public abstract CommandSource<?> genCommandSource();
 
     public MessageType getMsgType() {
         return this.msgType;

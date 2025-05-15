@@ -1,6 +1,8 @@
 package net.cjsah.bot.event.events;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.command.source.GroupCommandSource;
 import net.cjsah.bot.data.AnonymousUserData;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.enums.GroupMsgMode;
@@ -42,5 +44,10 @@ public class GroupMessageEvent extends MessageEvent<GroupUserData> {
     @Nullable
     public AnonymousUserData getAnonymous() {
         return this.anonymous;
+    }
+
+    @Override
+    public CommandSource<?> genCommandSource() {
+        return new GroupCommandSource(this);
     }
 }

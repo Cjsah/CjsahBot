@@ -2,7 +2,7 @@ package net.cjsah.bot.util;
 
 import org.jetbrains.annotations.Nullable;
 
-public class EnumUtil {
+public final class EnumUtil {
     @Nullable
     public static <T extends Enum<T>> T ofName(Class<T> clazz, String name) {
         return ofName(clazz, name, null);

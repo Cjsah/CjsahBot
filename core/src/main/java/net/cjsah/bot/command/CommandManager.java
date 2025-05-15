@@ -8,10 +8,8 @@ import net.cjsah.bot.command.context.CommandNodeBuilder;
 import net.cjsah.bot.command.context.CommandParameter;
 import net.cjsah.bot.command.context.CommandParser;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.data.CommandInfo;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import org.slf4j.Logger;
@@ -23,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -65,35 +64,36 @@ public final class CommandManager {
         keys.forEach(COMMANDS::remove);
     }
 
-    public static void execute(CommandInfo info, CommandSource source) {
+    public static void execute(String cmd, CommandSource<?> source) {
         try {
-            CommandNode node = COMMANDS.get(info.getCommand());
-            Map<String, String> options = info.getOptions();
+            List<String> nodes = Arrays.stream(cmd.split(" ")).map(String::trim).filter(it -> !it.isEmpty()).toList();
+            if (nodes.isEmpty()) return;
+            CommandNode node = COMMANDS.get(nodes.removeFirst());
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
-            if (!PermissionManager.hasCommandPermission(source.sender(), node)) {
-                throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
-            }
+//            if (!PermissionManager.hasCommandPermission(source.sender(), node)) {
+//                throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
+//            }
             List<CommandParameter> parameters = node.getParameters();
             Object[] args = new Object[parameters.size()];
+            Iterator<String> nodeIterator = nodes.iterator();
             for (int i = 0; i < parameters.size(); i++) {
                 CommandParameter parameter = parameters.get(i);
                 Class<? extends Argument<?>> resolver = parameter.resolver();
                 if (resolver == ArgsArgument.class) {
-                    args[i] = options;
+                    args[i] = nodes;
                     continue;
                 }
                 if (resolver == CommandSourceArgument.class) {
                     args[i] = source;
                     continue;
                 }
-                String value = options.get(parameter.name());
-                if (value == null) {
+                if (!nodeIterator.hasNext()) {
                     args[i] = null;
                     continue;
                 }
                 Constructor<? extends Argument<?>> constructor = resolver.getDeclaredConstructor();
                 Argument<?> argument = constructor.newInstance();
-                args[i] = argument.parse(value);
+                args[i] = argument.parse(nodeIterator.next());
             }
             PluginThreadPools.execute(node.getPluginId(), () -> {
                 try {

@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class Main {
+public final class Main {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static final BlockingQueue<SignalType> SignalQueue = new LinkedBlockingQueue<>();
     private static volatile MainThread CurrentMainThread;

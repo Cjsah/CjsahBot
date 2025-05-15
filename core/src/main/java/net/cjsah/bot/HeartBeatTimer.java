@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class HeartBeatTimer {
+public final class HeartBeatTimer {
     private static final Logger log = LoggerFactory.getLogger(HeartBeatTimer.class);
     private final Scheduler scheduler;
     private final AtomicInteger count;
