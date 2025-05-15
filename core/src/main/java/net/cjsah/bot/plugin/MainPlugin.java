@@ -6,6 +6,7 @@ import net.cjsah.bot.command.Command;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.AppStopEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.permission.HeyboxPermission;
 import org.slf4j.Logger;
@@ -23,6 +24,10 @@ public final class MainPlugin extends Plugin {
         CommandManager.register(MainPlugin.class);
 
         String pluginId = PLUGIN_INFO.getId();
+
+        EventManager.subscribe(pluginId, AppStopEvent.class, event -> {
+            if (!MainApplication.isRunning()) event.cancel();
+        });
 
         EventManager.subscribe(pluginId, MessageEvent.class, event -> {
             String content = event.getContent();

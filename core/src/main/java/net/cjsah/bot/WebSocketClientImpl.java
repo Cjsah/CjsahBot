@@ -106,7 +106,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
         if (code == CloseFrame.NORMAL) return;
         log.warn("连接断开: [{}]{}", code, reason);
         if (MainApplication.isRunning()) {
-            MainApplication.sendSignal(SignalType.STOP);
+            MainApplication.sendSignal(SignalType.RE_CONNECT);
         }
     }
 

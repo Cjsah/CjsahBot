@@ -53,7 +53,7 @@ public class MainApplication extends Thread {
         this.signals = new LinkedBlockingQueue<>();
     }
 
-    public static void main(String[] args) throws SchedulerException, URISyntaxException, InterruptedException {
+    public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (!INSTANCE.stop) MainApplication.sendSignal(SignalType.STOP);
             try {
@@ -64,16 +64,25 @@ public class MainApplication extends Thread {
         }));
 
         do {
-            RESTART = false;
-            INSTANCE = new MainApplication();
-            INSTANCE.start();
-            INSTANCE.join();
+            try {
+                RESTART = false;
+                INSTANCE = new MainApplication();
+                INSTANCE.start();
+                INSTANCE.join();
+            } catch (Exception e) {
+                log.error("Application Error!", e);
+                break;
+            }
         } while (!INSTANCE.stop || RESTART);
     }
 
     public static void sendSignal(SignalType signal) {
         log.info("触发信号: {}", signal);
         CancelableEvent event = signal.getEvent().get();
+        if (INSTANCE.signals.contains(SignalType.STOP) || INSTANCE.signals.contains(signal)) {
+            log.info("取消触发: {}", signal);
+            return;
+        }
         if (event != null) {
             EventManager.broadcast(event);
             if (event.isCancel()) {
@@ -81,6 +90,7 @@ public class MainApplication extends Thread {
                 return;
             }
         }
+        if (signal == SignalType.STOP) INSTANCE.signals.clear();
         if (!INSTANCE.signals.offer(signal)) {
             log.warn("触发 {} 失败, 请重试!", signal);
         }
@@ -98,13 +108,16 @@ public class MainApplication extends Thread {
     public void run() {
         try {
             this.runApp();
-        } catch (InterruptedException | SchedulerException | URISyntaxException e) {
+        } catch (Exception e) {
             MainApplication.sendSignal(SignalType.STOP);
             throw new RuntimeException(e);
+        } finally {
+            this.unload();
+            log.info("已关闭");
         }
     }
 
-    private void runApp() throws InterruptedException, SchedulerException, URISyntaxException {
+    private void runApp() throws InterruptedException, SchedulerException {
         log.info("初始化文件系统...");
         FilePaths.init();
         log.info("初始化系统定时器...");
@@ -121,7 +134,7 @@ public class MainApplication extends Thread {
         PluginLoader.onStarted();
 
         running:
-        while (true) {
+        while (!this.stop) {
             switch (signals.take()) {
                 case RESTART:
                     RESTART = true;
@@ -132,45 +145,58 @@ public class MainApplication extends Thread {
                     break;
             }
         }
-
-        log.info("执行关闭命令...");
-        this.stop = true;
-        log.info("正在卸载所有插件...");
-        PluginLoader.unloadPlugins();
-        log.info("等待插件线程关闭...");
-        PluginThreadPools.awaitShutdown();
-        log.info("正在断开连接...");
-        this.wsc.shutdown();
-        log.info("正在取消注册所有事件...");
-        EventManager.unsubscribeAll();
-        log.info("正在关闭系统定时器...");
-        this.scheduler.shutdown(true);
-        log.info("已关闭");
     }
 
-    private void tryConnect() throws InterruptedException, URISyntaxException, SchedulerException {
-        log.info("正在获取服务器地址...");
-        String content = FilePaths.ACCOUNT.read();
-        JSONObject json = JsonUtil.deserialize(content);
-        String appId = json.getString("appId");
-        String token = json.getString("token");
-        String secret = json.getString("secret");
-        if (Validator.isEmpty(appId)) {
-            throw new IllegalArgumentException("appId为空，请先设置appId");
+    private void unload() {
+        try {
+            log.info("执行关闭命令...");
+            this.stop = true;
+            log.info("正在卸载所有插件...");
+            PluginLoader.unloadPlugins();
+            log.info("等待插件线程关闭...");
+            PluginThreadPools.awaitShutdown();
+            log.info("正在断开连接...");
+            this.wsc.shutdown();
+            log.info("正在取消注册所有事件...");
+            EventManager.unsubscribeAll();
+            log.info("正在关闭系统定时器...");
+            this.scheduler.shutdown(true);
+        }catch (InterruptedException | SchedulerException e) {
+            log.error("Stop Bot Failed!", e);
+            throw new RuntimeException(e);
         }
-        if (Validator.isEmpty(token)) {
-            throw new IllegalArgumentException("token为空，请先设置token");
+    }
+
+    private void tryConnect() {
+        try {
+            log.info("正在获取服务器地址...");
+            String content = FilePaths.ACCOUNT.read();
+            JSONObject json = JsonUtil.deserialize(content);
+            String appId = json.getString("appId");
+            String token = json.getString("token");
+            String secret = json.getString("secret");
+            if (Validator.isEmpty(appId)) {
+                throw new IllegalArgumentException("appId为空，请先设置appId");
+            }
+            if (Validator.isEmpty(token)) {
+                throw new IllegalArgumentException("token为空，请先设置token");
+            }
+            if (Validator.isEmpty(secret)) {
+                throw new IllegalArgumentException("secret为空，请先设置secret");
+            }
+            this.wsConnect(appId, token);
+            this.apiConnect(appId, secret);
+        } catch (Exception e) {
+            log.error("连接失败!", e);
+            this.wsc.closeConnection(-10, "Connection Failed");
+            throw new RuntimeException(e);
         }
-        if (Validator.isEmpty(secret)) {
-            throw new IllegalArgumentException("secret为空，请先设置secret");
-        }
-        this.wsConnect(appId, token);
-        this.apiConnect(appId, secret);
     }
 
     private void wsConnect(String appId, String secret) throws URISyntaxException, InterruptedException {
         String token = "Bot %s.%s".formatted(appId, secret);
         JSONObject body = RequestUtil.request(RequestUtil.get("https://sandbox.api.sgroup.qq.com/gateway").header("Authorization", token));
+        log.info("body: {}", body);
         this.wsc.init(body.getString("url"), token);
         log.info("正在连接到服务器...");
         this.connecting = true;

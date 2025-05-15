@@ -64,6 +64,7 @@ public final class HeartBeatTimer {
         TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
         JobKey heartJobKey = new JobKey("Job", "Heart");
         try {
+            if (this.scheduler.isShutdown()) return;
             this.scheduler.pauseTrigger(triggerKey);
             this.scheduler.deleteJob(heartJobKey);
         } catch (SchedulerException e) {
