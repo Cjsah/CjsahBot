@@ -1,15 +1,13 @@
 package net.cjsah.bot.http;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.sun.net.httpserver.Headers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public enum Opcode {
-    DISPATCH(0, resolver -> null),
+    DISPATCH(0, HttpServerOperate::processServerMsg),
     HTTP_ACK(12, resolver -> null),
     WEBHOOK_VERIFY(13, HttpServerOperate::verifyAccount),
     ;

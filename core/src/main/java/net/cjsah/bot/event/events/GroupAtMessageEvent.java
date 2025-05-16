@@ -7,8 +7,8 @@ import net.cjsah.bot.command.source.GroupCommandSource;
 public class GroupAtMessageEvent extends MessageEvent {
     private final String groupOpenId;
 
-    public GroupAtMessageEvent(JSONObject raw) {
-        super(raw);
+    public GroupAtMessageEvent(String eventId, JSONObject raw) {
+        super(eventId, raw);
         this.groupOpenId = raw.getString("group_openid");
     }
 

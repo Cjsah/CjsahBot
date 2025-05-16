@@ -7,14 +7,15 @@ import net.cjsah.bot.util.DateUtil;
 
 import java.util.List;
 
-public abstract class MessageEvent extends Event {
+public abstract class MessageEvent extends BotEvent {
     private final UserData sender;
     private final String content;
     private final String id;
     private final long timestamp;
     private final List<JSONObject> attachments;
 
-    public MessageEvent(JSONObject raw) {
+    public MessageEvent(String eventId, JSONObject raw) {
+        super(eventId);
         this.sender = new UserData(raw.getJSONObject("author"));
         this.content = raw.getString("content");
         this.id = raw.getString("id");
@@ -40,7 +41,7 @@ public abstract class MessageEvent extends Event {
         return this.timestamp;
     }
 
-    public List<JSONObject>getAttachments() {
+    public List<JSONObject> getAttachments() {
         return this.attachments;
     }
 }

@@ -1,7 +1,6 @@
 package net.cjsah.bot;
 
 import net.cjsah.bot.event.events.CancelableEvent;
-import net.cjsah.bot.event.events.AppReconnectEvent;
 import net.cjsah.bot.event.events.AppStopEvent;
 
 import java.util.function.Supplier;
@@ -9,7 +8,6 @@ import java.util.function.Supplier;
 public enum SignalType {
     STOP(AppStopEvent::new),
     RESTART,
-    RE_CONNECT(AppReconnectEvent::new),
     ;
 
     private final Supplier<CancelableEvent> event;

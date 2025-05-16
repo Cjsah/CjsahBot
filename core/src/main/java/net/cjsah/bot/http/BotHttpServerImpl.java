@@ -4,7 +4,6 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.lang.Validator;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.alibaba.fastjson2.JSONWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class BotHttpServerImpl {
     protected static final Logger log = LoggerFactory.getLogger("BotHttpServer");
@@ -38,6 +36,10 @@ public class BotHttpServerImpl {
         this.httpServer.start();
     }
 
+    public void shutdown() {
+        this.httpServer.stop(30);
+    }
+
     private void httpServerBindContext() {
         this.httpServer.createContext("/", exchange -> {
             String method = exchange.getRequestMethod();
@@ -58,14 +60,11 @@ public class BotHttpServerImpl {
                     body,
                     exchange.getRequestHeaders(),
                     json.getIntValue("op", -1),
-                    json.getJSONObject("d"),
+                    json,
                     botSecret
             );
 
-            System.out.println(json.toJSONString(JSONWriter.Feature.PrettyFormat));
-
             JSONObject res = Opcode.processRequest(resolver);
-            System.out.println(res);
             this.response(exchange, res);
         });
     }

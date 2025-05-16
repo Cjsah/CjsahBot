@@ -1,6 +1,9 @@
 package net.cjsah.bot.http;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.BotEvent;
+import net.cjsah.bot.event.type.TencentEventType;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.Utils;
@@ -18,7 +21,7 @@ import java.security.SignatureException;
 public final class HttpServerOperate {
 
     static JSONObject verifyAccount(ExchangeResolver resolver) {
-        JSONObject result = resolver.data();
+        JSONObject result = resolver.data().getJSONObject("d");
         String token = result.getString("plain_token");
         String ts = result.getString("event_ts");
 
@@ -41,6 +44,12 @@ public final class HttpServerOperate {
             BotHttpServerImpl.log.error("Signature Failed!", e);
             return null;
         }
+    }
+
+    static JSONObject processServerMsg(ExchangeResolver resolver) {
+        BotEvent event = TencentEventType.createEvent(resolver.data());
+        EventManager.broadcast(event);
+        return null;
     }
 
 }

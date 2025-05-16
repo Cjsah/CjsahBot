@@ -41,7 +41,6 @@ public class MainApplication extends Thread {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static volatile MainApplication INSTANCE = null;
     private static volatile boolean RESTART = false;
-    private final WebSocketClientImpl wsc;
     private final BotHttpServerImpl httpServer;
     private final Scheduler scheduler;
     private final BlockingQueue<SignalType> signals;
@@ -50,7 +49,6 @@ public class MainApplication extends Thread {
 
     public MainApplication() throws SchedulerException, URISyntaxException, IOException {
         this.scheduler = new StdSchedulerFactory().getScheduler();
-        this.wsc = new WebSocketClientImpl(this.scheduler);
         this.httpServer = new BotHttpServerImpl();
         this.stop = false;
         this.connecting = false;
@@ -145,8 +143,7 @@ public class MainApplication extends Thread {
                     RESTART = true;
                 case STOP:
                     break running;
-                case RE_CONNECT:
-                    this.tryConnect();
+                default:
                     break;
             }
         }
@@ -161,7 +158,7 @@ public class MainApplication extends Thread {
             log.info("等待插件线程关闭...");
             PluginThreadPools.awaitShutdown();
             log.info("正在断开连接...");
-            this.wsc.shutdown();
+            this.httpServer.shutdown();
             log.info("正在取消注册所有事件...");
             EventManager.unsubscribeAll();
             log.info("正在关闭系统定时器...");
@@ -191,57 +188,6 @@ public class MainApplication extends Thread {
         } catch (Exception e) {
             log.error("Http Hooks create failed!", e);
             throw new RuntimeException(e);
-        }
-    }
-
-
-    private void tryConnect() {
-        if (true) return;
-        try {
-            log.info("正在获取服务器地址...");
-            String content = FilePaths.ACCOUNT.read();
-            JSONObject json = JsonUtil.deserialize(content);
-            String appId = json.getString("appId");
-            String token = json.getString("token");
-            String secret = json.getString("secret");
-            if (Validator.isEmpty(appId)) {
-                throw new IllegalArgumentException("appId为空，请先设置appId");
-            }
-            if (Validator.isEmpty(token)) {
-                throw new IllegalArgumentException("token为空，请先设置token");
-            }
-            if (Validator.isEmpty(secret)) {
-                throw new IllegalArgumentException("secret为空，请先设置secret");
-            }
-            this.wsConnect(appId, token);
-            this.apiConnect(appId, secret);
-        } catch (Exception e) {
-            log.error("连接失败!", e);
-            this.wsc.closeConnection(-10, "Connection Failed");
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void wsConnect(String appId, String secret) throws URISyntaxException, InterruptedException {
-        String token = "Bot %s.%s".formatted(appId, secret);
-        JSONObject body = RequestUtil.request(RequestUtil.get("https://sandbox.api.sgroup.qq.com/gateway").header("Authorization", token));
-        log.info("body: {}", body);
-        this.wsc.init(body.getString("url"), token);
-        log.info("正在连接到服务器...");
-        this.connecting = true;
-        while (!this.stop) {
-            if (this.wsc.getReadyState() == ReadyState.NOT_YET_CONNECTED ?
-                    this.wsc.connectBlocking() :
-                    this.wsc.reconnectBlocking()
-            ) {
-                break;
-            }
-            log.warn("连接失败, 将在 3 秒后重试...");
-            TimeUnit.SECONDS.sleep(3);
-        }
-        this.connecting = false;
-        if (this.stop) {
-            log.info("程序关闭中, 停止连接");
         }
     }
 

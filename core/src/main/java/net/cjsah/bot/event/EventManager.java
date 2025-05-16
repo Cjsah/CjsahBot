@@ -1,8 +1,6 @@
 package net.cjsah.bot.event;
 
-import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.type.Opcode;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
@@ -16,14 +14,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public final class EventManager {
     private static final Logger log = LoggerFactory.getLogger("EventManager");
 
     private static final List<EventNode<?>> events = new ArrayList<>();
-    private static final AtomicInteger eventNumber = new AtomicInteger(-1);
 
     /**
      * 订阅给定类型的事件。
@@ -55,16 +51,16 @@ public final class EventManager {
     public static <T extends Event> void register(@NotNull Object object) {
         // 遍历对象的所有方法
         for (Method method : object.getClass().getMethods()) {
-            // 忽略参数数量不为1的方法
-            if (method.getParameterCount() != 1) continue;
             // 获取方法上的SubscribeEvent注解
             SubscribeEvent annotation = method.getAnnotation(SubscribeEvent.class);
             // 忽略没有SubscribeEvent注解的方法
             if (null == annotation) continue;
+            // 忽略参数数量不为1的方法
+            if (method.getParameterCount() != 1) continue;
             // 获取方法的参数类型
-            Class<?> parameterTypes = method.getParameterTypes()[0];
+            Class<?> parameterType = method.getParameterTypes()[0];
             // 忽略参数类型不是Event或其子类的方法
-            if (!Event.class.isAssignableFrom(parameterTypes)) continue;
+            if (!Event.class.isAssignableFrom(parameterType)) continue;
             // 创建一个事件触发器，用于在事件发生时调用相应的方法
             Consumer<?> trigger = (obj) -> {
                 try {
@@ -76,7 +72,7 @@ public final class EventManager {
                 }
             };
             // 使用反射获取方法参数的类型，并将其和触发器一起注册到事件管理器中
-            EventManager.subscribe((Class<T>) parameterTypes, (Consumer<T>) trigger);
+            EventManager.subscribe((Class<T>) parameterType, (Consumer<T>) trigger);
         }
     }
 
@@ -150,21 +146,6 @@ public final class EventManager {
                 }
             });
         });
-    }
-
-    public static void parseEvent(JSONObject raw) {
-        int s = raw.getIntValue("s");
-        if (s != 0) updateEventNum(s);
-        Event event = Opcode.toEvent(raw);
-        EventManager.broadcast(event);
-    }
-
-    private static void updateEventNum(int num) {
-        eventNumber.set(num);
-    }
-
-    public static int getEventNum() {
-        return eventNumber.get();
     }
 
     record EventNode<T extends Event>(String pluginId, Class<T> event, Consumer<T> handler) {

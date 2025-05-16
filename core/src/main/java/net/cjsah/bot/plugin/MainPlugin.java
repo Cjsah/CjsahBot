@@ -30,6 +30,7 @@ public final class MainPlugin extends Plugin {
         });
 
         EventManager.subscribe(pluginId, MessageEvent.class, event -> {
+            System.out.println("msg event");
             String content = event.getContent();
             if (content.startsWith("/")) {
                 CommandManager.execute(content.substring(1), event.genCommandSource());
@@ -76,6 +77,7 @@ public final class MainPlugin extends Plugin {
 
     @Command(value = "/test", permissions = HeyboxPermission.ADMIN)
     public static void test(CommandSource<?> source) {
+        System.out.println("test");
         source.sendFeedback("test");
     }
 

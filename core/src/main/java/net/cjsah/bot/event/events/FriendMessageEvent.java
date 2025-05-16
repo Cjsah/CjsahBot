@@ -5,8 +5,8 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.source.FriendCommandSource;
 
 public class FriendMessageEvent extends MessageEvent {
-    public FriendMessageEvent(JSONObject raw) {
-        super(raw);
+    public FriendMessageEvent(String eventId, JSONObject raw) {
+        super(eventId, raw);
     }
 
     @Override
