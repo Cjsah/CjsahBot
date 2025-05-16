@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.CancelableEvent;
+import net.cjsah.bot.http.BotHttpServerImpl;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginLoader;
 import net.cjsah.bot.plugin.PluginThreadPools;
@@ -30,6 +31,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -40,14 +42,16 @@ public class MainApplication extends Thread {
     private static volatile MainApplication INSTANCE = null;
     private static volatile boolean RESTART = false;
     private final WebSocketClientImpl wsc;
+    private final BotHttpServerImpl httpServer;
     private final Scheduler scheduler;
     private final BlockingQueue<SignalType> signals;
     private volatile boolean stop;
     private volatile boolean connecting;
 
-    public MainApplication() throws SchedulerException, URISyntaxException {
+    public MainApplication() throws SchedulerException, URISyntaxException, IOException {
         this.scheduler = new StdSchedulerFactory().getScheduler();
         this.wsc = new WebSocketClientImpl(this.scheduler);
+        this.httpServer = new BotHttpServerImpl();
         this.stop = false;
         this.connecting = false;
         this.signals = new LinkedBlockingQueue<>();
@@ -129,7 +133,8 @@ public class MainApplication extends Thread {
         log.info("正在加载插件...");
         PluginLoader.loadPlugins();
 
-        this.tryConnect();
+//        this.tryConnect();
+        this.listenHttpHooks();
 
         PluginLoader.onStarted();
 
@@ -167,7 +172,31 @@ public class MainApplication extends Thread {
         }
     }
 
+    private void listenHttpHooks() {
+        try {
+            log.info("正在启动Http服务器...");
+            String content = FilePaths.ACCOUNT.read();
+            JSONObject config = JsonUtil.deserialize(content);
+            String appId = config.getString("appId");
+            String secret = config.getString("secret");
+            int port = config.getIntValue("port", 8080);
+            if (Validator.isEmpty(appId)) {
+                throw new IllegalArgumentException("appId为空，请先设置appId");
+            }
+            if (Validator.isEmpty(secret)) {
+                throw new IllegalArgumentException("secret为空，请先设置secret");
+            }
+            this.httpServer.init(port, appId, secret);
+            this.httpServer.start();
+        } catch (Exception e) {
+            log.error("Http Hooks create failed!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private void tryConnect() {
+        if (true) return;
         try {
             log.info("正在获取服务器地址...");
             String content = FilePaths.ACCOUNT.read();

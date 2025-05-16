@@ -15,6 +15,7 @@ dependencies {
         exclude group: 'com.mchange'
         exclude group: 'org.slf4j'
     }
+    implementation "net.i2p.crypto:eddsa:$eddsa_version"
 }
 
 tasks.register('copyJar', Copy) {

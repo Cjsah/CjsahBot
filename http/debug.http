@@ -1,0 +1,5 @@
+POST http://localhost:6666/.test
+
+{
+  "foo": "bar"
+}
