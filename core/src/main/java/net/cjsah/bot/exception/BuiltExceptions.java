@@ -44,4 +44,5 @@ public final class BuiltExceptions{
     public static final CustomExceptionFactory<?> COUNTDOWN_LESS_NOW = new CustomExceptionFactory<>("定时结束时间小于当前系统时间", MessageException::new);
     public static final CustomExceptionFactory<?> COUNTDOWN_OVER_COUNT = new CustomExceptionFactory<>("定时时长超过了范围", MessageException::new);
 
+    public static final CustomExceptionFactory<?> PLUGIN_EXCEPTION = new CustomExceptionFactory<>("%s", PluginException::new);
 }

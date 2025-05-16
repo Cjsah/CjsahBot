@@ -71,6 +71,10 @@ public final class FilePaths {
                 return FileUtil.readString(this.path.toFile(), StandardCharsets.UTF_8);
             } else return this.defaultContent;
         }
+
+        public void write(String content) {
+            FileUtil.writeString(content, this.path.toFile(), StandardCharsets.UTF_8);
+        }
     }
 
 

@@ -17,6 +17,14 @@ public final class RequestUtil {
         return request(url, Method.POST).header("Content-Type", "application/json");
     }
 
+    public static JSONObject getRequest(String url) {
+        return request(request(url, Method.GET));
+    }
+
+    public static JSONObject postRequest(String url) {
+        return request(request(url, Method.GET));
+    }
+
     public static HttpRequest request(String url, Method method) {
         return HttpRequest.of(url).method(method).timeout(5000);
     }

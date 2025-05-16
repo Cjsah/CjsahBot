@@ -12,7 +12,7 @@ public abstract class CommandSource<T> {
         this.sender = sender;
     }
 
-    private static final Logger log = LoggerFactory.getLogger("Console");
+    public abstract long getSenderId();
 
     public boolean hasPermission(HeyboxPermission[] permissions) {
         return true;

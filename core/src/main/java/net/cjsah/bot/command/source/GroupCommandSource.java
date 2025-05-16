@@ -11,6 +11,11 @@ public final class GroupCommandSource extends CommandSource<GroupAtMessageEvent>
     }
 
     @Override
+    public long getSenderId() {
+        return this.sender.getSender().getId().hashCode();
+    }
+
+    @Override
     public void sendFeedback(String message) {
         Api.sendGroupMsg(this.sender.getGroupId(), this.sender.getId(), TypedMessage.text(message));
     }

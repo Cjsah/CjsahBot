@@ -1,5 +1,8 @@
-POST http://localhost:6666/.test
+POST https://bugs.mojang.com/api/jql-search-post
+Content-Type: application/json
 
 {
-  "foo": "bar"
+  "project": "MC",
+  "advanced": true,
+  "search": "key='MC-1'"
 }

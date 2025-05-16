@@ -11,6 +11,11 @@ public final class FriendCommandSource extends CommandSource<FriendMessageEvent>
     }
 
     @Override
+    public long getSenderId() {
+        return this.sender.getSender().getId().hashCode();
+    }
+
+    @Override
     public void sendFeedback(String message) {
         Api.sendFriendMsg(
                 this.sender.getSender().getId(),

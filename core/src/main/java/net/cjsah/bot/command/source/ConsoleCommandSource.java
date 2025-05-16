@@ -12,6 +12,11 @@ public final class ConsoleCommandSource extends CommandSource<Void> {
     }
 
     @Override
+    public long getSenderId() {
+        return "CommandConsole".hashCode();
+    }
+
+    @Override
     public void sendFeedback(String message) {
         log.info(message);
     }
