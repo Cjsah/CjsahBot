@@ -71,11 +71,11 @@ public final class Api {
     }
 
     private static JSONObject request(HttpRequest request) {
-        request.addRequestInterceptor(System.out::println); // log
+        request.addRequestInterceptor(str -> log.debug("{}", str));
         try (HttpResponse response = request.execute()) {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);
-            log.info("{}", json);
+            log.debug("Response: \n\t{}", json);
             int code = json.getIntValue("code");
             if (code != 0) {
                 String traceId = json.getString("trace_id");

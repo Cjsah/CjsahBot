@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 public class BotHttpServerImpl {
     protected static final Logger log = LoggerFactory.getLogger("BotHttpServer");
     private final HttpServer httpServer;
-    private static String appId;
     private static String botSecret;
 
     public BotHttpServerImpl() throws IOException {
@@ -26,9 +25,8 @@ public class BotHttpServerImpl {
         this.httpServerBindContext();
     }
 
-    public void init(int port, String appId, String botSecret) throws IOException {
+    public void init(int port, String botSecret) throws IOException {
         this.httpServer.bind(new InetSocketAddress(port), 0);
-        BotHttpServerImpl.appId = appId;
         BotHttpServerImpl.botSecret = botSecret;
     }
 
@@ -69,27 +67,18 @@ public class BotHttpServerImpl {
         });
     }
 
-    private void response(HttpExchange exchange, JSONObject json) throws IOException {
-        if (json == null) {
-            this.response(exchange, 200);
-            return;
-        }
-        this.response(exchange, 200, json.toJSONString());
-    }
-
-    private void response(HttpExchange exchange, String text) throws IOException {
-        this.response(exchange, 200, text);
-    }
-
     private void response(HttpExchange exchange, int code) throws IOException {
         exchange.sendResponseHeaders(code, -1);
         exchange.close();
     }
 
-    private void response(HttpExchange exchange, int code, String message) throws IOException {
-        byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().add("X-Bot-Appid", appId);
-        exchange.sendResponseHeaders(code, bytes.length);
+    private void response(HttpExchange exchange, JSONObject json) throws IOException {
+        if (json == null) {
+            this.response(exchange, 200);
+            return;
+        }
+        byte[] bytes = json.toJSONBBytes();
+        exchange.sendResponseHeaders(200, bytes.length);
         try (OutputStream responseBody = exchange.getResponseBody()) {
             responseBody.write(bytes);
         }

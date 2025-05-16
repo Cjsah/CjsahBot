@@ -16,8 +16,6 @@ public class FriendMessageEvent extends MessageEvent {
 
     @Override
     public String toString() {
-        return "FriendMessageEvent{" +
-                "super='" + super.toString() + '\'' +
-                '}';
+        return "FriendMessageEvent{super=" + super.toString() + '}';
     }
 }

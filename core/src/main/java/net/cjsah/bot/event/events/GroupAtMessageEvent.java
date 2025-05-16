@@ -23,10 +23,7 @@ public class GroupAtMessageEvent extends MessageEvent {
 
     @Override
     public String toString() {
-        return "GroupAtMessageEvent{" +
-                "super='" + super.toString() + '\'' +
-                ", groupOpenId='" + groupOpenId + '\'' +
-                '}';
+        return "GroupAtMessageEvent{super=" + super.toString() + ", groupOpenId='" + groupOpenId + "'}";
     }
 
 }

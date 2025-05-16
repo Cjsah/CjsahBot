@@ -135,7 +135,7 @@ public class MainApplication extends Thread {
         }
 
         this.apiConnect(appId, secret);
-        this.listenHttpHooks(appId, secret, port);
+        this.listenHttpHooks(secret, port);
 
         PluginLoader.onStarted();
 
@@ -172,10 +172,10 @@ public class MainApplication extends Thread {
         }
     }
 
-    private void listenHttpHooks(String appId, String secret, int port) {
+    private void listenHttpHooks(String secret, int port) {
         try {
             log.info("正在启动Http服务器...");
-            this.httpServer.init(port, appId, secret);
+            this.httpServer.init(port, secret);
             this.httpServer.start();
         } catch (Exception e) {
             log.error("Http Hooks create failed!", e);
