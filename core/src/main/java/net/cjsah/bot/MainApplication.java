@@ -12,7 +12,6 @@ import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.DateUtil;
 import net.cjsah.bot.util.JsonUtil;
 import net.cjsah.bot.util.RequestUtil;
-import org.java_websocket.enums.ReadyState;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -32,10 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class MainApplication extends Thread {
     private static final Logger log = LoggerFactory.getLogger("Console");
@@ -45,13 +42,11 @@ public class MainApplication extends Thread {
     private final Scheduler scheduler;
     private final BlockingQueue<SignalType> signals;
     private volatile boolean stop;
-    private volatile boolean connecting;
 
-    public MainApplication() throws SchedulerException, URISyntaxException, IOException {
+    public MainApplication() throws SchedulerException, IOException {
         this.scheduler = new StdSchedulerFactory().getScheduler();
         this.httpServer = new BotHttpServerImpl();
         this.stop = false;
-        this.connecting = false;
         this.signals = new LinkedBlockingQueue<>();
     }
 
@@ -98,10 +93,6 @@ public class MainApplication extends Thread {
         }
     }
 
-    public static boolean isConnecting() {
-        return INSTANCE.connecting;
-    }
-
     public static boolean isRunning() {
         return !INSTANCE.stop;
     }
@@ -131,8 +122,20 @@ public class MainApplication extends Thread {
         log.info("正在加载插件...");
         PluginLoader.loadPlugins();
 
-//        this.tryConnect();
-        this.listenHttpHooks();
+        String content = FilePaths.ACCOUNT.read();
+        JSONObject config = JsonUtil.deserialize(content);
+        String appId = config.getString("appId");
+        String secret = config.getString("secret");
+        int port = config.getIntValue("port", 8080);
+        if (Validator.isEmpty(appId)) {
+            throw new IllegalArgumentException("appId为空，请先设置appId");
+        }
+        if (Validator.isEmpty(secret)) {
+            throw new IllegalArgumentException("secret为空，请先设置secret");
+        }
+
+        this.apiConnect(appId, secret);
+        this.listenHttpHooks(appId, secret, port);
 
         PluginLoader.onStarted();
 
@@ -169,20 +172,9 @@ public class MainApplication extends Thread {
         }
     }
 
-    private void listenHttpHooks() {
+    private void listenHttpHooks(String appId, String secret, int port) {
         try {
             log.info("正在启动Http服务器...");
-            String content = FilePaths.ACCOUNT.read();
-            JSONObject config = JsonUtil.deserialize(content);
-            String appId = config.getString("appId");
-            String secret = config.getString("secret");
-            int port = config.getIntValue("port", 8080);
-            if (Validator.isEmpty(appId)) {
-                throw new IllegalArgumentException("appId为空，请先设置appId");
-            }
-            if (Validator.isEmpty(secret)) {
-                throw new IllegalArgumentException("secret为空，请先设置secret");
-            }
             this.httpServer.init(port, appId, secret);
             this.httpServer.start();
         } catch (Exception e) {

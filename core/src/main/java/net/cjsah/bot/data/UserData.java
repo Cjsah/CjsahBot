@@ -7,9 +7,9 @@ public class UserData {
     private final String memberOpenid;
     private final String unionOpenid;
 
-    public UserData(JSONObject raw) {
+    public UserData(JSONObject raw, boolean isGroup) {
         this.id = raw.getString("id");
-        this.memberOpenid = raw.getString("member_openid");
+        this.memberOpenid = raw.getString(isGroup ? "member_openid" : "user_openid");
         this.unionOpenid = raw.getString("union_openid");
     }
 

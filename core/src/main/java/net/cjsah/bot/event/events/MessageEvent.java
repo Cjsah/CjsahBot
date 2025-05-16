@@ -14,9 +14,9 @@ public abstract class MessageEvent extends BotEvent {
     private final long timestamp;
     private final List<JSONObject> attachments;
 
-    public MessageEvent(String eventId, JSONObject raw) {
+    public MessageEvent(String eventId, JSONObject raw, boolean isGroup) {
         super(eventId);
-        this.sender = new UserData(raw.getJSONObject("author"));
+        this.sender = new UserData(raw.getJSONObject("author"), isGroup);
         this.content = raw.getString("content");
         this.id = raw.getString("id");
         this.timestamp = DateUtil.parseRFC3339(raw.getString("timestamp"));
@@ -43,5 +43,17 @@ public abstract class MessageEvent extends BotEvent {
 
     public List<JSONObject> getAttachments() {
         return this.attachments;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageEvent{" +
+                "sender=" + sender +
+                ", content='" + content + '\'' +
+                ", id='" + id + '\'' +
+                ", timestamp=" + timestamp +
+                ", attachments=" + attachments +
+                ", eventId='" + eventId + '\'' +
+                '}';
     }
 }

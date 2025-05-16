@@ -19,13 +19,20 @@ public final class Api {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static String TOKEN = "";
 
-    public static String sendFriendMsg(String userId, String msg, boolean markdown, String callbackMsgId) {
+    public static <T> String sendFriendMsg(String userId, String replyId, TypedMessage<T> typedMessage) {
         JSONObject res = postJson("/v2/users/%s/messages".formatted(userId), json -> {
-            json.put("msg_type", markdown ? 2 : 0);
-            json.put(markdown ? "markdown" : "content", msg);
-            if (callbackMsgId != null && !callbackMsgId.isEmpty()) {
-                json.put("msg_id", callbackMsgId);
-            }
+            json.put("msg_type", typedMessage.getType());
+            json.put(typedMessage.getKey(), typedMessage.getContent());
+            json.put("msg_id", replyId);
+        });
+        return res.getString("id");
+    }
+
+    public static <T> String sendGroupMsg(String groupId, String replyId, TypedMessage<T> typedMessage) {
+        JSONObject res = postJson("/v2/groups/%s/messages".formatted(groupId), json -> {
+            json.put("msg_type", typedMessage.getType());
+            json.put(typedMessage.getKey(), typedMessage.getContent());
+            json.put("msg_id", replyId);
         });
         System.out.println(res);
         return "";
@@ -45,7 +52,7 @@ public final class Api {
     }
 
     private static JSONObject postJson(String url, Consumer<JSONObject> consumer) {
-        HttpRequest request = Api.genRequest("https://api.sgroup.qq.com" + url, Method.POST);
+        HttpRequest request = Api.genRequest(url, Method.POST);
         JSONObject body = new JSONObject();
         consumer.accept(body);
         request.body(JsonUtil.serialize(body));
@@ -68,9 +75,13 @@ public final class Api {
         try (HttpResponse response = request.execute()) {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);
-            System.out.println(json);
-            if (!"ok".equals(json.getString("status"))) {
-                throw BuiltExceptions.REQUEST_FAILED.create(json.getString("msg"));
+            log.info("{}", json);
+            int code = json.getIntValue("code");
+            if (code != 0) {
+                String traceId = json.getString("trace_id");
+                String message = json.getString("message");
+                String errCode = json.getString("err_code");
+                throw BuiltExceptions.API_REQUEST_FAILED.create(code, errCode, traceId, message);
             }
             return json;
         }

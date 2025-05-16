@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class CommandManager {
-    private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
+    private static final Logger log = LoggerFactory.getLogger("CommandManager");
 
     private static final Map<String, CommandNode> COMMANDS = new HashMap<>();
 
