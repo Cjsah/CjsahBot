@@ -7,9 +7,6 @@ archivesBaseName = rootProject.name
 
 dependencies {
 //    implementation project(":api")
-    api("org.java-websocket:Java-WebSocket:$websocket_version") {
-        exclude group: 'org.slf4j'
-    }
     api("org.quartz-scheduler:quartz:$quartz_version") {
         exclude group: 'com.zaxxer'
         exclude group: 'com.mchange'
