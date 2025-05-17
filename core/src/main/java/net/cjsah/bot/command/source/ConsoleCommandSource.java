@@ -1,5 +1,6 @@
 package net.cjsah.bot.command.source;
 
+import net.cjsah.bot.api.TypedMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ public final class ConsoleCommandSource extends CommandSource<Void> {
     }
 
     @Override
-    public void sendFeedback(String message) {
-        log.info(message);
+    public <S> void sendFeedback(TypedMessage<S> message) {
+        log.info("{}", message.getContent());
     }
 }

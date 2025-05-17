@@ -16,7 +16,7 @@ public final class GroupCommandSource extends CommandSource<GroupAtMessageEvent>
     }
 
     @Override
-    public void sendFeedback(String message) {
-        Api.sendGroupMsg(this.sender.getGroupId(), this.sender.getId(), TypedMessage.text(message));
+    public <S> void sendFeedback(TypedMessage<S> message) {
+        Api.sendGroupMsg(this.sender.getGroupId(), this.sender.getId(), message);
     }
 }
