@@ -43,6 +43,7 @@ public final class BuiltExceptions{
     public static final CustomExceptionFactory<?> MSG_UNSUPPORTED_DATA = new CustomExceptionFactory<>("不支持的数据格式, 请完整填入后返回", MessageException::new);
     public static final CustomExceptionFactory<?> COUNTDOWN_LESS_NOW = new CustomExceptionFactory<>("定时结束时间小于当前系统时间", MessageException::new);
     public static final CustomExceptionFactory<?> COUNTDOWN_OVER_COUNT = new CustomExceptionFactory<>("定时时长超过了范围", MessageException::new);
+    public static final CustomExceptionFactory<?> MESSAGE_NOT_MARKDOWN = new CustomExceptionFactory<>("消息类型错误, keyboard只允许添加到markdown消息中", MessageException::new);
 
     public static final CustomExceptionFactory<?> PLUGIN_EXCEPTION = new CustomExceptionFactory<>("%s", PluginException::new);
 }

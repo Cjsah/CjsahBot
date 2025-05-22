@@ -19,20 +19,24 @@ public final class Api {
     private static final Logger log = LoggerFactory.getLogger("Console");
     private static String TOKEN = "";
 
-    public static <T> String sendFriendMsg(String userId, String replyId, TypedMessage<T> typedMessage) {
+    public static String sendFriendMsg(String userId, String replyId, TypedMessage typedMessage) {
         JSONObject res = postJson("/v2/users/%s/messages".formatted(userId), json -> {
             json.put("msg_type", typedMessage.getType());
-            json.put(typedMessage.getKey(), typedMessage.getContent());
-            json.put("msg_id", replyId);
+            json.putAll(typedMessage.getContent());
+            if (replyId != null) {
+                json.put("msg_id", replyId);
+            }
         });
         return res.getString("id");
     }
 
-    public static <T> String sendGroupMsg(String groupId, String replyId, TypedMessage<T> typedMessage) {
+    public static String sendGroupMsg(String groupId, String replyId, TypedMessage typedMessage) {
         JSONObject res = postJson("/v2/groups/%s/messages".formatted(groupId), json -> {
             json.put("msg_type", typedMessage.getType());
-            json.put(typedMessage.getKey(), typedMessage.getContent());
-            json.put("msg_id", replyId);
+            json.putAll(typedMessage.getContent());
+            if (replyId != null) {
+                json.put("msg_id", replyId);
+            }
         });
         System.out.println(res);
         return "";

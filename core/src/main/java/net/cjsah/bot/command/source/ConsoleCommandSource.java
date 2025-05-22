@@ -18,7 +18,7 @@ public final class ConsoleCommandSource extends CommandSource<Void> {
     }
 
     @Override
-    public <S> void sendFeedback(TypedMessage<S> message) {
+    public void sendFeedback(TypedMessage message) {
         log.info("{}", message.getContent());
     }
 }

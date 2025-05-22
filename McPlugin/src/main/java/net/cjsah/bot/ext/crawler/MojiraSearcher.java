@@ -41,7 +41,7 @@ public class MojiraSearcher {
             params.put("version", versions);
             params.put("fix_version", fixVersion);
 
-            source.sendFeedback(TypedMessage.markdown("102283152_1747463399", params));
+            source.sendFeedback(TypedMessage.markdown("102283152_1747463399", params).keyboard("102283152_1747464605"));
         } catch (PluginException e) {
             CrawlerPlugin.log.error(e.getMessage());
             source.sendFeedback(e.getMessage());

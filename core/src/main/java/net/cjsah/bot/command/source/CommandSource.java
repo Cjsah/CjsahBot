@@ -24,5 +24,5 @@ public abstract class CommandSource<T> {
         this.sendFeedback(TypedMessage.text(message));
     }
 
-    public abstract <S> void sendFeedback(TypedMessage<S> message);
+    public abstract void sendFeedback(TypedMessage message);
 }
