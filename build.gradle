@@ -18,8 +18,9 @@ allprojects {
 subprojects {
     dependencies {
         api "ch.qos.logback:logback-classic:$logback_version"
-        api "com.alibaba.fastjson2:fastjson2:$fastjson_version"
         api "cn.hutool:hutool-all:$hutool_version"
+        api "com.google.code.gson:gson:$project.gson_version"
+        api "com.alibaba.fastjson2:fastjson2:$fastjson_version"
 
         api "org.jetbrains:annotations:24.0.0"
 

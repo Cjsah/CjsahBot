@@ -1,4 +1,4 @@
 rootProject.name = "QQNTBotConsole"
 include 'api'
 include 'core'
-include 'McPlugin'
+//include 'McPlugin'

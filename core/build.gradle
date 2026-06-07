@@ -1,9 +1,17 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
+    id 'io.freefair.lombok' version '9.5.0'
 }
 
 archivesBaseName = rootProject.name
+
+repositories {
+    maven {
+        name 'mojang'
+        url 'https://libraries.minecraft.net'
+    }
+}
 
 dependencies {
 //    implementation project(":api")
@@ -15,6 +23,12 @@ dependencies {
         exclude group: 'com.mchange'
         exclude group: 'org.slf4j'
     }
+
+    api "com.mojang:datafixerupper:${project.codec_version}"
+}
+
+lombok {
+    version = lombok_version
 }
 
 tasks.register('copyJar', Copy) {

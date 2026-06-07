@@ -1,6 +1,7 @@
 package net.cjsah.bot;
 
 import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.client.WebSocketClient;
@@ -15,12 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j(topic = "WebsocketClient")
 public final class WebSocketClientImpl extends WebSocketClient {
-    private static final Logger log = LoggerFactory.getLogger("WebsocketClient");
+    private final WebSocketThread thread;
     private final HeartBeatTimer heart = new HeartBeatTimer();
 
-    public WebSocketClientImpl(String url, String token) throws URISyntaxException, SchedulerException {
+    public WebSocketClientImpl(WebSocketThread thread, String url, String token) throws URISyntaxException, SchedulerException {
         super(new URI(url + "?access_token=" + token));
+        this.thread = thread;
     }
 
     @Override
