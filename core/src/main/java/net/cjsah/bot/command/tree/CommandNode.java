@@ -4,6 +4,7 @@ import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContextBuilder;
 import net.cjsah.bot.command.execute.Command;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.CommandException;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,39 +15,39 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class CommandNode<S> {
-    private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
-    private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
-    private final Predicate<S> requirement;
+public abstract class CommandNode {
+    private final Map<String, CommandNode> children = new LinkedHashMap<>();
+    private final Map<String, LiteralCommandNode> literals = new LinkedHashMap<>();
+    private final Map<String, ArgumentCommandNode<?>> arguments = new LinkedHashMap<>();
+    private final Predicate<CommandSource<?>> requirement;
     @Nullable
     private final String pluginId;
     @Nullable
-    private Command<S> command;
+    private Command command;
 
-    protected CommandNode(@Nullable String pluginId, @Nullable Command<S> command, Predicate<S> requirement) {
+    protected CommandNode(@Nullable String pluginId, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
         this.pluginId = pluginId;
         this.command = command;
         this.requirement = requirement;
     }
 
-    public Command<S> getCommand() {
+    public Command getCommand() {
         return this.command;
     }
 
-    public Collection<CommandNode<S>> getChildren() {
+    public Collection<CommandNode> getChildren() {
         return this.children.values();
     }
 
-    public CommandNode<S> getChild(String name) {
+    public CommandNode getChild(String name) {
         return this.children.get(name);
     }
 
-    public Predicate<S> getRequirement() {
+    public Predicate<CommandSource<?>> getRequirement() {
         return this.requirement;
     }
 
-    public boolean canUse(final S source) {
+    public boolean canUse(final CommandSource<?> source) {
         return requirement.test(source);
     }
 
@@ -60,12 +61,12 @@ public abstract class CommandNode<S> {
 
     protected abstract boolean isValidInput(final String input);
 
-    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException;
+    public abstract void parse(StringReader reader, CommandContextBuilder contextBuilder) throws CommandException;
 
-    protected abstract ArgumentBuilder<S, ?> builderFactory();
+    protected abstract ArgumentBuilder<?> builderFactory();
 
-    public ArgumentBuilder<S, ?> createBuilder() {
-        ArgumentBuilder<S, ?> builder = this.builderFactory();
+    public ArgumentBuilder<?> createBuilder() {
+        ArgumentBuilder<?> builder = this.builderFactory();
         builder.requires(this.getRequirement());
         if (this.getCommand() != null) {
             builder.executes(this.getCommand());
@@ -76,31 +77,31 @@ public abstract class CommandNode<S> {
         return builder;
     }
 
-    public void addChild(CommandNode<S> node) {
-        if (node instanceof RootCommandNode<S>) {
+    public void addChild(CommandNode node) {
+        if (node instanceof RootCommandNode) {
             throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
         }
 
-        final CommandNode<S> child = this.children.get(node.getName());
+        final CommandNode child = this.children.get(node.getName());
         if (child != null) {
             // We've found something to merge onto
             if (node.getCommand() != null) {
                 child.command = node.getCommand();
             }
-            for (final CommandNode<S> grandchild : node.getChildren()) {
+            for (final CommandNode grandchild : node.getChildren()) {
                 child.addChild(grandchild);
             }
         } else {
             this.children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
-                this.literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                this.literals.put(node.getName(), (LiteralCommandNode) node);
             } else if (node instanceof ArgumentCommandNode) {
-                this.arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
+                this.arguments.put(node.getName(), (ArgumentCommandNode<?>) node);
             }
         }
     }
 
-    public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
+    public Collection<? extends CommandNode> getRelevantNodes(final StringReader input) {
         if (!this.literals.isEmpty()) {
             final int cursor = input.getCursor();
             while (input.canRead() && input.peek() != ' ') {
@@ -108,7 +109,7 @@ public abstract class CommandNode<S> {
             }
             final String text = input.getString().substring(cursor, input.getCursor());
             input.setCursor(cursor);
-            final LiteralCommandNode<S> literal = this.literals.get(text);
+            final LiteralCommandNode literal = this.literals.get(text);
             if (literal != null) {
                 return Collections.singleton(literal);
             }
@@ -119,7 +120,7 @@ public abstract class CommandNode<S> {
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof CommandNode<?> that)) return false;
+        if (!(o instanceof CommandNode that)) return false;
 
         if (!this.children.equals(that.children)) return false;
         return Objects.equals(this.command, that.command);

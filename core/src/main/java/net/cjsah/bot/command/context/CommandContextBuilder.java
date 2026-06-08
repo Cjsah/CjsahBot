@@ -2,6 +2,7 @@ package net.cjsah.bot.command.context;
 
 import net.cjsah.bot.command.CommandDispatcher;
 import net.cjsah.bot.command.execute.Command;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.tree.CommandNode;
 
 import java.util.ArrayList;
@@ -9,57 +10,57 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommandContextBuilder<S> {
-    private final Map<String, ParsedArgument<S, ?>> arguments = new LinkedHashMap<>();
-    private final CommandNode<S> rootNode;
-    private final List<ParsedCommandNode<S>> nodes = new ArrayList<>();
-    private final CommandDispatcher<S> dispatcher;
-    private S source;
-    private Command<S> command;
+public class CommandContextBuilder {
+    private final Map<String, ParsedArgument<?>> arguments = new LinkedHashMap<>();
+    private final CommandNode rootNode;
+    private final List<ParsedCommandNode> nodes = new ArrayList<>();
+    private final CommandDispatcher dispatcher;
+    private CommandSource<?> source;
+    private Command command;
     private StringRange range;
 
-    public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final CommandNode<S> rootNode, final int start) {
+    public CommandContextBuilder(final CommandDispatcher dispatcher, final CommandSource<?> source, final CommandNode rootNode, final int start) {
         this.rootNode = rootNode;
         this.dispatcher = dispatcher;
         this.source = source;
         this.range = StringRange.at(start);
     }
 
-    public CommandContextBuilder<S> withSource(final S source) {
+    public CommandContextBuilder withSource(final CommandSource<?> source) {
         this.source = source;
         return this;
     }
 
-    public S getSource() {
+    public CommandSource<?> getSource() {
         return this.source;
     }
 
-    public CommandNode<S> getRootNode() {
+    public CommandNode getRootNode() {
         return this.rootNode;
     }
 
-    public CommandContextBuilder<S> withArgument(final String name, final ParsedArgument<S, ?> argument) {
+    public CommandContextBuilder withArgument(final String name, final ParsedArgument<?> argument) {
         this.arguments.put(name, argument);
         return this;
     }
 
-    public Map<String, ParsedArgument<S, ?>> getArguments() {
+    public Map<String, ParsedArgument<?>> getArguments() {
         return arguments;
     }
 
-    public CommandContextBuilder<S> withCommand(final Command<S> command) {
+    public CommandContextBuilder withCommand(final Command command) {
         this.command = command;
         return this;
     }
 
-    public CommandContextBuilder<S> withNode(final CommandNode<S> node, final StringRange range) {
-        this.nodes.add(new ParsedCommandNode<>(node, range));
+    public CommandContextBuilder withNode(final CommandNode node, final StringRange range) {
+        this.nodes.add(new ParsedCommandNode(node, range));
         this.range = StringRange.encompassing(this.range, range);
         return this;
     }
 
-    public CommandContextBuilder<S> copy() {
-        final CommandContextBuilder<S> copy = new CommandContextBuilder<>(this.dispatcher, this.source, this.rootNode, this.range.start());
+    public CommandContextBuilder copy() {
+        final CommandContextBuilder copy = new CommandContextBuilder(this.dispatcher, this.source, this.rootNode, this.range.start());
         copy.command = this.command;
         copy.arguments.putAll(this.arguments);
         copy.nodes.addAll(this.nodes);
@@ -67,19 +68,19 @@ public class CommandContextBuilder<S> {
         return copy;
     }
 
-    public Command<S> getCommand() {
+    public Command getCommand() {
         return this.command;
     }
 
-    public List<ParsedCommandNode<S>> getNodes() {
+    public List<ParsedCommandNode> getNodes() {
         return this.nodes;
     }
 
-    public CommandContext<S> build(final String input) {
-        return new CommandContext<>(this.source, input, this.arguments, this.command, this.rootNode, this.nodes, this.range);
+    public CommandContext build(final String input) {
+        return new CommandContext(this.source, input, this.arguments, this.command, this.rootNode, this.nodes, this.range);
     }
 
-    public CommandDispatcher<S> getDispatcher() {
+    public CommandDispatcher getDispatcher() {
         return this.dispatcher;
     }
 

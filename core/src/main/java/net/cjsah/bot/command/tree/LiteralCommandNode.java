@@ -6,16 +6,17 @@ import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContextBuilder;
 import net.cjsah.bot.command.context.StringRange;
 import net.cjsah.bot.command.execute.Command;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-public class LiteralCommandNode<S> extends CommandNode<S> {
+public class LiteralCommandNode extends CommandNode {
     private final String literal;
 
-    public LiteralCommandNode(String literal, @Nullable String pluginId, @Nullable Command<S> command, Predicate<S> requirement) {
+    public LiteralCommandNode(String literal, @Nullable String pluginId, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
         super(pluginId, command, requirement);
         this.literal = literal;
     }
@@ -36,7 +37,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(StringReader reader, CommandContextBuilder contextBuilder) throws CommandException {
         final int start = reader.getCursor();
         final int end = parse(reader);
         if (end > -1) {
@@ -64,14 +65,14 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    protected ArgumentBuilder<S, ?> builderFactory() {
-        return LiteralArgumentBuilder.literal(this.literal);
+    protected ArgumentBuilder<?> builderFactory() {
+        return LiteralArgumentBuilder.literal(this.getPluginId(), this.literal);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LiteralCommandNode<?> that)) return false;
+        if (!(o instanceof LiteralCommandNode that)) return false;
 
         if (!this.literal.equals(that.literal)) return false;
         return super.equals(o);

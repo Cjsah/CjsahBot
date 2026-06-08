@@ -3,6 +3,7 @@ package net.cjsah.bot.command;
 import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.context.CommandContextBuilder;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.tree.CommandNode;
 import net.cjsah.bot.command.tree.LiteralCommandNode;
 import net.cjsah.bot.command.tree.RootCommandNode;
@@ -13,7 +14,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class CommandDispatcher<S> {
+public class CommandDispatcher {
     public static final String ARGUMENT_SEPARATOR = " ";
 
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
@@ -24,39 +25,39 @@ public class CommandDispatcher<S> {
     private static final String USAGE_REQUIRED_CLOSE = ")";
     private static final String USAGE_OR = "|";
 
-    private final RootCommandNode<S> root;
+    private final RootCommandNode root;
 
-    private final Predicate<CommandNode<S>> hasCommand = new Predicate<>() {
+    private final Predicate<CommandNode> hasCommand = new Predicate<>() {
         @Override
-        public boolean test(final CommandNode<S> input) {
+        public boolean test(final CommandNode input) {
             return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
         }
     };
 
-    public CommandDispatcher(final RootCommandNode<S> root) {
+    public CommandDispatcher(final RootCommandNode root) {
         this.root = root;
     }
 
     public CommandDispatcher() {
-        this(new RootCommandNode<>());
+        this(new RootCommandNode());
     }
 
-    public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
-        final LiteralCommandNode<S> build = command.build();
+    protected LiteralCommandNode register(final LiteralArgumentBuilder command) {
+        final LiteralCommandNode build = command.build();
         this.root.addChild(build);
         return build;
     }
 
-    public int execute(final String input, final S source) throws CommandException {
+    public int execute(final String input, final CommandSource<?> source) throws CommandException {
         return execute(new StringReader(input), source);
     }
 
-    public int execute(final StringReader input, final S source) throws CommandException {
-        final ParseResults<S> parse = parse(input, source);
+    public int execute(final StringReader input, final CommandSource<?> source) throws CommandException {
+        final ParseResults parse = parse(input, source);
         return execute(parse);
     }
 
-    public int execute(final ParseResults<S> parse) throws CommandException {
+    public int execute(final ParseResults parse) throws CommandException {
         if (parse.reader().canRead()) {
             if (parse.exceptions().size() == 1) {
                 throw parse.exceptions().values().iterator().next();
@@ -68,7 +69,7 @@ public class CommandDispatcher<S> {
         }
 
         final String command = parse.reader().getString();
-        final CommandContext<S> context = parse.context().build(command);
+        final CommandContext context = parse.context().build(command);
 
         if (context.getCommand() == null) {
             throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
@@ -77,26 +78,26 @@ public class CommandDispatcher<S> {
         return context.getCommand().run(context);
     }
 
-    public ParseResults<S> parse(final String command, final S source) {
+    public ParseResults parse(final String command, final CommandSource<?> source) {
         return parse(new StringReader(command), source);
     }
 
-    public ParseResults<S> parse(final StringReader command, final S source) {
-        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, this.root, command.getCursor());
+    public ParseResults parse(final StringReader command, final CommandSource<?> source) {
+        final CommandContextBuilder context = new CommandContextBuilder(this, source, this.root, command.getCursor());
         return parseNodes(this.root, command, context);
     }
 
-    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextBuilder) {
-        final S source = contextBuilder.getSource();
-        Map<CommandNode<S>, CommandException> errors = new LinkedHashMap<>();
-        List<ParseResults<S>> potentials = new ArrayList<>(1);
+    private ParseResults parseNodes(final CommandNode node, final StringReader originalReader, final CommandContextBuilder contextBuilder) {
+        final CommandSource<?> source = contextBuilder.getSource();
+        Map<CommandNode, CommandException> errors = new LinkedHashMap<>();
+        List<ParseResults> potentials = new ArrayList<>(1);
         final int cursor = originalReader.getCursor();
 
-        for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
+        for (final CommandNode child : node.getRelevantNodes(originalReader)) {
             if (!child.canUse(source)) {
                 continue;
             }
-            final CommandContextBuilder<S> context = contextBuilder.copy();
+            final CommandContextBuilder context = contextBuilder.copy();
             final StringReader reader = new StringReader(originalReader);
             try {
                 try {
@@ -117,11 +118,11 @@ public class CommandDispatcher<S> {
 
             context.withCommand(child.getCommand());
             if (reader.canRead(2)) {
-                final ParseResults<S> parse = parseNodes(child, reader, context);
+                final ParseResults parse = parseNodes(child, reader, context);
                 potentials.add(parse);
 
             } else {
-                potentials.add(new ParseResults<>(context, reader, Collections.emptyMap()));
+                potentials.add(new ParseResults(context, reader, Collections.emptyMap()));
             }
         }
 
@@ -146,16 +147,16 @@ public class CommandDispatcher<S> {
             return potentials.getFirst();
         }
 
-        return new ParseResults<>(contextBuilder, originalReader, errors);
+        return new ParseResults(contextBuilder, originalReader, errors);
     }
 
-    public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
+    public String[] getAllUsage(final CommandNode node, final CommandSource<?> source, final boolean restricted) {
         final ArrayList<String> result = new ArrayList<>();
         getAllUsage(node, source, result, "", restricted);
         return result.toArray(new String[0]);
     }
 
-    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
+    private void getAllUsage(final CommandNode node, final CommandSource<?> source, final ArrayList<String> result, final String prefix, final boolean restricted) {
         if (restricted && !node.canUse(source)) {
             return;
         }
@@ -165,17 +166,17 @@ public class CommandDispatcher<S> {
         }
 
         if (!node.getChildren().isEmpty()) {
-            for (final CommandNode<S> child : node.getChildren()) {
+            for (final CommandNode child : node.getChildren()) {
                 getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), restricted);
             }
         }
     }
 
-    public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
-        final Map<CommandNode<S>, String> result = new LinkedHashMap<>();
+    public Map<CommandNode, String> getSmartUsage(final CommandNode node, final CommandSource<?> source) {
+        final Map<CommandNode, String> result = new LinkedHashMap<>();
 
         final boolean optional = node.getCommand() != null;
-        for (final CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode child : node.getChildren()) {
             final String usage = getSmartUsage(child, source, optional, false);
             if (usage != null) {
                 result.put(child, usage);
@@ -184,7 +185,7 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final boolean deep) {
+    private String getSmartUsage(final CommandNode node, final CommandSource<?> source, final boolean optional, final boolean deep) {
         if (!node.canUse(source)) {
             return null;
         }
@@ -195,7 +196,7 @@ public class CommandDispatcher<S> {
         final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
         if (!deep) {
-            final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+            final Collection<CommandNode> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
             if (children.size() == 1) {
                 final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                 if (usage != null) {
@@ -203,7 +204,7 @@ public class CommandDispatcher<S> {
                 }
             } else if (children.size() > 1) {
                 final Set<String> childUsage = new LinkedHashSet<>();
-                for (final CommandNode<S> child : children) {
+                for (final CommandNode child : children) {
                     final String usage = getSmartUsage(child, source, childOptional, true);
                     if (usage != null) {
                         childUsage.add(usage);
@@ -215,7 +216,7 @@ public class CommandDispatcher<S> {
                 } else if (childUsage.size() > 1) {
                     final StringBuilder builder = new StringBuilder(open);
                     int count = 0;
-                    for (final CommandNode<S> child : children) {
+                    for (final CommandNode child : children) {
                         if (count > 0) {
                             builder.append(USAGE_OR);
                         }
@@ -233,18 +234,18 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    public RootCommandNode<S> getRoot() {
+    public RootCommandNode getRoot() {
         return root;
     }
 
-    public Collection<String> getPath(final CommandNode<S> target) {
-        final List<List<CommandNode<S>>> nodes = new ArrayList<>();
+    public Collection<String> getPath(final CommandNode target) {
+        final List<List<CommandNode>> nodes = new ArrayList<>();
         addPaths(root, nodes, new ArrayList<>());
 
-        for (final List<CommandNode<S>> list : nodes) {
+        for (final List<CommandNode> list : nodes) {
             if (list.get(list.size() - 1) == target) {
                 final List<String> result = new ArrayList<>(list.size());
-                for (final CommandNode<S> node : list) {
+                for (final CommandNode node : list) {
                     if (node != root) {
                         result.add(node.getName());
                     }
@@ -256,8 +257,8 @@ public class CommandDispatcher<S> {
         return Collections.emptyList();
     }
 
-    public CommandNode<S> findNode(final Collection<String> path) {
-        CommandNode<S> node = root;
+    public CommandNode findNode(final Collection<String> path) {
+        CommandNode node = root;
         for (final String name : path) {
             node = node.getChild(name);
             if (node == null) {
@@ -267,12 +268,12 @@ public class CommandDispatcher<S> {
         return node;
     }
 
-    private void addPaths(final CommandNode<S> node, final List<List<CommandNode<S>>> result, final List<CommandNode<S>> parents) {
-        final List<CommandNode<S>> current = new ArrayList<>(parents);
+    private void addPaths(final CommandNode node, final List<List<CommandNode>> result, final List<CommandNode> parents) {
+        final List<CommandNode> current = new ArrayList<>(parents);
         current.add(node);
         result.add(current);
 
-        for (final CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode child : node.getChildren()) {
             addPaths(child, result, current);
         }
     }

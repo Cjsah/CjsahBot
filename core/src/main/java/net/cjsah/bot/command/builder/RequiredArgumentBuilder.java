@@ -4,7 +4,7 @@ import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.tree.ArgumentCommandNode;
 import net.cjsah.bot.command.tree.CommandNode;
 
-public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
+public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
     private final String name;
     private final Argument<T> argument;
 
@@ -14,7 +14,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         this.byPlugin(pluginId);
     }
 
-    public static <S, T> RequiredArgumentBuilder<S, T> argument(final String pluginId, final String name, final Argument<T> argument) {
+    public static <T> RequiredArgumentBuilder<T> argument(final String pluginId, final String name, final Argument<T> argument) {
         return new RequiredArgumentBuilder<>(pluginId, name, argument);
     }
 
@@ -27,13 +27,13 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     @Override
-    protected RequiredArgumentBuilder<S, T> getThis() {
+    protected RequiredArgumentBuilder<T> getThis() {
         return this;
     }
 
     @Override
-    public ArgumentCommandNode<S, T> build() {
-        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(
+    public ArgumentCommandNode<T> build() {
+        final ArgumentCommandNode<T> result = new ArgumentCommandNode<>(
             this.getName(),
             this.getArgument(),
             this.getPluginId(),
@@ -41,7 +41,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
             this.getRequirement()
         );
 
-        for (final CommandNode<S> argument : this.getArguments()) {
+        for (final CommandNode argument : this.getArguments()) {
             result.addChild(argument);
         }
 

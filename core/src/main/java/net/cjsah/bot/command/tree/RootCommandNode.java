@@ -6,7 +6,7 @@ import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContextBuilder;
 import net.cjsah.bot.exception.CommandException;
 
-public class RootCommandNode<S> extends CommandNode<S> {
+public class RootCommandNode extends CommandNode {
     public RootCommandNode() {
         super(null, null, CommandManager.passRequirement());
     }
@@ -27,17 +27,17 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(StringReader reader, CommandContextBuilder contextBuilder) throws CommandException {
 
     }
 
     @Override
-    protected ArgumentBuilder<S, ?> builderFactory() {
+    protected ArgumentBuilder<?> builderFactory() {
         return null;
     }
 
     @Override
-    public ArgumentBuilder<S, ?> createBuilder() {
+    public ArgumentBuilder<?> createBuilder() {
         throw new IllegalStateException("Cannot convert root into a builder");
     }
 

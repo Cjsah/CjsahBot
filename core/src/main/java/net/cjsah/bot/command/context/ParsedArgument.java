@@ -2,7 +2,7 @@ package net.cjsah.bot.command.context;
 
 import java.util.Objects;
 
-public class ParsedArgument<S, T> {
+public class ParsedArgument<T> {
     private final StringRange range;
     private final T result;
 
@@ -22,7 +22,7 @@ public class ParsedArgument<S, T> {
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof ParsedArgument<?, ?> that)) return false;
+        if (!(o instanceof ParsedArgument<?> that)) return false;
 
         return Objects.equals(this.range, that.range) && Objects.equals(this.result, that.result);
     }

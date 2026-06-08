@@ -26,12 +26,12 @@ public class CommandContext {
     private final CommandSource<?> source;
     private final String input;
     private final Command command;
-    private final Map<String, ParsedArgument<S, ?>> arguments;
-    private final CommandNode<S> rootNode;
-    private final List<ParsedCommandNode<S>> nodes;
+    private final Map<String, ParsedArgument<?>> arguments;
+    private final CommandNode rootNode;
+    private final List<ParsedCommandNode> nodes;
     private final StringRange range;
 
-    public CommandContext(final CommandSource<?> source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range) {
+    public CommandContext(final CommandSource<?> source, final String input, final Map<String, ParsedArgument<?>> arguments, final Command command, final CommandNode rootNode, final List<ParsedCommandNode> nodes, final StringRange range) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -41,14 +41,14 @@ public class CommandContext {
         this.range = range;
     }
 
-    public CommandContext<S> copyFor(final CommandSource<?> source) {
+    public CommandContext copyFor(final CommandSource<?> source) {
         if (this.source == source) {
             return this;
         }
-        return new CommandContext<>(source, this.input, this.arguments, this.command, this.rootNode, this.nodes, this.range);
+        return new CommandContext(source, this.input, this.arguments, this.command, this.rootNode, this.nodes, this.range);
     }
 
-    public Command<S> getCommand() {
+    public Command getCommand() {
         return this.command;
     }
 
@@ -58,7 +58,7 @@ public class CommandContext {
 
     @SuppressWarnings("unchecked")
     public <V> V getArgument(final String name, final Class<V> clazz) {
-        final ParsedArgument<S, ?> argument = this.arguments.get(name);
+        final ParsedArgument<?> argument = this.arguments.get(name);
 
         if (argument == null) {
             throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
@@ -75,7 +75,7 @@ public class CommandContext {
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof CommandContext<?> that)) return false;
+        if (!(o instanceof CommandContext that)) return false;
 
         if (!this.arguments.equals(that.arguments)) return false;
         if (!this.rootNode.equals(that.rootNode)) return false;
@@ -103,11 +103,11 @@ public class CommandContext {
         return this.input;
     }
 
-    public CommandNode<S> getRootNode() {
+    public CommandNode getRootNode() {
         return this.rootNode;
     }
 
-    public List<ParsedCommandNode<S>> getNodes() {
+    public List<ParsedCommandNode> getNodes() {
         return this.nodes;
     }
 

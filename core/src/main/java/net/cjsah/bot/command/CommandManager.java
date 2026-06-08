@@ -24,8 +24,6 @@ import java.util.function.Predicate;
 public final class CommandManager {
     private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
 
-    private static final CommandDispatcher<CommandSource<?>> dispatcher = new CommandDispatcher<>();
-
     private static final Map<String, net.cjsah.bot.command.tree.CommandNode> COMMANDS = new HashMap<>();
 
     public static void register(Class<?> commandClass) {
