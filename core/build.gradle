@@ -25,6 +25,7 @@ dependencies {
     }
 
     api "com.mojang:datafixerupper:${project.codec_version}"
+//    api "com.mojang:brigadier:${project.brigadier_version}"
 }
 
 lombok {

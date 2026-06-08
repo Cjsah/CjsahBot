@@ -2,13 +2,12 @@ package net.cjsah.bot.plugin;
 
 import net.cjsah.bot.Main;
 import net.cjsah.bot.SignalType;
-import net.cjsah.bot.command.Command;
+import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.UserData;
 import net.cjsah.bot.event.EventManager;
-import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
@@ -70,13 +69,13 @@ public final class MainPlugin extends Plugin {
 //        });
     }
 
-    @Command(value = "/botstop", permissions = HeyboxPermission.ADMIN)
+    @SimpleCommand(value = "/botstop", permissions = HeyboxPermission.ADMIN)
     public static void botStop(CommandSource source) {
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }
 
-    @Command(value = "/test", permissions = HeyboxPermission.ADMIN)
+    @SimpleCommand(value = "/test", permissions = HeyboxPermission.ADMIN)
     public static void test(CommandSource source) {
         Main.sendSignal(SignalType.RESTART);
     }

@@ -4,20 +4,24 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.config.AppConfig;
 import net.cjsah.bot.exception.AppException;
+import net.cjsah.bot.permission.PermissionManager;
 
 @Slf4j(topic = "Console")
 @Getter
 public final class MainApplication {
     private static final MainApplication INSTANCE = new MainApplication();
-    private WebSocketThread thread = null;
-
     private final AppConfig config;
 
-    public MainApplication() {
+    private WebSocketThread thread = null;
+
+    private MainApplication() {
         log.info("初始化文件系统...");
         AppPaths.init();
         log.info("加载配置文件...");
         this.config = AppConfig.loadOrCreate();
+        log.info("初始化权限系统...");
+        PermissionManager.getInstance().reload();
+
     }
 
     public synchronized void start() {

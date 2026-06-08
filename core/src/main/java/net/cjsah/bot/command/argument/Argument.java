@@ -1,5 +1,6 @@
 package net.cjsah.bot.command.argument;
 
+import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.argument.special.ArgsArgument;
 import net.cjsah.bot.command.argument.special.CommandSourceArgument;
 import net.cjsah.bot.command.source.CommandSource;
@@ -8,9 +9,9 @@ import net.cjsah.bot.exception.CommandException;
 
 public interface Argument<T> {
 
-    T parse(final String node) throws CommandException;
+    T parse(final StringReader node) throws CommandException;
 
-    static Class<? extends Argument<?>> getResolver(Class<?> clazz) {
+    static Class<? extends Argument<?>> getResolver(Class<?> clazz) throws CommandException {
         return switch (clazz.getTypeName()) {
             case "boolean", "java.lang.Boolean" -> BooleanArgument.class;
             case "byte", "java.lang.Byte" -> ByteArgument.class;

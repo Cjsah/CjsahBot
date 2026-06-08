@@ -10,6 +10,5 @@ public final class GroupCommandSource extends CommandSource<GroupMessageEvent> {
 
     @Override
     public void sendFeedback(String message) {
-
     }
 }

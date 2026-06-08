@@ -1,12 +1,7 @@
 package net.cjsah.bot.command;
 
-import net.cjsah.bot.command.argument.special.ArgsArgument;
 import net.cjsah.bot.command.argument.Argument;
-import net.cjsah.bot.command.argument.special.CommandSourceArgument;
-import net.cjsah.bot.command.context.CommandNode;
-import net.cjsah.bot.command.context.CommandNodeBuilder;
-import net.cjsah.bot.command.context.CommandParameter;
-import net.cjsah.bot.command.context.CommandParser;
+import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
@@ -24,26 +19,29 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public final class CommandManager {
     private static final Logger log = LoggerFactory.getLogger(CommandManager.class);
 
-    private static final Map<String, CommandNode> COMMANDS = new HashMap<>();
+    private static final CommandDispatcher<CommandSource<?>> dispatcher = new CommandDispatcher<>();
+
+    private static final Map<String, net.cjsah.bot.command.tree.CommandNode> COMMANDS = new HashMap<>();
 
     public static void register(Class<?> commandClass) {
         List<Method> methods = Arrays.stream(commandClass.getDeclaredMethods())
-                .filter(it -> Modifier.isPublic(it.getModifiers()) && Modifier.isStatic(it.getModifiers()) && !it.isBridge() && it.isAnnotationPresent(Command.class))
+                .filter(it -> Modifier.isPublic(it.getModifiers()) && Modifier.isStatic(it.getModifiers()) && !it.isBridge() && it.isAnnotationPresent(SimpleCommand.class))
                 .toList();
 
         for (Method method : methods) {
             try {
-                Command annotation = method.getAnnotation(Command.class);
+                SimpleCommand annotation = method.getAnnotation(SimpleCommand.class);
                 String cmd = annotation.value();
                 CommandParser parser = new CommandParser(cmd);
                 CommandNodeBuilder builder = parser.parse(method.getParameters())
                         .setMethod(method).setPermissions(annotation.permissions())
                         .setPlugin(PluginContext.getCurrentPluginInfo().getId());
-                CommandNode node = builder.build();
+                net.cjsah.bot.command.tree.CommandNode node = builder.build();
                 if (COMMANDS.containsKey(node.getName())) {
                     throw BuiltExceptions.REPEAT_COMMAND.create();
                 }
@@ -68,7 +66,7 @@ public final class CommandManager {
         try {
             List<String> nodes = Arrays.stream(cmd.split(" ")).map(String::trim).filter(it -> !it.isEmpty()).toList();
             if (nodes.isEmpty()) return;
-            CommandNode node = COMMANDS.get(nodes.removeFirst());
+            net.cjsah.bot.command.tree.CommandNode node = COMMANDS.get(nodes.removeFirst());
             if (node == null) throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
 //            if (!PermissionManager.hasCommandPermission(source.sender(), node)) {
 //                throw BuiltExceptions.DISPATCHER_COMMAND_NO_PERMISSION.create();
@@ -114,4 +112,9 @@ public final class CommandManager {
         }
 
     }
+
+    public static <S> Predicate<S> passRequirement() {
+        return c -> true;
+    }
+
 }

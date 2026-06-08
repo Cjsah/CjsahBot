@@ -1,18 +1,24 @@
 package net.cjsah.bot.command.argument;
 
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.exception.CommandException;
 
-public class ShortArgument implements Argument<Short> {
+public record ShortArgument(short min, short max) implements Argument<Short> {
+
+    public static ShortArgument shortArg() {
+        return shortArg(Short.MIN_VALUE);
+    }
+
+    public static ShortArgument shortArg(short min) {
+        return shortArg(min, Short.MAX_VALUE);
+    }
+
+    public static ShortArgument shortArg(short min, short max) {
+        return new ShortArgument(min, max);
+    }
+
     @Override
-    public Short parse(final String node) throws CommandException {
-        if (node.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_SHORT.create();
-        }
-        try {
-            return Short.parseShort(node);
-        }catch (NumberFormatException e) {
-            throw BuiltExceptions.READER_INVALID_SHORT.create(node);
-        }
+    public Short parse(final StringReader reader) throws CommandException {
+        return reader.readShort();
     }
 }
