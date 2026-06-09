@@ -1,8 +1,8 @@
 package net.cjsah.bot.command.source;
 
 import net.cjsah.bot.config.Permissions;
+import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.permission.PermissionManager;
-import net.cjsah.bot.permission.PermissionRole;
 import net.cjsah.bot.permission.context.PermissionContext;
 
 import java.util.Collection;
@@ -21,11 +21,11 @@ public abstract class CommandSource<T> {
 
     protected abstract Function<Permissions, PermissionContext> permissionFactory();
 
-    public boolean hasPermission(PermissionRole role) {
+    public boolean hasPermission(UserRole role) {
         return this.permission.hasPermission(role);
     }
 
-    public boolean hasPermission(PermissionRole role, Collection<String> pluginIds) {
+    public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         return this.permission.hasPermission(role, pluginIds);
     }
 }

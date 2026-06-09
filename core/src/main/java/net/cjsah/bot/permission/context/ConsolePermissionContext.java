@@ -1,18 +1,18 @@
 package net.cjsah.bot.permission.context;
 
-import net.cjsah.bot.permission.PermissionRole;
+import net.cjsah.bot.config.permission.UserRole;
 
 import java.util.Collection;
 
 public class ConsolePermissionContext extends PermissionContext {
 
     @Override
-    public boolean hasPermission(PermissionRole role) {
+    public boolean hasPermission(UserRole role) {
         return true;
     }
 
     @Override
-    public boolean hasPermission(PermissionRole role, Collection<String> pluginIds) {
+    public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         return true;
     }
 }

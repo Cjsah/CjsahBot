@@ -1,14 +1,14 @@
 package net.cjsah.bot.permission.context;
 
-import net.cjsah.bot.permission.PermissionRole;
+import net.cjsah.bot.config.permission.UserRole;
 
 import java.util.Collection;
 
 public abstract class PermissionContext {
 
-    public abstract boolean hasPermission(PermissionRole role);
+    public abstract boolean hasPermission(UserRole role);
 
-    public abstract boolean hasPermission(PermissionRole role, Collection<String> pluginIds);
+    public abstract boolean hasPermission(UserRole role, Collection<String> pluginIds);
 
     protected enum Enabled {
         UNSET(true),

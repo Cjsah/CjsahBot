@@ -8,7 +8,6 @@ import net.cjsah.bot.config.permission.PermissionPlugin;
 import net.cjsah.bot.config.permission.RoledGroup;
 import net.cjsah.bot.config.permission.RoledUser;
 import net.cjsah.bot.config.permission.UserRole;
-import net.cjsah.bot.permission.PermissionRole;
 
 import java.util.Collection;
 
@@ -28,25 +27,27 @@ public class GroupPermissionContext extends PermissionContext {
         UserRole role = UserRole.USER;
         Enabled enabled = Enabled.UNSET;
 
-        for (RoledUser user : global.users()) {
-            if (user.id() == userId) {
-                role = user.role();
-                enabled = user.enabled() ? Enabled.ENABLED : Enabled.DISABLED;
+        for (RoledGroup group : global.groups()) {
+            if (group.id() == groupId) {
+                enabled = Enabled.from(group.enabled());
                 break;
             }
         }
 
-        for (RoledGroup group : global.groups()) {
-            if (group.id() == groupId) {
-                enabled = group.enabled() ? Enabled.ENABLED : Enabled.DISABLED;
-                break;
+        if (enabled.enabled()) {
+            for (RoledUser user : global.users()) {
+                if (user.id() == userId) {
+                    role = user.role();
+                    enabled = Enabled.from(user.enabled());
+                    break;
+                }
             }
         }
 
         for (OverrideUserInGroup uig : global.userInGroups()) {
             if (uig.userId() == userId && uig.groupId() == groupId) {
-                uig.role().ifPresent(r -> role = r);
-                uig.enabled().ifPresent(e -> enabled = e ? Enabled.ENABLED : Enabled.DISABLED);
+                role = uig.role().orElse(role);
+                enabled = uig.enabled().map(Enabled::from).orElse(enabled);
                 break;
             }
         }
@@ -56,12 +57,12 @@ public class GroupPermissionContext extends PermissionContext {
     }
 
     @Override
-    public boolean hasPermission(PermissionRole role) {
-        return this.enabled != Enabled.DISABLED && this.level >= role.getLevel();
+    public boolean hasPermission(UserRole role) {
+        return this.enabled.enabled() && this.level >= role.getLevel();
     }
 
     @Override
-    public boolean hasPermission(PermissionRole role, Collection<String> pluginIds) {
+    public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         for (String pluginId : pluginIds) {
             PermissionPlugin plugin = this.permissions.plugins().get(pluginId);
             int resolvedLevel = this.level;

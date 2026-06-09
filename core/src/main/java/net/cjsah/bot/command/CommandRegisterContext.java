@@ -6,8 +6,8 @@ import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.simple.SimpleCommandParser;
+import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.permission.PermissionRole;
 import net.cjsah.bot.plugin.PluginInfo;
 
 import java.lang.reflect.Method;
@@ -58,11 +58,11 @@ public final class CommandRegisterContext {
         }
         SimpleCommand annotation = method.getDeclaredAnnotation(SimpleCommand.class);
         String cmd = annotation.value();
-        PermissionRole permission = annotation.permission();
+        UserRole permission = annotation.permission();
         SimpleCommandParser parser = new SimpleCommandParser(this, cmd);
         try {
             LiteralArgumentBuilder root = parser.parse(method);
-            if (permission.getLevel() > PermissionRole.USER.getLevel()) {
+            if (permission.getLevel() > UserRole.USER.getLevel()) {
                 root.requires(source -> source.hasPermission(permission, root.getPluginIds()));
             }
             this.dispatcher.register(root);

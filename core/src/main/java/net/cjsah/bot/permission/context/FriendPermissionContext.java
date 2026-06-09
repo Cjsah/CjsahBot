@@ -6,7 +6,6 @@ import net.cjsah.bot.config.permission.PermissionGlobal;
 import net.cjsah.bot.config.permission.PermissionPlugin;
 import net.cjsah.bot.config.permission.RoledUser;
 import net.cjsah.bot.config.permission.UserRole;
-import net.cjsah.bot.permission.PermissionRole;
 
 import java.util.Collection;
 
@@ -34,12 +33,12 @@ public class FriendPermissionContext extends PermissionContext {
     }
 
     @Override
-    public boolean hasPermission(PermissionRole role) {
+    public boolean hasPermission(UserRole role) {
         return this.enabled.enabled() && this.level >= role.getLevel();
     }
 
     @Override
-    public boolean hasPermission(PermissionRole role, Collection<String> pluginIds) {
+    public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         for (String pluginId : pluginIds) {
             PermissionPlugin plugin = this.permissions.plugins().get(pluginId);
             int level = this.level;
@@ -60,6 +59,6 @@ public class FriendPermissionContext extends PermissionContext {
                 return true;
             }
         }
-        return pluginIds.isEmpty();
+        return pluginIds.isEmpty() && this.hasPermission(role);
     }
 }

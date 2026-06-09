@@ -5,6 +5,7 @@ import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.UserData;
 import net.cjsah.bot.event.EventManager;
@@ -12,7 +13,6 @@ import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
 import net.cjsah.bot.event.events.LifecycleEvent;
-import net.cjsah.bot.permission.PermissionRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,13 +69,13 @@ public final class MainPlugin extends Plugin {
 //        });
     }
 
-    @SimpleCommand(value = "/botstop", permission = PermissionRole.ADMIN)
+    @SimpleCommand(value = "/botstop", permission = UserRole.ADMIN)
     public static void botStop(CommandSource<?> source) {
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }
 
-    @SimpleCommand(value = "/test", permission = PermissionRole.OWNER)
+    @SimpleCommand(value = "/test", permission = UserRole.OWNER)
     public static void test(CommandSource<?> source) {
         Main.sendSignal(SignalType.RESTART);
     }
