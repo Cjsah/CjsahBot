@@ -5,6 +5,8 @@ import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.permission.context.FriendPermissionContext;
 import net.cjsah.bot.permission.context.PermissionContext;
 
+import java.util.function.Function;
+
 public final class FriendCommandSource extends CommandSource<FriendMessageEvent> {
 
     public FriendCommandSource(FriendMessageEvent sender) {
@@ -12,8 +14,8 @@ public final class FriendCommandSource extends CommandSource<FriendMessageEvent>
     }
 
     @Override
-    public PermissionContext createPermissionContext(Permissions permissions, String pluginId) {
-        return new FriendPermissionContext(permissions, pluginId, this.sender.getUserId());
+    protected Function<Permissions, PermissionContext> permissionFactory() {
+        return permissions -> new FriendPermissionContext(permissions, this.sender.getUserId());
     }
 
     @Override

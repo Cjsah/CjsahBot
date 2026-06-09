@@ -5,6 +5,7 @@ import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.permission.PermissionRole;
 import net.cjsah.bot.permission.context.PermissionContext;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 public abstract class CommandSource<T> {
@@ -18,11 +19,13 @@ public abstract class CommandSource<T> {
 
     public abstract void sendFeedback(String message);
 
-    public abstract Function<Permissions, PermissionContext> permissionFactory();
-
-    public abstract PermissionContext createPermissionContext(Permissions permissions, String pluginId);
+    protected abstract Function<Permissions, PermissionContext> permissionFactory();
 
     public boolean hasPermission(PermissionRole role) {
-        return true;
+        return this.permission.hasPermission(role);
+    }
+
+    public boolean hasPermission(PermissionRole role, Collection<String> pluginIds) {
+        return this.permission.hasPermission(role, pluginIds);
     }
 }

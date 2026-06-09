@@ -63,7 +63,7 @@ public final class CommandRegisterContext {
         try {
             LiteralArgumentBuilder root = parser.parse(method);
             if (permission.getLevel() > PermissionRole.USER.getLevel()) {
-                root.requires(source -> source.hasPermission(permission));
+                root.requires(source -> source.hasPermission(permission, root.getPluginIds()));
             }
             this.dispatcher.register(root);
             return true;

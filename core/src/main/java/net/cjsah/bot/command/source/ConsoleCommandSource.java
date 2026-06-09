@@ -5,6 +5,8 @@ import net.cjsah.bot.config.Permissions;
 import net.cjsah.bot.permission.context.ConsolePermissionContext;
 import net.cjsah.bot.permission.context.PermissionContext;
 
+import java.util.function.Function;
+
 @Slf4j(topic = "Command")
 public final class ConsoleCommandSource extends CommandSource<Void> {
 
@@ -13,8 +15,8 @@ public final class ConsoleCommandSource extends CommandSource<Void> {
     }
 
     @Override
-    public PermissionContext createPermissionContext(Permissions permissions, String pluginId) {
-        return new ConsolePermissionContext();
+    protected Function<Permissions, PermissionContext> permissionFactory() {
+        return permissions -> new ConsolePermissionContext();
     }
 
     @Override

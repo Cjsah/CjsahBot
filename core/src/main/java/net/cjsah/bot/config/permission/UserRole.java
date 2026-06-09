@@ -10,16 +10,20 @@ public enum UserRole {
     USER("user", 5),
     ;
 
-    public static Codec<UserRole> CODEC = CodecUtil.enumCodec(UserRole.class);
+    public static final Codec<UserRole> CODEC = CodecUtil.enumCodec(UserRole.class);
     private final String name;
-    private final int role;
+    private final int level;
 
-    UserRole(String name, int role) {
+    UserRole(String name, int level) {
         this.name = name;
-        this.role = role;
+        this.level = level;
     }
 
-    public int getRole() {
-        return this.role;
+    public String getName() {
+        return this.name;
+    }
+
+    public int getLevel() {
+        return this.level;
     }
 }

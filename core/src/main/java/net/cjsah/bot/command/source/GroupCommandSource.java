@@ -5,6 +5,8 @@ import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.permission.context.GroupPermissionContext;
 import net.cjsah.bot.permission.context.PermissionContext;
 
+import java.util.function.Function;
+
 public final class GroupCommandSource extends CommandSource<GroupMessageEvent> {
 
     public GroupCommandSource(GroupMessageEvent sender) {
@@ -12,8 +14,8 @@ public final class GroupCommandSource extends CommandSource<GroupMessageEvent> {
     }
 
     @Override
-    public PermissionContext createPermissionContext(Permissions permissions, String pluginId) {
-        return new GroupPermissionContext(permissions, pluginId, this.sender.getUserId(), this.sender.getGroupId());
+    protected Function<Permissions, PermissionContext> permissionFactory() {
+        return permissions -> new GroupPermissionContext(permissions, this.sender.getUserId(), this.sender.getGroupId());
     }
 
     @Override
