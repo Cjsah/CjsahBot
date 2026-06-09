@@ -123,7 +123,19 @@ public abstract class CommandNode {
     }
 
     public void removePlugin(String pluginId) {
-
+        this.children.values().removeIf(child -> {
+            child.removePlugin(pluginId);
+            if (child.children.isEmpty() && child.pluginIds.isEmpty()) {
+                if (child instanceof LiteralCommandNode) {
+                    this.literals.remove(child.getName());
+                } else if (child instanceof ArgumentCommandNode) {
+                    this.arguments.remove(child.getName());
+                }
+                return true;
+            }
+            return false;
+        });
+        this.pluginIds.remove(pluginId);
     }
 
     @Override

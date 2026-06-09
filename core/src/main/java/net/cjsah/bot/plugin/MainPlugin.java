@@ -2,6 +2,7 @@ package net.cjsah.bot.plugin;
 
 import net.cjsah.bot.Main;
 import net.cjsah.bot.SignalType;
+import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.CommandManager;
 import net.cjsah.bot.command.source.CommandSource;
@@ -13,6 +14,7 @@ import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
 import net.cjsah.bot.event.events.LifecycleEvent;
 import net.cjsah.bot.permission.HeyboxPermission;
+import net.cjsah.bot.permission.PermissionRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ public final class MainPlugin extends Plugin {
 
     @Override
     public void onLoad() {
-        CommandManager.register(MainPlugin.class);
+        Commands.registerContext().register(MainPlugin.class);
 
         String pluginId = PLUGIN_INFO.getId();
 
@@ -69,14 +71,14 @@ public final class MainPlugin extends Plugin {
 //        });
     }
 
-    @SimpleCommand(value = "/botstop", permissions = HeyboxPermission.ADMIN)
-    public static void botStop(CommandSource source) {
+    @SimpleCommand(value = "/botstop", permission = PermissionRole.ADMIN)
+    public static void botStop(CommandSource<?> source) {
         source.sendFeedback("bot正在关闭...");
         Main.sendSignal(SignalType.STOP);
     }
 
-    @SimpleCommand(value = "/test", permissions = HeyboxPermission.ADMIN)
-    public static void test(CommandSource source) {
+    @SimpleCommand(value = "/test", permission = PermissionRole.OWNER)
+    public static void test(CommandSource<?> source) {
         Main.sendSignal(SignalType.RESTART);
     }
 

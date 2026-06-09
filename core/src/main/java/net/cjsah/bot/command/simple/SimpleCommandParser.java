@@ -9,6 +9,7 @@ import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.execute.MethodCommand;
+import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 
@@ -71,6 +72,9 @@ public class SimpleCommandParser {
                 Class<?> clazz = args.get(name);
                 if (type.isAssignableFrom(clazz)) {
                     return new ParamInfo(type, ParamInfo.arg(name, clazz));
+                }
+                if (CommandSource.class.isAssignableFrom(clazz)) {
+                    return new ParamInfo(type, ParamInfo.source());
                 }
                 return new ParamInfo(type, ParamInfo.empty());
             })

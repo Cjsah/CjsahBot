@@ -1,5 +1,7 @@
 package net.cjsah.bot.command.simple;
 
+import net.cjsah.bot.permission.PermissionRole;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,6 +13,8 @@ public @interface SimpleCommand {
     String value();
 
     String description() default "";
+
+    PermissionRole permission() default PermissionRole.USER;
 
 //    HeyboxPermission[] permissions() default HeyboxPermission.USE_BOT_COMMAND;
 //
