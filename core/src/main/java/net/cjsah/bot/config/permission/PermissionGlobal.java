@@ -8,8 +8,8 @@ import net.cjsah.bot.util.DataUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-@Getter
 public class PermissionGlobal {
     public static final Codec<PermissionGlobal> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         RoledUser.CODEC.listOf().fieldOf("users").forGetter(PermissionGlobal::users),
@@ -27,6 +27,18 @@ public class PermissionGlobal {
         this.users = DataUtil.makeMap(users);
         this.groups = DataUtil.makeMap(groups);
         this.userInGroups = DataUtil.makeTable(userInGroups);
+    }
+
+    public Optional<RoledUser> getUser(long id) {
+        return Optional.ofNullable(this.users.get(id));
+    }
+
+    public Optional<RoledGroup> getGroup(long id) {
+        return Optional.ofNullable(this.groups.get(id));
+    }
+
+    public Optional<OverrideUserInGroup> getUserInGroup(long userId, long groupId) {
+        return Optional.ofNullable(this.userInGroups.get(groupId, userId));
     }
 
     public List<RoledUser> users() {

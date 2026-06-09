@@ -8,6 +8,7 @@ import net.cjsah.bot.config.permission.RoledUser;
 import net.cjsah.bot.config.permission.UserRole;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class FriendPermissionContext extends PermissionContext {
     private final Permissions permissions;
@@ -21,12 +22,11 @@ public class FriendPermissionContext extends PermissionContext {
         PermissionGlobal global = permissions.global();
         UserRole role = UserRole.USER;
         Enabled enabled = Enabled.UNSET;
-        for (RoledUser user : global.users()) {
-            if (user.id() == userId) {
-                role = user.role();
-                enabled = Enabled.from(user.enabled());
-                break;
-            }
+        Optional<RoledUser> optional = global.getUser(userId);
+        if (optional.isPresent()) {
+            RoledUser user = optional.get();
+            role = user.role();
+            enabled = Enabled.from(user.enabled());
         }
         this.level = role.getLevel();
         this.enabled = enabled;
@@ -44,12 +44,11 @@ public class FriendPermissionContext extends PermissionContext {
             int level = this.level;
             Enabled enabled = this.enabled;
             if (plugin != null) {
-                for (OverrideRoleUser user : plugin.users()) {
-                    if (user.id() == this.userId) {
-                        level = user.role().map(UserRole::getLevel).orElse(level);
-                        enabled = user.enabled().map(Enabled::from).orElse(enabled);
-                        break;
-                    }
+                Optional<OverrideRoleUser> optional = plugin.getUser(this.userId);
+                if (optional.isPresent()) {
+                    OverrideRoleUser user = optional.get();
+                    level = user.role().map(UserRole::getLevel).orElse(level);
+                    enabled = user.enabled().map(Enabled::from).orElse(enabled);
                 }
                 if (enabled == Enabled.UNSET) {
                     enabled = Enabled.from(plugin.defaultEnabled());

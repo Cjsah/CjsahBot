@@ -5,11 +5,11 @@ import net.cjsah.bot.config.permission.OverrideRoleUser;
 import net.cjsah.bot.config.permission.OverrideUserInGroup;
 import net.cjsah.bot.config.permission.PermissionGlobal;
 import net.cjsah.bot.config.permission.PermissionPlugin;
-import net.cjsah.bot.config.permission.RoledGroup;
 import net.cjsah.bot.config.permission.RoledUser;
 import net.cjsah.bot.config.permission.UserRole;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class GroupPermissionContext extends PermissionContext {
     private final Permissions permissions;
@@ -25,31 +25,24 @@ public class GroupPermissionContext extends PermissionContext {
 
         PermissionGlobal global = permissions.global();
         UserRole role = UserRole.USER;
-        Enabled enabled = Enabled.UNSET;
-
-        for (RoledGroup group : global.groups()) {
-            if (group.id() == groupId) {
-                enabled = Enabled.from(group.enabled());
-                break;
-            }
-        }
+        Enabled enabled = global.getGroup(groupId)
+            .map(it -> Enabled.from(it.enabled()))
+            .orElse(Enabled.UNSET);
 
         if (enabled.enabled()) {
-            for (RoledUser user : global.users()) {
-                if (user.id() == userId) {
-                    role = user.role();
-                    enabled = Enabled.from(user.enabled());
-                    break;
-                }
+            Optional<RoledUser> optional = global.getUser(userId);
+            if (optional.isPresent()) {
+                RoledUser user = optional.get();
+                role = user.role();
+                enabled = Enabled.from(user.enabled());
             }
         }
 
-        for (OverrideUserInGroup uig : global.userInGroups()) {
-            if (uig.userId() == userId && uig.groupId() == groupId) {
-                role = uig.role().orElse(role);
-                enabled = uig.enabled().map(Enabled::from).orElse(enabled);
-                break;
-            }
+        Optional<OverrideUserInGroup> optional = global.getUserInGroup(userId, groupId);
+        if (optional.isPresent()) {
+            OverrideUserInGroup uig = optional.get();
+            role = uig.role().orElse(role);
+            enabled = uig.enabled().map(Enabled::from).orElse(enabled);
         }
 
         this.level = role.getLevel();
@@ -68,28 +61,27 @@ public class GroupPermissionContext extends PermissionContext {
             int level = this.level;
             Enabled enabled = this.enabled;
             if (plugin != null) {
-                for (RoledGroup group : plugin.groups()) {
-                    if (group.id() == this.groupId) {
-                        enabled = Enabled.from(group.enabled());
-                        break;
-                    }
-                }
+
+                enabled = plugin.getGroup(this.groupId)
+                    .map(it -> Enabled.from(it.enabled()))
+                    .orElse(enabled);
+
                 if (enabled.enabled()) {
-                    for (OverrideRoleUser user : plugin.users()) {
-                        if (user.id() == this.userId) {
-                            level = user.role().map(UserRole::getLevel).orElse(level);
-                            enabled = user.enabled().map(Enabled::from).orElse(enabled);
-                            break;
-                        }
+                    Optional<OverrideRoleUser> optional = plugin.getUser(this.userId);
+                    if (optional.isPresent()) {
+                        OverrideRoleUser user = optional.get();
+                        level = user.role().map(UserRole::getLevel).orElse(level);
+                        enabled = user.enabled().map(Enabled::from).orElse(enabled);
                     }
                 }
-                for (OverrideUserInGroup uig : plugin.userInGroups()) {
-                    if (uig.userId() == this.userId && uig.groupId() == this.groupId) {
-                        level = uig.role().map(UserRole::getLevel).orElse(level);
-                        enabled = uig.enabled().map(Enabled::from).orElse(enabled);
-                        break;
-                    }
+
+                Optional<OverrideUserInGroup> optional = plugin.getUserInGroup(this.userId, this.groupId);
+                if (optional.isPresent()) {
+                    OverrideUserInGroup uig = optional.get();
+                    level = uig.role().map(UserRole::getLevel).orElse(level);
+                    enabled = uig.enabled().map(Enabled::from).orElse(enabled);
                 }
+
                 if (enabled == Enabled.UNSET) {
                     enabled = Enabled.from(plugin.defaultEnabled());
                 }

@@ -7,6 +7,7 @@ import net.cjsah.bot.util.DataUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class PermissionPlugin {
     public static final Codec<PermissionPlugin> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -18,7 +19,6 @@ public class PermissionPlugin {
 
     public static final Codec<Map<String, PermissionPlugin>> PLUGINS_CODEC = Codec.unboundedMap(Codec.STRING, CODEC);
 
-
     private final boolean defaultEnabled;
     private final Map<Long, OverrideRoleUser> users;
     private final Map<Long, RoledGroup> groups;
@@ -29,6 +29,18 @@ public class PermissionPlugin {
         this.users = DataUtil.makeMap(users);
         this.groups = DataUtil.makeMap(groups);
         this.userInGroups = DataUtil.makeTable(userInGroups);
+    }
+
+    public Optional<OverrideRoleUser> getUser(long id) {
+        return Optional.ofNullable(this.users.get(id));
+    }
+
+    public Optional<RoledGroup> getGroup(long id) {
+        return Optional.ofNullable(this.groups.get(id));
+    }
+
+    public Optional<OverrideUserInGroup> getUserInGroup(long userId, long groupId) {
+        return Optional.ofNullable(this.userInGroups.get(groupId, userId));
     }
 
     public boolean defaultEnabled() {

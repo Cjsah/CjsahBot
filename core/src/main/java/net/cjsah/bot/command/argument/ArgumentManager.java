@@ -1,7 +1,7 @@
 package net.cjsah.bot.command.argument;
 
-import cn.hutool.core.map.multi.RowKeyTable;
-import cn.hutool.core.map.multi.Table;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.MainPlugin;
@@ -13,7 +13,7 @@ public class ArgumentManager {
     private static final Table<String, String, Function<String, Argument<?>>> arguments;
 
     static {
-        arguments = new RowKeyTable<>();
+        arguments = HashBasedTable.create();
         String id = MainPlugin.PLUGIN_INFO.getId();
         register(id, arg -> BooleanArgument.bool(), "Boolean", "boolean", "bool");
         register(id, ByteArgument::byteArg, "Byte", "byte");
@@ -35,8 +35,8 @@ public class ArgumentManager {
     }
 
     public static Argument<?> getArgument(String type, String param) throws CommandException {
-        Map<String, Function<String, Argument<?>>> column = arguments.getColumn(type);
-        if (column == null || column.isEmpty()) {
+        Map<String, Function<String, Argument<?>>> column = arguments.column(type);
+        if (column.isEmpty()) {
             throw BuiltExceptions.PARSE_ARGUMENT_NOT_EXIST.create(type);
         }
         Function<String, Argument<?>> factory = column.values().stream().findFirst().orElseThrow();
