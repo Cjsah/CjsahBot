@@ -54,7 +54,7 @@ public final class CommandManager {
     public static void deregister(String pluginId) {
         List<String> keys = COMMANDS.entrySet()
                 .stream().parallel()
-                .filter(it -> it.getValue().getPluginId().equals(pluginId))
+                .filter(it -> it.getValue().getPluginIds().equals(pluginId))
                 .map(Map.Entry::getKey)
                 .toList();
         keys.forEach(COMMANDS::remove);
@@ -91,7 +91,7 @@ public final class CommandManager {
                 Argument<?> argument = constructor.newInstance();
                 args[i] = argument.parse(nodeIterator.next());
             }
-            PluginThreadPools.execute(node.getPluginId(), () -> {
+            PluginThreadPools.execute(node.getPluginIds(), () -> {
                 try {
                     node.getMethod().invoke(null, args);
                 } catch (InvocationTargetException e) {

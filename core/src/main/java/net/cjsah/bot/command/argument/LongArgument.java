@@ -5,6 +5,17 @@ import net.cjsah.bot.exception.CommandException;
 
 public record LongArgument(long min, long max) implements Argument<Long> {
 
+    public static LongArgument longArg(String param) {
+        if (param == null) return longArg();
+        int index = param.indexOf("_");
+        if (index == -1) {
+            return longArg(Long.parseLong(param));
+        }
+        long min = Long.parseLong(param.substring(0, index));
+        long max = Long.parseLong(param.substring(index + 1));
+        return longArg(min, max);
+    }
+
     public static LongArgument longArg() {
         return longArg(Long.MIN_VALUE);
     }

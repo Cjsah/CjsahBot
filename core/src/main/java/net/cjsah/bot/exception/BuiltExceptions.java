@@ -27,6 +27,14 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_ARGUMENT = new CommandExceptionFactory("参数错误 / 没有权限");
     public static final CommandExceptionFactory DISPATCHER_PARSE_EXCEPTION = new CommandExceptionFactory("无法解析命令: '%s'");
     public static final CommandExceptionFactory DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new CommandExceptionFactory("Expected whitespace to end one argument, but found trailing data");
+
+    public static final CommandExceptionFactory PARSE_EMPTY_STRING = new CommandExceptionFactory("Cannot parse an empty string");
+    public static final CommandExceptionFactory PARSE_ROOT_ARGUMENT = new CommandExceptionFactory("The root node must be a literal node");
+    public static final CommandExceptionFactory PARSE_ARGUMENT_NOT_EXIST = new CommandExceptionFactory("Argument type: %s does not exist");
+    public static final CommandExceptionFactory PARSE_INVALID_NODE = new CommandExceptionFactory("Invalid node: %s");
+    public static final CommandExceptionFactory FAILED_ACCESS_METHOD = new CommandExceptionFactory("Failed to access method: %s");
+
+
     public static final CommandExceptionFactory DISPATCHER_COMMAND_NO_PERMISSION = new CommandExceptionFactory("没有权限执行此命令");
     public static final CommandExceptionFactory COMMAND_PATTERN_ERROR = new CommandExceptionFactory("命令格式错误: %s");
     public static final CommandExceptionFactory ERROR_PARSE_PARAM_NAME = new CommandExceptionFactory("错误的参数名称: %s");

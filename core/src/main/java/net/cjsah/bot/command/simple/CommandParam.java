@@ -1,6 +1,5 @@
 package net.cjsah.bot.command.simple;
 
-import net.cjsah.bot.command.argument.Argument;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.ElementType;
@@ -13,8 +12,4 @@ import java.lang.annotation.Target;
 public @interface CommandParam {
     @NotNull
     String value() default "";
-
-    @NotNull
-    String description() default "";
-    Class<? extends Argument<?>> resolver();
 }

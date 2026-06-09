@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class CommandContext {
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
@@ -57,7 +58,7 @@ public class CommandContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> V getArgument(final String name, final Class<V> clazz) {
+    public <V> Optional<V> getArgument(final String name, final Class<V> clazz) {
         final ParsedArgument<?> argument = this.arguments.get(name);
 
         if (argument == null) {
@@ -66,9 +67,9 @@ public class CommandContext {
 
         final Object result = argument.getResult();
         if (PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
-            return (V) result;
+            return Optional.of((V) result);
         } else {
-            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
+            return Optional.empty();
         }
     }
 

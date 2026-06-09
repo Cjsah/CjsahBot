@@ -9,13 +9,15 @@ import net.cjsah.bot.command.tree.RootCommandNode;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
     private final RootCommandNode arguments = new RootCommandNode();
     private Predicate<CommandSource<?>> requirement = CommandManager.passRequirement();
+    private final Set<String> pluginIds = new HashSet<>();
     private Command command;
-    private String pluginId;
 
     protected abstract T getThis();
 
@@ -54,12 +56,23 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
     }
 
     public T byPlugin(String pluginId) {
-        this.pluginId = pluginId;
+        if (pluginId != null) {
+            this.pluginIds.add(pluginId);
+        }
+        return getThis();
+    }
+
+    public T byPlugins(Collection<String> pluginIds) {
+        this.pluginIds.addAll(pluginIds);
         return getThis();
     }
 
     @Nullable
-    public String getPluginId() {
-        return this.pluginId;
+    public Set<String> getPluginIds() {
+        return this.pluginIds;
+    }
+
+    public boolean containsPlugin(String pluginId) {
+        return this.pluginIds.contains(pluginId);
     }
 }

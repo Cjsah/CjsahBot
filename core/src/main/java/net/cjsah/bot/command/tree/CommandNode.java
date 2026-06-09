@@ -10,9 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class CommandNode {
@@ -20,13 +22,12 @@ public abstract class CommandNode {
     private final Map<String, LiteralCommandNode> literals = new LinkedHashMap<>();
     private final Map<String, ArgumentCommandNode<?>> arguments = new LinkedHashMap<>();
     private final Predicate<CommandSource<?>> requirement;
-    @Nullable
-    private final String pluginId;
+    private final Set<String> pluginIds;
     @Nullable
     private Command command;
 
-    protected CommandNode(@Nullable String pluginId, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
-        this.pluginId = pluginId;
+    protected CommandNode(Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
+        this.pluginIds = new HashSet<>(pluginIds);
         this.command = command;
         this.requirement = requirement;
     }
@@ -51,8 +52,12 @@ public abstract class CommandNode {
         return requirement.test(source);
     }
 
-    public String getPluginId() {
-        return this.pluginId;
+    public Set<String> getPluginIds() {
+        return this.pluginIds;
+    }
+
+    public boolean containsPlugin(String pluginId) {
+        return this.pluginIds.contains(pluginId);
     }
 
     public abstract String getName();
@@ -71,8 +76,8 @@ public abstract class CommandNode {
         if (this.getCommand() != null) {
             builder.executes(this.getCommand());
         }
-        if (this.getPluginId() != null) {
-            builder.byPlugin(this.getPluginId());
+        if (this.getPluginIds() != null) {
+            builder.byPlugins(this.getPluginIds());
         }
         return builder;
     }
@@ -115,6 +120,10 @@ public abstract class CommandNode {
             }
         }
         return arguments.values();
+    }
+
+    public void removePlugin(String pluginId) {
+
     }
 
     @Override

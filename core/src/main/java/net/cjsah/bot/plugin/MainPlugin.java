@@ -21,7 +21,7 @@ import java.util.Collections;
 public final class MainPlugin extends Plugin {
     private static final Logger log = LoggerFactory.getLogger("Console");
     public static final MainPlugin INSTANCE = new MainPlugin();
-    public static final PluginInfo PLUGIN_INFO = new PluginInfo("main", "Main", "Main", "1.0", Collections.singletonMap("authors", Collections.singletonList("Cjsah")));
+    public static final PluginInfo PLUGIN_INFO = new PluginInfo("core", "Core", "Core Plugin", "1.0", Collections.singletonMap("authors", Collections.singletonList("Cjsah")));
 
     @Override
     public void onLoad() {

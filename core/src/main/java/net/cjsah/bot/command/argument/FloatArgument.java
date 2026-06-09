@@ -5,6 +5,17 @@ import net.cjsah.bot.exception.CommandException;
 
 public record FloatArgument(float min, float max) implements Argument<Float> {
 
+    public static FloatArgument floatArg(String param) {
+        if (param == null) return floatArg();
+        int index = param.indexOf("_");
+        if (index == -1) {
+            return floatArg(Float.parseFloat(param));
+        }
+        float min = Float.parseFloat(param.substring(0, index));
+        float max = Float.parseFloat(param.substring(index + 1));
+        return floatArg(min, max);
+    }
+
     public static FloatArgument floatArg() {
         return floatArg(Float.MIN_VALUE);
     }

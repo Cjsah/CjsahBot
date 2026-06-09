@@ -2,11 +2,12 @@ package net.cjsah.bot.command.builder;
 
 import net.cjsah.bot.command.tree.CommandNode;
 import net.cjsah.bot.command.tree.LiteralCommandNode;
+import org.jetbrains.annotations.Nullable;
 
 public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuilder> {
     private final String literal;
 
-    private LiteralArgumentBuilder(final String pluginId, final String literal) {
+    private LiteralArgumentBuilder(@Nullable final String pluginId, final String literal) {
         this.literal = literal;
         this.byPlugin(pluginId);
     }
@@ -28,7 +29,7 @@ public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
     public LiteralCommandNode build() {
         final LiteralCommandNode result = new LiteralCommandNode(
             this.getLiteral(),
-            this.getPluginId(),
+            this.getPluginIds(),
             this.getCommand(),
             this.getRequirement()
         );

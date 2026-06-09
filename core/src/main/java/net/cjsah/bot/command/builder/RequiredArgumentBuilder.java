@@ -3,12 +3,13 @@ package net.cjsah.bot.command.builder;
 import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.tree.ArgumentCommandNode;
 import net.cjsah.bot.command.tree.CommandNode;
+import org.jetbrains.annotations.Nullable;
 
 public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
     private final String name;
     private final Argument<T> argument;
 
-    private RequiredArgumentBuilder(final String pluginId, final String name, final Argument<T> argument) {
+    private RequiredArgumentBuilder(@Nullable final String pluginId, final String name, final Argument<T> argument) {
         this.name = name;
         this.argument = argument;
         this.byPlugin(pluginId);
@@ -36,7 +37,7 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         final ArgumentCommandNode<T> result = new ArgumentCommandNode<>(
             this.getName(),
             this.getArgument(),
-            this.getPluginId(),
+            this.getPluginIds(),
             this.getCommand(),
             this.getRequirement()
         );

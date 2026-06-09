@@ -5,6 +5,17 @@ import net.cjsah.bot.exception.CommandException;
 
 public record DoubleArgument(double min, double max) implements Argument<Double> {
 
+    public static DoubleArgument doubleArg(String param) {
+        if (param == null) return doubleArg();
+        int index = param.indexOf("_");
+        if (index == -1) {
+            return doubleArg(Double.parseDouble(param));
+        }
+        double min = Double.parseDouble(param.substring(0, index));
+        double max = Double.parseDouble(param.substring(index + 1));
+        return doubleArg(min, max);
+    }
+
     public static DoubleArgument doubleArg() {
         return doubleArg(Double.MIN_VALUE);
     }

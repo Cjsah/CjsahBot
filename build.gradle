@@ -32,4 +32,8 @@ subprojects {
         useJUnitPlatform()
     }
 
+    compileJava {
+        options.compilerArgs += "-parameters"
+    }
+
 }

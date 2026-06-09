@@ -11,14 +11,15 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.CommandException;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 
 public class ArgumentCommandNode<T> extends CommandNode {
     private final String name;
     private final Argument<T> argument;
 
-    public ArgumentCommandNode(String name, Argument<T> argument, @Nullable String pluginId, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
-        super(pluginId, command, requirement);
+    public ArgumentCommandNode(String name, Argument<T> argument, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
+        super(pluginIds, command, requirement);
         this.name = name;
         this.argument = argument;
     }
@@ -52,7 +53,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
     public void parse(StringReader reader, CommandContextBuilder contextBuilder) throws CommandException {
         final int start = reader.getCursor();
         final T result = this.argument.parse(reader);
-        final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
+        final ParsedArgument<T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(this.name, parsed);
         contextBuilder.withNode(this, parsed.getRange());
@@ -61,7 +62,9 @@ public class ArgumentCommandNode<T> extends CommandNode {
 
     @Override
     protected ArgumentBuilder<?> builderFactory() {
-        return RequiredArgumentBuilder.argument(this.getPluginId(), this.name, this.argument);
+        RequiredArgumentBuilder<T> builder = RequiredArgumentBuilder.argument(null, this.name, this.argument);
+        builder.byPlugins(this.getPluginIds());
+        return builder;
     }
 
     @Override

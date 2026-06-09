@@ -11,13 +11,14 @@ import net.cjsah.bot.exception.BuiltExceptions;
 import net.cjsah.bot.exception.CommandException;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 
 public class LiteralCommandNode extends CommandNode {
     private final String literal;
 
-    public LiteralCommandNode(String literal, @Nullable String pluginId, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
-        super(pluginId, command, requirement);
+    public LiteralCommandNode(String literal, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
+        super(pluginIds, command, requirement);
         this.literal = literal;
     }
 
@@ -66,7 +67,9 @@ public class LiteralCommandNode extends CommandNode {
 
     @Override
     protected ArgumentBuilder<?> builderFactory() {
-        return LiteralArgumentBuilder.literal(this.getPluginId(), this.literal);
+        LiteralArgumentBuilder builder = LiteralArgumentBuilder.literal(null, this.literal);
+        builder.byPlugins(this.getPluginIds());
+        return builder;
     }
 
     @Override

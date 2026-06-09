@@ -5,6 +5,15 @@ import net.cjsah.bot.exception.CommandException;
 
 public record StringArgument(ArgType type) implements Argument<String> {
 
+    public static StringArgument byArg(String param) {
+        return switch (param) {
+            case "word", "single_word" -> word();
+            case "string", "quotable" -> string();
+            case "greedy" -> greedyString();
+            default -> throw new IllegalArgumentException("Unsupported types");
+        };
+    }
+
     public static StringArgument word() {
         return new StringArgument(ArgType.SINGLE_WORD);
     }
@@ -16,7 +25,7 @@ public record StringArgument(ArgType type) implements Argument<String> {
     public static StringArgument greedyString() {
         return new StringArgument(ArgType.GREEDY_PHRASE);
     }
-    
+
     @Override
     public String parse(StringReader reader) throws CommandException {
         return switch (type) {
