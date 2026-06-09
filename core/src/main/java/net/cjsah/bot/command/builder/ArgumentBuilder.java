@@ -1,7 +1,7 @@
 package net.cjsah.bot.command.builder;
 
 
-import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.execute.Command;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.tree.CommandNode;
@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
     private final RootCommandNode arguments = new RootCommandNode();
-    private Predicate<CommandSource<?>> requirement = CommandManager.passRequirement();
+    private Predicate<CommandSource<?>> requirement = Commands.passRequirement();
     private final Set<String> pluginIds = new HashSet<>();
     private Command command;
 

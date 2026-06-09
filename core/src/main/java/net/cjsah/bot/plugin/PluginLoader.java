@@ -2,7 +2,7 @@ package net.cjsah.bot.plugin;
 
 import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.FilePaths;
-import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.resolver.Counter;
 import net.cjsah.bot.util.JsonUtil;
@@ -100,7 +100,7 @@ public class PluginLoader extends URLClassLoader {
         PluginThreadPools.execute(pluginId, () -> {
             Plugin plugin = PluginContext.getCurrentPlugin();
             EventManager.unsubscribe(pluginId);
-            CommandManager.deregister(pluginId);
+            Commands.deregisterPlugin(pluginId);
             plugin.onUnload();
         });
         PluginThreadPools.unloadPlugin(pluginId);

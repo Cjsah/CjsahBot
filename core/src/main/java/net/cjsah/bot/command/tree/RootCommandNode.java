@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.tree;
 
-import net.cjsah.bot.command.CommandManager;
+import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContextBuilder;
@@ -8,7 +8,7 @@ import net.cjsah.bot.exception.CommandException;
 
 public class RootCommandNode extends CommandNode {
     public RootCommandNode() {
-        super(null, null, CommandManager.passRequirement());
+        super(null, null, Commands.passRequirement());
     }
 
     @Override
