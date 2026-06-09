@@ -65,40 +65,39 @@ public class GroupPermissionContext extends PermissionContext {
     public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         for (String pluginId : pluginIds) {
             PermissionPlugin plugin = this.permissions.plugins().get(pluginId);
-            int resolvedLevel = this.level;
-            Enabled enabled;
+            int level = this.level;
+            Enabled enabled = this.enabled;
             if (plugin != null) {
-                enabled = plugin.defaultEnabled() ? Enabled.ENABLED : Enabled.DISABLED;
-
-                for (OverrideRoleUser user : plugin.users()) {
-                    if (user.id() == this.userId) {
-                        user.role().ifPresent(r -> resolvedLevel = r.getLevel());
-                        user.enabled().ifPresent(e -> enabled = e ? Enabled.ENABLED : Enabled.DISABLED);
-                        break;
-                    }
-                }
-
                 for (RoledGroup group : plugin.groups()) {
                     if (group.id() == this.groupId) {
-                        enabled = group.enabled() ? Enabled.ENABLED : Enabled.DISABLED;
+                        enabled = Enabled.from(group.enabled());
                         break;
                     }
                 }
-
+                if (enabled.enabled()) {
+                    for (OverrideRoleUser user : plugin.users()) {
+                        if (user.id() == this.userId) {
+                            level = user.role().map(UserRole::getLevel).orElse(level);
+                            enabled = user.enabled().map(Enabled::from).orElse(enabled);
+                            break;
+                        }
+                    }
+                }
                 for (OverrideUserInGroup uig : plugin.userInGroups()) {
                     if (uig.userId() == this.userId && uig.groupId() == this.groupId) {
-                        uig.role().ifPresent(r -> resolvedLevel = r.getLevel());
-                        uig.enabled().ifPresent(e -> enabled = e ? Enabled.ENABLED : Enabled.DISABLED);
+                        level = uig.role().map(UserRole::getLevel).orElse(level);
+                        enabled = uig.enabled().map(Enabled::from).orElse(enabled);
                         break;
                     }
                 }
-            } else {
-                enabled = this.enabled;
+                if (enabled == Enabled.UNSET) {
+                    enabled = Enabled.from(plugin.defaultEnabled());
+                }
             }
-            if (enabled != Enabled.DISABLED && resolvedLevel >= role.getLevel()) {
+            if (enabled.enabled() && level >= role.getLevel()) {
                 return true;
             }
         }
-        return false;
+        return pluginIds.isEmpty() && this.hasPermission(role);
     }
 }

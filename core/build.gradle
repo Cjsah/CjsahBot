@@ -24,8 +24,10 @@ dependencies {
         exclude group: 'org.slf4j'
     }
 
+    api "it.unimi.dsi:fastutil:${fastutil_version}"
+
     api "com.mojang:datafixerupper:${project.codec_version}"
-//    api "com.mojang:brigadier:${project.brigadier_version}"
+
 }
 
 lombok {
