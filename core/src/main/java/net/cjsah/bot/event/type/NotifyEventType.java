@@ -1,6 +1,8 @@
 package net.cjsah.bot.event.type;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.mojang.serialization.Codec;
+import net.cjsah.bot.data.IStrSerializable;
 import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.event.events.GroupHonorEvent;
 import net.cjsah.bot.event.events.GroupLuckyKingEvent;
@@ -13,18 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public enum NotifyEventType {
+public enum NotifyEventType implements IStrSerializable {
     POKE("poke", GroupPokeEvent::new),
     LUCKY_KING("lucky_king", GroupLuckyKingEvent::new),
     HONOR("honor", GroupHonorEvent::new),
     ;
 
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
+    public static final Codec<NotifyEventType> CODEC = IStrSerializable.fromEnum(NotifyEventType.class);
 
     NotifyEventType(String type, Function<JSONObject, Event> handler) {
         this.type = type;
         this.handler = handler;
-        InnerClass.TYPE_MAP.put(type, this);
     }
 
     private final String type;
@@ -34,16 +35,8 @@ public enum NotifyEventType {
         return this.type;
     }
 
-    @Nullable
-    public static Event toEvent(JSONObject raw) {
-        String typeKey = raw.getString("notice_type");
-        NotifyEventType type = InnerClass.TYPE_MAP.get(typeKey);
-        if (type != null) return type.handler.apply(raw);
-        log.warn("Unknown event type: {}, {}", typeKey, raw);
-        return null;
-    }
-
-    private static class InnerClass {
-        private static final Map<String, NotifyEventType> TYPE_MAP = new HashMap<>();
+    @Override
+    public String getSerializedName() {
+        return this.type;
     }
 }

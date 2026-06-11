@@ -3,8 +3,8 @@ package net.cjsah.bot.util;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import net.cjsah.bot.config.IRowMapper;
-import net.cjsah.bot.config.ITableMapper;
+import net.cjsah.bot.data.IRowMapper;
+import net.cjsah.bot.data.ITableMapper;
 
 import java.util.Collection;
 import java.util.List;

@@ -1,47 +1,45 @@
 package net.cjsah.bot.event.type;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.events.HeartbeatEvent;
-import net.cjsah.bot.event.events.LifecycleEvent;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.BaseEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-public enum MetaEventType {
-    META("lifecycle", LifecycleEvent::new),
-    MESSAGE("heartbeat", HeartbeatEvent::new),
+public enum MetaEventType implements IStrSerializable, IEventBuilder {
+//    META("lifecycle", LifecycleEvent::new),
+//    MESSAGE("heartbeat", HeartbeatEvent::new),
+    EMPTY("empty", null),
     ;
 
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
-
-    MetaEventType(String type, Function<JSONObject, Event> handler) {
-        this.type = type;
-        this.handler = handler;
-        InnerClass.TYPE_MAP.put(type, this);
-    }
+    public static final Codec<MetaEventType> CODEC = IStrSerializable.fromEnum(MetaEventType.class);
 
     private final String type;
-    private final Function<JSONObject, Event> handler;
+    private final Codec<? extends BaseEvent> codec;
 
-    public String getType() {
+    MetaEventType(String type, Codec<? extends BaseEvent> codec) {
+        this.type = type;
+        this.codec = codec;
+    }
+
+    @Override
+    public String getSerializedName() {
         return this.type;
     }
 
-    @Nullable
-    public static Event toEvent(JSONObject raw) {
-        String typeKey = raw.getString("meta_event_type");
-        MetaEventType type = InnerClass.TYPE_MAP.get(typeKey);
-        if (type != null) return type.handler.apply(raw);
-        log.warn("Unknown event type: {}, {}", typeKey, raw);
-        return null;
+    @Override
+    public Codec<? extends BaseEvent> codec() {
+        return this.codec;
     }
 
-    private static class InnerClass {
-        private static final Map<String, MetaEventType> TYPE_MAP = new HashMap<>();
+    public record Builder(MetaEventType type) implements IEventBuilder {
+        public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            MetaEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+        ).apply(instance, Builder::new));
+
+        @Override
+        public Codec<? extends BaseEvent> codec() {
+            return this.type.codec();
+        }
     }
 }

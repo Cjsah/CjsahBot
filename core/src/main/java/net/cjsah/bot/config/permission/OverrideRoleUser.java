@@ -2,7 +2,7 @@ package net.cjsah.bot.config.permission;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.cjsah.bot.config.IRowMapper;
+import net.cjsah.bot.data.IRowMapper;
 
 import java.util.Optional;
 

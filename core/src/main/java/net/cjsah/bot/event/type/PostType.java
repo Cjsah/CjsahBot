@@ -1,47 +1,33 @@
 package net.cjsah.bot.event.type;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.event.events.Event;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mojang.serialization.Codec;
+import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.data.IStrSerializable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-public enum PostType {
-    META("meta_event", MetaEventType::toEvent),
-    MESSAGE("message", MessageEventType::toEvent),
-    REQUEST("request", RequestEventType::toEvent),
-    NOTICE("notice", NoticeEventType::toEvent),
+public enum PostType implements IStrSerializable {
+    META("meta_event", MetaEventType.Builder.CODEC),
+    MESSAGE("message", MessageEventType.Builder.CODEC),
+    REQUEST("request", RequestEventType.Builder.CODEC),
+    NOTICE("notice", NoticeEventType.Builder.CODEC),
+    MESSAGE_SENT("message_sent", null),
     ;
 
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
-
-    PostType(String type, Function<JSONObject, Event> handler) {
-        this.type = type;
-        this.handler = handler;
-        InnerClass.TYPE_MAP.put(type, this);
-    }
+    public static final Codec<PostType> CODEC = IStrSerializable.fromEnum(PostType.class);
 
     private final String type;
-    private final Function<JSONObject, Event> handler;
+    private final Codec<? extends IEventBuilder> codec;
 
-    public String getType() {
+    PostType(String type, Codec<? extends IEventBuilder> codec) {
+        this.type = type;
+        this.codec = codec;
+    }
+
+    @Override
+    public String getSerializedName() {
         return this.type;
     }
 
-    @Nullable
-    public static Event toEvent(JSONObject raw) {
-        String typeKey = raw.getString("post_type");
-        PostType type = InnerClass.TYPE_MAP.get(typeKey);
-        if (type != null) return type.handler.apply(raw);
-        log.warn("Unknown event type: {}, {}", typeKey, raw);
-        return null;
-    }
-
-    private static class InnerClass {
-        private static final Map<String, PostType> TYPE_MAP = new HashMap<>();
+    public Codec<? extends IEventBuilder> codec() {
+        return this.codec;
     }
 }

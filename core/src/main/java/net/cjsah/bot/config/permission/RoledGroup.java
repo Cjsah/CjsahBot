@@ -2,7 +2,7 @@ package net.cjsah.bot.config.permission;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.cjsah.bot.config.IRowMapper;
+import net.cjsah.bot.data.IRowMapper;
 
 public record RoledGroup(long id, boolean enabled) implements IRowMapper {
     public static Codec<RoledGroup> CODEC = RecordCodecBuilder.create(instance -> instance.group(

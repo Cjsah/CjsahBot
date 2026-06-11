@@ -62,9 +62,7 @@ public final class CommandRegisterContext {
         SimpleCommandParser parser = new SimpleCommandParser(this, cmd);
         try {
             LiteralArgumentBuilder root = parser.parse(method);
-            if (permission.getLevel() > UserRole.USER.getLevel()) {
-                root.requires(source -> source.hasPermission(permission, root.getPluginIds()));
-            }
+            root.requires(source -> source.hasPermission(permission, root.getPluginIds()));
             this.dispatcher.register(root);
             return true;
         } catch (CommandException e) {

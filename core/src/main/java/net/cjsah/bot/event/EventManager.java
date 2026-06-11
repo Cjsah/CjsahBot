@@ -1,11 +1,20 @@
 package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonObject;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.event.events.BaseEvent;
 import net.cjsah.bot.event.events.Event;
+import net.cjsah.bot.event.events.OB11BaseType;
 import net.cjsah.bot.event.type.PostType;
+import net.cjsah.bot.exception.AppException;
+import net.cjsah.bot.exception.EventException;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
 import net.cjsah.bot.plugin.PluginThreadPools;
+import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -17,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class EventManager {
     private static final Logger log = LoggerFactory.getLogger("EventManager");
@@ -147,8 +157,11 @@ public final class EventManager {
         });
     }
 
-    public static void parseEvent(JSONObject raw) {
-        Event event = PostType.toEvent(raw);
+    public static void parseEvent(JsonObject raw) {
+        Function<String, EventException> exception = EventException::new;
+        OB11BaseType baseType = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
+        IEventBuilder eventBuilder = CodecUtil.decode(baseType.getPostType().codec(), raw, exception).orThrow();
+        BaseEvent event = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
         EventManager.broadcast(event);
     }
 

@@ -1,47 +1,50 @@
 package net.cjsah.bot.event.type;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.events.FriendRequestEvent;
-import net.cjsah.bot.event.events.GroupRequestEvent;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.BaseEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-public enum RequestEventType {
-    FRIEND("friend", FriendRequestEvent::new),
-    GROUP("group", GroupRequestEvent::new),
+public enum RequestEventType implements IStrSerializable, IEventBuilder {
+//    FRIEND("friend", FriendRequestEvent::new),
+//    GROUP("group", GroupRequestEvent::new),
+    EMPTY("empty", null),
     ;
 
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
-
-    RequestEventType(String type, Function<JSONObject, Event> handler) {
-        this.type = type;
-        this.handler = handler;
-        InnerClass.TYPE_MAP.put(type, this);
-    }
+    public static final Codec<RequestEventType> CODEC = IStrSerializable.fromEnum(RequestEventType.class);
 
     private final String type;
-    private final Function<JSONObject, Event> handler;
+    private final Codec<? extends BaseEvent> codec;
+
+    RequestEventType(String type, Codec<? extends BaseEvent> codec) {
+        this.type = type;
+        this.codec = codec;
+    }
 
     public String getType() {
         return this.type;
     }
 
-    @Nullable
-    public static Event toEvent(JSONObject raw) {
-        String typeKey = raw.getString("request_type");
-        RequestEventType type = InnerClass.TYPE_MAP.get(typeKey);
-        if (type != null) return type.handler.apply(raw);
-        log.warn("Unknown event type: {}, {}", typeKey, raw);
-        return null;
+    @Override
+    public String getSerializedName() {
+        return this.type;
     }
 
-    private static class InnerClass {
-        private static final Map<String, RequestEventType> TYPE_MAP = new HashMap<>();
+    @Override
+    public Codec<? extends BaseEvent> codec() {
+        return this.codec;
     }
+
+    public record Builder(RequestEventType type) implements IEventBuilder {
+        public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            RequestEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+        ).apply(instance, Builder::new));
+
+        @Override
+        public Codec<? extends BaseEvent> codec() {
+            return this.type.codec();
+        }
+    }
+
 }
