@@ -1,11 +1,9 @@
 package net.cjsah.bot.event.type;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
-import net.cjsah.bot.event.events.BaseEvent;
 
 public enum MessageEventType implements IStrSerializable {
 //    FRIEND("private", FriendMessageEvent::new),
@@ -16,9 +14,9 @@ public enum MessageEventType implements IStrSerializable {
     public static final Codec<MessageEventType> CODEC = IStrSerializable.fromEnum(MessageEventType.class);
 
     private final String type;
-    private final Codec<? extends BaseEvent> codec;
+    private final Codec<?> codec;
 
-    MessageEventType(String type, Codec<? extends BaseEvent> codec) {
+    MessageEventType(String type, Codec<?> codec) {
         this.type = type;
         this.codec = codec;
     }
@@ -34,12 +32,12 @@ public enum MessageEventType implements IStrSerializable {
 
     public record Builder(MessageEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            MessageEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+            MessageEventType.CODEC.fieldOf("message_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override
-        public Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec() {
-            return Either.right(this.type.codec);
+        public Codec<?> codec() {
+            return this.type.codec;
         }
     }
 

@@ -5,20 +5,24 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
 
-public enum MetaEventType implements IStrSerializable {
-//    META("lifecycle", LifecycleEvent::new),
-//    MESSAGE("heartbeat", HeartbeatEvent::new),
+public enum MessageSendEventType implements IStrSerializable {
+//    FRIEND("private", FriendMessageEvent::new),
+//    GROUP("group", GroupMessageEvent::new),
     EMPTY("empty", null),
     ;
 
-    public static final Codec<MetaEventType> CODEC = IStrSerializable.fromEnum(MetaEventType.class);
+    public static final Codec<MessageSendEventType> CODEC = IStrSerializable.fromEnum(MessageSendEventType.class);
 
     private final String type;
     private final Codec<?> codec;
 
-    MetaEventType(String type, Codec<?> codec) {
+    MessageSendEventType(String type, Codec<?> codec) {
         this.type = type;
         this.codec = codec;
+    }
+
+    public String getType() {
+        return this.type;
     }
 
     @Override
@@ -26,9 +30,9 @@ public enum MetaEventType implements IStrSerializable {
         return this.type;
     }
 
-    public record Builder(MetaEventType type) implements IEventBuilder {
+    public record Builder(MessageSendEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            MetaEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+            MessageSendEventType.CODEC.fieldOf("message_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override
@@ -36,4 +40,5 @@ public enum MetaEventType implements IStrSerializable {
             return this.type.codec;
         }
     }
+
 }

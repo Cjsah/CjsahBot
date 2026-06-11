@@ -1,11 +1,9 @@
 package net.cjsah.bot.event.type;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
-import net.cjsah.bot.event.events.BaseEvent;
 
 public enum NoticeEventType implements IStrSerializable {
 //    GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
@@ -16,16 +14,16 @@ public enum NoticeEventType implements IStrSerializable {
 //    FRIEND_ADD("friend_add", FriendAppendedEvent::new),
 //    GROUP_RECALL("group_recall", GroupRecallEvent::new),
 //    FRIEND_RECALL("friend_recall", FriendRecallEvent::new),
-//    NOTIFY("notify", NotifyEventType::toEvent),
+    NOTIFY("notify", NotifyEventType.Builder.CODEC),
     EMPTY("empty", null),
     ;
 
     public static final Codec<NoticeEventType> CODEC = IStrSerializable.fromEnum(NoticeEventType.class);
 
     private final String type;
-    private final Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec;
+    private final Codec<?> codec;
 
-    NoticeEventType(String type, Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec) {
+    NoticeEventType(String type, Codec<?> codec) {
         this.type = type;
         this.codec = codec;
     }
@@ -41,11 +39,11 @@ public enum NoticeEventType implements IStrSerializable {
 
     public record Builder(NoticeEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            NoticeEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+            NoticeEventType.CODEC.fieldOf("notice_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override
-        public Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec() {
+        public Codec<?> codec() {
             return this.type.codec;
         }
     }

@@ -159,15 +159,21 @@ public final class EventManager {
         });
     }
 
-    public static void parseEvent(JsonObject raw) {
+    public static void parseEvent(JsonObject raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
         OB11BaseType baseType = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
-        Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec = baseType.getPostType().codec();
-
-
-        IEventBuilder eventBuilder = CodecUtil.decode(baseType.getPostType().codec(), raw, exception).orThrow();
-        BaseEvent event = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
-        EventManager.broadcast(event);
+        IEventBuilder eventBuilder = baseType.getPostType();
+        while (true) {
+            Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
+            if (obj instanceof IEventBuilder builder) {
+                eventBuilder = builder;
+            } else if (obj instanceof BaseEvent event) {
+                EventManager.broadcast(event);
+                return;
+            } else {
+                throw new EventException("Unsupported decoding data");
+            }
+        }
     }
 
     record EventNode<T extends Event>(String pluginId, Class<T> event, Consumer<T> handler) {
