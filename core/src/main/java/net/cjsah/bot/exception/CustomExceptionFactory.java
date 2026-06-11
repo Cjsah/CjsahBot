@@ -2,7 +2,7 @@ package net.cjsah.bot.exception;
 
 import java.util.function.Function;
 
-public class CustomExceptionFactory<T extends RuntimeException> {
+public class CustomExceptionFactory<T extends Exception> {
     private final String message;
     private final Function<String, T> factory;
 

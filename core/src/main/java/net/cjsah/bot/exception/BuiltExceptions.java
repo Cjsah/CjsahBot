@@ -46,16 +46,16 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory REGISTER_IN_PLUGIN = new CommandExceptionFactory("请在插件中注册命令");
     public static final CommandExceptionFactory UNSUPPORTED_TYPE  = new CommandExceptionFactory("不支持的类型: %s");
 
-    public static final CustomExceptionFactory<?> REQUEST_FAILED = new CustomExceptionFactory<>("请求失败: %s", RequestException::new);
+    public static final CustomRuntimeExceptionFactory<? extends RuntimeException> REQUEST_FAILED = new CustomRuntimeExceptionFactory<>("请求失败: %s", RequestException::new);
 
-    public static final CustomExceptionFactory<?> CONFLICT_PERMISSION = new CustomExceptionFactory<>("%s 与已有权限冲突", PermissionException::new);
-    public static final CustomExceptionFactory<?> CONFLICT_MERGE_PERMISSION = new CustomExceptionFactory<>("%s已为 %s模式, 但受到了 %s 数据", PermissionException::new);
-    public static final CustomExceptionFactory<?> UNKNOWN_PERMISSION_TYPE = new CustomExceptionFactory<>("未知的权限类型: %s", PermissionException::new);
+    public static final CustomRuntimeExceptionFactory<?> CONFLICT_PERMISSION = new CustomRuntimeExceptionFactory<>("%s 与已有权限冲突", PermissionException::new);
+    public static final CustomRuntimeExceptionFactory<?> CONFLICT_MERGE_PERMISSION = new CustomRuntimeExceptionFactory<>("%s已为 %s模式, 但受到了 %s 数据", PermissionException::new);
+    public static final CustomRuntimeExceptionFactory<?> UNKNOWN_PERMISSION_TYPE = new CustomRuntimeExceptionFactory<>("未知的权限类型: %s", PermissionException::new);
 
-    public static final CustomExceptionFactory<?> MSG_TOO_MANY_DATA = new CustomExceptionFactory<>("数据量过多, 最多允许 %d 条数据", MessageException::new);
-    public static final CustomExceptionFactory<?> MSG_EMPTY_DATA = new CustomExceptionFactory<>("还未填入数据, 请填入数据后返回", MessageException::new);
-    public static final CustomExceptionFactory<?> MSG_UNSUPPORTED_DATA = new CustomExceptionFactory<>("不支持的数据格式, 请完整填入后返回", MessageException::new);
-    public static final CustomExceptionFactory<?> COUNTDOWN_LESS_NOW = new CustomExceptionFactory<>("定时结束时间小于当前系统时间", MessageException::new);
-    public static final CustomExceptionFactory<?> COUNTDOWN_OVER_COUNT = new CustomExceptionFactory<>("定时时长超过了范围", MessageException::new);
+    public static final CustomRuntimeExceptionFactory<?> MSG_TOO_MANY_DATA = new CustomRuntimeExceptionFactory<>("数据量过多, 最多允许 %d 条数据", MessageException::new);
+    public static final CustomRuntimeExceptionFactory<?> MSG_EMPTY_DATA = new CustomRuntimeExceptionFactory<>("还未填入数据, 请填入数据后返回", MessageException::new);
+    public static final CustomRuntimeExceptionFactory<?> MSG_UNSUPPORTED_DATA = new CustomRuntimeExceptionFactory<>("不支持的数据格式, 请完整填入后返回", MessageException::new);
+    public static final CustomRuntimeExceptionFactory<?> COUNTDOWN_LESS_NOW = new CustomRuntimeExceptionFactory<>("定时结束时间小于当前系统时间", MessageException::new);
+    public static final CustomRuntimeExceptionFactory<?> COUNTDOWN_OVER_COUNT = new CustomRuntimeExceptionFactory<>("定时时长超过了范围", MessageException::new);
 
 }
