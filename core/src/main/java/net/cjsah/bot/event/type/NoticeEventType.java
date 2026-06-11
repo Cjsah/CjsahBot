@@ -7,7 +7,7 @@ import net.cjsah.bot.data.IStrSerializable;
 
 public enum NoticeEventType implements IStrSerializable {
 //    GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
-//    GROUP_ADMIN("group_admin", GroupAdminChangeEventType::toEvent),
+    GROUP_ADMIN("group_admin", GroupAdminChangeEventType.Builder.CODEC),
 //    GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent::new),
 //    GROUP_INCREASE("group_increase", GroupMemberJoinEvent::new),
 //    GROUP_BAN("group_ban", GroupMuteEvent::new),
@@ -26,10 +26,6 @@ public enum NoticeEventType implements IStrSerializable {
     NoticeEventType(String type, Codec<?> codec) {
         this.type = type;
         this.codec = codec;
-    }
-
-    public String getType() {
-        return this.type;
     }
 
     @Override

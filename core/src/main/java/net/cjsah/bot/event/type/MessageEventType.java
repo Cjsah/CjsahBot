@@ -21,10 +21,6 @@ public enum MessageEventType implements IStrSerializable {
         this.codec = codec;
     }
 
-    public String getType() {
-        return this.type;
-    }
-
     @Override
     public String getSerializedName() {
         return this.type;

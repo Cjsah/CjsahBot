@@ -108,7 +108,7 @@ public final class Main {
                     throw new IllegalArgumentException("token为空，请先设置token");
                 }
                 Api.setToken(token);
-                this.wsc = new WebSocketClientImpl(url, token);
+                this.wsc = new WebSocketClientImpl(null, url, token);
             } catch (Throwable e) {
                 log.error("初始化失败!", e);
                 throw e;

@@ -1,20 +1,16 @@
 package net.cjsah.bot;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.event.EventManager;
-import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
 import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j(topic = "WebsocketClient")
 public final class WebSocketClientImpl extends WebSocketClient {
@@ -58,7 +54,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
     public void onMessage(String msg) {
         log.debug("收到消息: {}", msg);
         try {
-            JSONObject json = JsonUtil.deserialize(msg);
+            JsonElement json = JsonParser.parseString(msg);
             EventManager.parseEvent(json);
         } catch (Throwable e) {
             log.error("出现错误!", e);

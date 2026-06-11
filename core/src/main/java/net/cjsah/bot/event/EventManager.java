@@ -1,6 +1,7 @@
 package net.cjsah.bot.event;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -159,7 +160,7 @@ public final class EventManager {
         });
     }
 
-    public static void parseEvent(JsonObject raw) throws EventException {
+    public static void parseEvent(JsonElement raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
         OB11BaseType baseType = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
         IEventBuilder eventBuilder = baseType.getPostType();

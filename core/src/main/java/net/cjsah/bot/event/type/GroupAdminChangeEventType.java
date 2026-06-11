@@ -1,48 +1,39 @@
 package net.cjsah.bot.event.type;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.events.GroupAdminSetEvent;
-import net.cjsah.bot.event.events.GroupAdminUnsetEvent;
-import net.cjsah.bot.event.events.LifecycleEvent;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.data.IStrSerializable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-public enum GroupAdminChangeEventType {
-    SET("set", GroupAdminSetEvent::new),
-    UNSET("unset", GroupAdminUnsetEvent::new),
+public enum GroupAdminChangeEventType implements IStrSerializable {
+//    SET("set", GroupAdminSetEvent::new),
+//    UNSET("unset", GroupAdminUnsetEvent::new),
+    EMPTY("empty", null),
     ;
 
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
-
-    GroupAdminChangeEventType(String type, Function<JSONObject, Event> handler) {
-        this.type = type;
-        this.handler = handler;
-        InnerClass.TYPE_MAP.put(type, this);
-    }
+    public static final Codec<GroupAdminChangeEventType> CODEC = IStrSerializable.fromEnum(GroupAdminChangeEventType.class);
 
     private final String type;
-    private final Function<JSONObject, Event> handler;
+    private final Codec<?> codec;
 
-    public String getType() {
+    GroupAdminChangeEventType(String type, Codec<?> codec) {
+        this.type = type;
+        this.codec = codec;
+    }
+
+    @Override
+    public String getSerializedName() {
         return this.type;
     }
 
-    @Nullable
-    public static Event toEvent(JSONObject raw) {
-        String typeKey = raw.getString("sub_type");
-        GroupAdminChangeEventType type = InnerClass.TYPE_MAP.get(typeKey);
-        if (type != null) return type.handler.apply(raw);
-        log.warn("Unknown event type: {}, {}", typeKey, raw);
-        return null;
-    }
+    public record Builder(GroupAdminChangeEventType type) implements IEventBuilder {
+        public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            GroupAdminChangeEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+        ).apply(instance, Builder::new));
 
-    private static class InnerClass {
-        private static final Map<String, GroupAdminChangeEventType> TYPE_MAP = new HashMap<>();
+        @Override
+        public Codec<?> codec() {
+            return this.type.codec;
+        }
     }
 }

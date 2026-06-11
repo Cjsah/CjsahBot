@@ -9,7 +9,7 @@ public enum PostType implements IStrSerializable, IEventBuilder {
     NOTICE("notice", NoticeEventType.Builder.CODEC),
     REQUEST("request", RequestEventType.Builder.CODEC),
     MESSAGE("message", MessageEventType.Builder.CODEC),
-    MESSAGE_SENT("message_sent", MessageEventType.Builder.CODEC),
+    MESSAGE_SENT("message_sent", MessageSentEventType.Builder.CODEC),
     ;
 
     public static final Codec<PostType> CODEC = IStrSerializable.fromEnum(PostType.class);
