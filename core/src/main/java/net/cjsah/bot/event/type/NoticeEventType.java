@@ -1,12 +1,13 @@
 package net.cjsah.bot.event.type;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
 import net.cjsah.bot.event.events.BaseEvent;
 
-public enum NoticeEventType implements IStrSerializable, IEventBuilder {
+public enum NoticeEventType implements IStrSerializable {
 //    GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
 //    GROUP_ADMIN("group_admin", GroupAdminChangeEventType::toEvent),
 //    GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent::new),
@@ -22,9 +23,9 @@ public enum NoticeEventType implements IStrSerializable, IEventBuilder {
     public static final Codec<NoticeEventType> CODEC = IStrSerializable.fromEnum(NoticeEventType.class);
 
     private final String type;
-    private final Codec<? extends BaseEvent> codec;
+    private final Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec;
 
-    NoticeEventType(String type, Codec<? extends BaseEvent> codec) {
+    NoticeEventType(String type, Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec) {
         this.type = type;
         this.codec = codec;
     }
@@ -38,19 +39,14 @@ public enum NoticeEventType implements IStrSerializable, IEventBuilder {
         return this.type;
     }
 
-    @Override
-    public Codec<? extends BaseEvent> codec() {
-        return this.codec;
-    }
-
-    public record Builder(RequestEventType type) implements IEventBuilder {
+    public record Builder(NoticeEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            RequestEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+            NoticeEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override
-        public Codec<? extends BaseEvent> codec() {
-            return this.type.codec();
+        public Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec() {
+            return this.type.codec;
         }
     }
 

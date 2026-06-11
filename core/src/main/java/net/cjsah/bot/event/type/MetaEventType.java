@@ -1,12 +1,13 @@
 package net.cjsah.bot.event.type;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
 import net.cjsah.bot.event.events.BaseEvent;
 
-public enum MetaEventType implements IStrSerializable, IEventBuilder {
+public enum MetaEventType implements IStrSerializable {
 //    META("lifecycle", LifecycleEvent::new),
 //    MESSAGE("heartbeat", HeartbeatEvent::new),
     EMPTY("empty", null),
@@ -27,19 +28,14 @@ public enum MetaEventType implements IStrSerializable, IEventBuilder {
         return this.type;
     }
 
-    @Override
-    public Codec<? extends BaseEvent> codec() {
-        return this.codec;
-    }
-
     public record Builder(MetaEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             MetaEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override
-        public Codec<? extends BaseEvent> codec() {
-            return this.type.codec();
+        public Either<Codec<? extends IEventBuilder>, Codec<? extends BaseEvent>> codec() {
+            return Either.right(this.type.codec);
         }
     }
 }
