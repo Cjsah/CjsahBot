@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.data.BaseUserData;
-import net.cjsah.bot.data.enums.MessageType;
+import net.cjsah.bot.data.enums.MessageSource;
 
 @Getter
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public abstract class MessageEvent<T extends BaseUserData> extends ReceivedEvent
     protected final JsonElement message;
     protected final String rawMessage;
     protected final T sender;
-    protected final MessageType type;
+    protected final MessageSource type;
 
     public abstract CommandSource<?> genCommandSource();
 }

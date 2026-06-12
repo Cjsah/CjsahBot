@@ -1,36 +1,19 @@
 package net.cjsah.bot.data.enums;
 
-import org.jetbrains.annotations.Nullable;
+import com.mojang.serialization.Codec;
+import lombok.RequiredArgsConstructor;
+import net.cjsah.bot.data.IStrSerializable;
 
-import java.util.function.Function;
+@RequiredArgsConstructor
+public enum MessageSource implements IStrSerializable {
+    FRIEND("private"),
+    GROUP("group");
 
-public enum MessageSource {
-    FRIEND("private", "qq"),
-    GROUP("group", "group");
+    public static final Codec<MessageSource> CODEC = IStrSerializable.fromEnum(MessageSource.class);
+    private final String type;
 
-    private final String source;
-    private final String contact;
-
-    MessageSource(String source, String contact) {
-        this.source = source;
-        this.contact = contact;
-    }
-
-    public String getSource() {
-        return this.source;
-    }
-
-    public String getContact() {
-        return this.contact;
-    }
-
-    @Nullable
-    public static MessageSource fromName(Function<MessageSource, String> key, String compare) {
-        for (MessageSource value : MessageSource.values()) {
-            if (key.apply(value).equals(compare)) {
-                return value;
-            }
-        }
-        return null;
+    @Override
+    public String getSerializedName() {
+        return this.type;
     }
 }

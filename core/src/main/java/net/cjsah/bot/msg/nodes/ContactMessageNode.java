@@ -1,16 +1,16 @@
 package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.enums.MessageSource;
+import net.cjsah.bot.data.enums.MessageSourceDep;
 import net.cjsah.bot.msg.MessageNodeType;
 
 import java.util.Map;
 
 public class ContactMessageNode extends MessageNode {
-    private final MessageSource source;
+    private final MessageSourceDep source;
     private final long id;
 
-    public ContactMessageNode(MessageSource source, int id) {
+    public ContactMessageNode(MessageSourceDep source, int id) {
         super(MessageNodeType.CONTACT);
         this.source = source;
         this.id = id;
@@ -19,7 +19,7 @@ public class ContactMessageNode extends MessageNode {
     public ContactMessageNode(JSONObject json) {
         super(MessageNodeType.CONTACT);
         String type = json.getString("type");
-        this.source = MessageSource.fromName(MessageSource::getContact, type);
+        this.source = MessageSourceDep.fromName(MessageSourceDep::getContact, type);
         this.id = this.parseToLong(json, "id");
     }
 

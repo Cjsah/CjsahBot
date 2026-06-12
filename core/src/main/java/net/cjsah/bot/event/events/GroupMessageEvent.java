@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.source.GroupCommandSource;
 import net.cjsah.bot.data.GroupUserData;
-import net.cjsah.bot.data.enums.MessageType;
+import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class GroupMessageEvent extends MessageEvent<GroupUserData> {
     private final JsonElement anonymous;
 
     public GroupMessageEvent(long messageId, long userId, JsonElement message, String rawMessage, GroupUserData sender, long groupId, @Nullable JsonElement anonymous) {
-        super(messageId, userId, message, rawMessage, sender, MessageType.GROUP);
+        super(messageId, userId, message, rawMessage, sender, MessageSource.GROUP);
         this.groupId = groupId;
         this.anonymous = anonymous;
     }

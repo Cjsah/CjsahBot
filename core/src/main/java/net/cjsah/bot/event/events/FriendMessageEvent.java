@@ -9,7 +9,7 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.source.FriendCommandSource;
 import net.cjsah.bot.data.FriendUserData;
 import net.cjsah.bot.data.enums.FriendMsgMode;
-import net.cjsah.bot.data.enums.MessageType;
+import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.util.CodecUtil;
 
 @Data
@@ -27,7 +27,7 @@ public class FriendMessageEvent extends MessageEvent<FriendUserData> {
     private final FriendMsgMode mode;
 
     public FriendMessageEvent(long messageId, long userId, JsonElement message, String rawMessage, FriendUserData sender, FriendMsgMode mode) {
-        super(messageId, userId, message, rawMessage, sender, MessageType.FRIEND);
+        super(messageId, userId, message, rawMessage, sender, MessageSource.FRIEND);
         this.mode = mode;
     }
 

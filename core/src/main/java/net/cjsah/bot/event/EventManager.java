@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.data.OB11BaseType;
+import net.cjsah.bot.data.OB11BaseInfo;
 import net.cjsah.bot.exception.EventException;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
@@ -154,7 +154,7 @@ public final class EventManager {
 
     public static void parseWebSocketEvent(JsonElement raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
-        OB11BaseType base = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
+        OB11BaseInfo base = CodecUtil.decode(OB11BaseInfo.CODEC, raw, exception).orThrow();
         IEventBuilder eventBuilder = base.getPostType();
         while (true) {
             Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
