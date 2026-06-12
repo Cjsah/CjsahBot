@@ -1,18 +1,10 @@
 package net.cjsah.bot.event;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import net.cjsah.bot.data.IEventBuilder;
-import net.cjsah.bot.event.events.BaseEvent;
+import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
-import net.cjsah.bot.event.events.OB11BaseType;
-import net.cjsah.bot.event.type.PostType;
-import net.cjsah.bot.exception.AppException;
+import net.cjsah.bot.data.OB11BaseType;
 import net.cjsah.bot.exception.EventException;
 import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.plugin.PluginInfo;
@@ -168,7 +160,7 @@ public final class EventManager {
             Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
             if (obj instanceof IEventBuilder builder) {
                 eventBuilder = builder;
-            } else if (obj instanceof BaseEvent event) {
+            } else if (obj instanceof ReceivedEvent event) {
                 EventManager.broadcast(event);
                 return;
             } else {

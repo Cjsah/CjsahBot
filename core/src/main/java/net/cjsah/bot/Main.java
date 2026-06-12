@@ -64,7 +64,7 @@ public final class Main {
         CancelableEvent event = signal.getEvent().get();
         if (event != null) {
             EventManager.broadcast(event);
-            if (event.isCancel()) {
+            if (event.isCanceled()) {
                 log.info("取消触发: {}", signal);
                 return;
             }
