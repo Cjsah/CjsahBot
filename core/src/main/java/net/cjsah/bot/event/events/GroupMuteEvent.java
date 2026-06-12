@@ -22,12 +22,4 @@ public class GroupMuteEvent extends ReceivedEvent {
     private final long operatorId;
     private final ChangeType type;
     private final long duration;
-
-    public GroupMuteEvent(long groupId, long userId, long operatorId, ChangeType type, long duration) {
-        this.groupId = groupId;
-        this.userId = userId;
-        this.operatorId = operatorId;
-        this.type = type;
-        this.duration = duration;
-    }
 }

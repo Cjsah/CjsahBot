@@ -20,7 +20,7 @@ public class ProfileLikeEvent extends ReceivedEvent {
     private final long operatorId;
     private final String operatorNick;
     private final int times;
-    protected final Instant time;
+    private final Instant time;
 
     public ProfileLikeEvent(long operatorId, String operatorNick, int times, long time) {
         this.operatorId = operatorId;

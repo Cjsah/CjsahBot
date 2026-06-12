@@ -12,7 +12,7 @@ public enum NoticeEventType implements IStrSerializable {
     GROUP_RECALL("group_recall", GroupRecallEvent.CODEC),
     GROUP_INCREASE("group_increase", GroupMemberJoinEvent.CODEC),
     GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent.CODEC),
-    GROUP_ADMIN("group_admin", GroupMemberJoinEvent.CODEC),
+    GROUP_ADMIN("group_admin", GroupAdminChangeEvent.CODEC),
     GROUP_BAN("group_ban", GroupMuteEvent.CODEC),
     GROUP_UPLOAD("group_upload", GroupUploadEvent.CODEC),
     GROUP_CARD("group_card", GroupCardEvent.CODEC),

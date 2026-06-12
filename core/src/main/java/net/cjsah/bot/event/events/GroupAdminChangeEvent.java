@@ -20,11 +20,4 @@ public class GroupAdminChangeEvent extends ReceivedEvent {
     private final long userId;
     private final long operatorId;
     private final ChangeType type;
-
-    public GroupAdminChangeEvent(long groupId, long userId, long operatorId, ChangeType type) {
-        this.groupId = groupId;
-        this.userId = userId;
-        this.operatorId = operatorId;
-        this.type = type;
-    }
 }

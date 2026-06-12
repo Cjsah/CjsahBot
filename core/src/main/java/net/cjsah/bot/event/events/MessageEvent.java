@@ -17,5 +17,5 @@ public abstract class MessageEvent<T extends BaseUserData> extends ReceivedEvent
     protected final T sender;
     protected final MessageSource type;
 
-    public abstract CommandSource<?> genCommandSource();
+    public abstract CommandSource<?> getCommandSource();
 }

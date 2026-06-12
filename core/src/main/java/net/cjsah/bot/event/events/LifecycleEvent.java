@@ -15,8 +15,4 @@ public class LifecycleEvent extends ReceivedEvent {
     ).apply(instance, LifecycleEvent::new));
 
     private final LifecycleStatus status;
-
-    public LifecycleEvent(LifecycleStatus status) {
-        this.status = status;
-    }
 }

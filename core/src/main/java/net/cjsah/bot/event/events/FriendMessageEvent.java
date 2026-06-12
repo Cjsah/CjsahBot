@@ -32,7 +32,7 @@ public class FriendMessageEvent extends MessageEvent<FriendUserData> {
     }
 
     @Override
-    public CommandSource<?> genCommandSource() {
+    public CommandSource<?> getCommandSource() {
         return new FriendCommandSource(this);
     }
 }

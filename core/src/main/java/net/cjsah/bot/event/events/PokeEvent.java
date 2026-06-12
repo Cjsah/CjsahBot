@@ -10,8 +10,8 @@ import java.util.function.Function;
 @Getter
 @RequiredArgsConstructor
 public abstract class PokeEvent extends ReceivedEvent {
-    private final long userId;
-    private final long targetId;
+    protected final long userId;
+    protected final long targetId;
 
     public static class Builder {
         public static final Codec<PokeEvent> CODEC = Codec.either(

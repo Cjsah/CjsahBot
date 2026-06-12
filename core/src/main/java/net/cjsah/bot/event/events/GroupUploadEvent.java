@@ -18,10 +18,4 @@ public class GroupUploadEvent extends ReceivedEvent {
     private final long groupId;
     private final long uploaderId;
     private final FileInfo file;
-
-    public GroupUploadEvent(long groupId, long uploaderId, FileInfo file) {
-        this.groupId = groupId;
-        this.uploaderId = uploaderId;
-        this.file = file;
-    }
 }

@@ -16,9 +16,4 @@ public class HeartbeatEvent extends ReceivedEvent {
 
     private final HeartbeatStatus status;
     private final long interval;
-
-    public HeartbeatEvent(HeartbeatStatus status, long interval) {
-        this.interval = interval;
-        this.status = status;
-    }
 }

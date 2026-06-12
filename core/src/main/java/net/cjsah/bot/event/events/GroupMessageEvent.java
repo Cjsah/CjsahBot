@@ -36,7 +36,7 @@ public class GroupMessageEvent extends MessageEvent<GroupUserData> {
     }
     
     @Override
-    public CommandSource<?> genCommandSource() {
+    public CommandSource<?> getCommandSource() {
         return new GroupCommandSource(this);
     }
 }
