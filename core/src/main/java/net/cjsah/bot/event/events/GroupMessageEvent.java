@@ -1,51 +1,40 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.source.GroupCommandSource;
-import net.cjsah.bot.data.AnonymousUserData;
 import net.cjsah.bot.data.GroupUserData;
-import net.cjsah.bot.data.enums.GroupMsgMode;
 import net.cjsah.bot.data.enums.MessageType;
-import net.cjsah.bot.util.EnumUtil;
+import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class GroupMessageEvent extends MessageEvent<GroupUserData> {
-    private static final Logger log = LoggerFactory.getLogger(GroupMessageEvent.class);
-    private final GroupMsgMode mode;
+    public static final Codec<GroupMessageEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("message_id").forGetter(GroupMessageEvent::getMessageId),
+        Codec.LONG.fieldOf("user_id").forGetter(GroupMessageEvent::getUserId),
+        CodecUtil.JSON.fieldOf("message").forGetter(GroupMessageEvent::getMessage),
+        Codec.STRING.fieldOf("raw_message").forGetter(GroupMessageEvent::getRawMessage),
+        GroupUserData.CODEC.fieldOf("sender").forGetter(GroupMessageEvent::getSender),
+        Codec.LONG.fieldOf("group_id").forGetter(GroupMessageEvent::getGroupId),
+        CodecUtil.JSON.optionalFieldOf("anonymous", null).forGetter(GroupMessageEvent::getAnonymous)
+    ).apply(instance, GroupMessageEvent::new));
+
     private final long groupId;
-    private final String groupName;
     @Nullable
-    private final AnonymousUserData anonymous;
+    private final JsonElement anonymous;
 
-    public GroupMessageEvent(JSONObject raw) {
-        super(raw, MessageType.GROUP, GroupUserData::new);
-        this.mode = EnumUtil.ofName(GroupMsgMode.class, raw.getString("sub_type"));
-        this.groupId = raw.getLongValue("group_id");
-        this.groupName = raw.getJSONObject("raw").getString("peerName");
-        JSONObject anonymous = raw.getJSONObject("anonymous");
-        this.anonymous = anonymous == null ? null : new AnonymousUserData(anonymous);
+    public GroupMessageEvent(long messageId, long userId, JsonElement message, String rawMessage, GroupUserData sender, long groupId, @Nullable JsonElement anonymous) {
+        super(messageId, userId, message, rawMessage, sender, MessageType.GROUP);
+        this.groupId = groupId;
+        this.anonymous = anonymous;
     }
-
-    public GroupMsgMode getMode() {
-        return this.mode;
-    }
-
-    public long getGroupId() {
-        return this.groupId;
-    }
-
-    public String getGroupName() {
-        return this.groupName;
-    }
-
-    @Nullable
-    public AnonymousUserData getAnonymous() {
-        return this.anonymous;
-    }
-
+    
     @Override
     public CommandSource<?> genCommandSource() {
         return new GroupCommandSource(this);

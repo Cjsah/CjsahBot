@@ -11,17 +11,26 @@ import net.cjsah.bot.permission.PermissionManager;
 public final class MainApplication {
     private static final MainApplication INSTANCE = new MainApplication();
     private final AppConfig config;
+    private volatile AppStatus status;
 
     private WebSocketThread thread = null;
 
     private MainApplication() {
+        this.status = AppStatus.INIT;
         log.info("初始化文件系统...");
         AppPaths.init();
         log.info("加载配置文件...");
         this.config = AppConfig.loadOrCreate();
         log.info("初始化权限系统...");
         PermissionManager.getInstance().reload();
+        this.status = AppStatus.PREPARED;
+    }
 
+    public AppInstantStatus getStatus() {
+        return new AppInstantStatus(
+            this.status,
+            this.thread == null ? WebSocketStatus.DISCONNECTED : this.thread.getStatus()
+        );
     }
 
     public synchronized void start() {

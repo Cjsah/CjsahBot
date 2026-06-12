@@ -1,32 +1,22 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.util.EnumUtil;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.cjsah.bot.data.enums.LifecycleStatus;
 
-public class LifecycleEvent extends BotEvent {
-    private final Status status;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class LifecycleEvent extends ReceivedEvent {
 
-    public LifecycleEvent(JSONObject raw) {
-        super(raw);
-        this.status = EnumUtil.ofName(Status.class, raw.getString("sub_type"));
-    }
+    public static final Codec<LifecycleEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        LifecycleStatus.CODEC.fieldOf("sub_type").forGetter(LifecycleEvent::getStatus)
+    ).apply(instance, LifecycleEvent::new));
 
-    public Status getStatus() {
-        return this.status;
-    }
+    private final LifecycleStatus status;
 
-    @Override
-    public String toString() {
-        return "LifecycleEvent{" +
-                "time=" + time +
-                ", selfId=" + selfId +
-                ", status=" + status +
-                '}';
-    }
-
-    public enum Status {
-        ENABLE,
-        DISABLE,
-        CONNECT
+    public LifecycleEvent(LifecycleStatus status) {
+        this.status = status;
     }
 }

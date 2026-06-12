@@ -1,22 +1,17 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.CommandInfo;
+import lombok.Getter;
+import net.cjsah.bot.command.context.CommandContext;
+import net.cjsah.bot.command.tree.CommandNode;
 
-public class CommandEvent extends Event {
+@Getter
+public class CommandEvent extends CancelableEvent {
+    private final CommandContext context;
+    private final CommandNode commandNode;
 
-    public CommandEvent(JSONObject json) {
+    public CommandEvent(CommandContext context, CommandNode commandNode) {
+        this.context = context;
+        this.commandNode = commandNode;
     }
 
-    public int getBotId() {
-        return 0;
-    }
-
-    public String getMsgId() {
-        return null;
-    }
-
-    public CommandInfo getCommandInfo() {
-        return null;
-    }
 }

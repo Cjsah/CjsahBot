@@ -7,12 +7,19 @@ import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Encoder;
 import com.mojang.serialization.JsonOps;
 
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class CodecUtil {
+    public static final Codec<JsonElement> JSON = converter(JsonOps.INSTANCE);
+
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static <T> Either<T, String> decode(Codec<T> codec, String jsonStr) {
@@ -56,5 +63,13 @@ public final class CodecUtil {
     public static <T extends Enum<T>> Codec<T> enumCodec(Class<T> clazz) {
         T[] constants = clazz.getEnumConstants();
         return Codec.INT.xmap(it -> constants[it], Enum::ordinal);
+    }
+
+    public static <T> Codec<T> converter(DynamicOps<T> dynamicOps) {
+        return Codec.PASSTHROUGH.xmap(dynamic -> dynamic.convert(dynamicOps).getValue(), object -> new Dynamic<>(dynamicOps, (T)object));
+    }
+
+    public static <T> Codec<T> supplier(Supplier<T> factory) {
+        return Codec.of(Encoder.empty(), Decoder.unit(factory)).codec();
     }
 }

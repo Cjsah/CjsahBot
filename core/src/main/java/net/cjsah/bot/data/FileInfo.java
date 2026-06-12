@@ -1,43 +1,13 @@
 package net.cjsah.bot.data;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class FileInfo {
-    private final String id;
-    private final String name;
-    private final long size;
-    private final long busid;
-
-    public FileInfo(JSONObject raw) {
-        this.id = raw.getString("id");
-        this.name = raw.getString("name");
-        this.size = raw.getLongValue("size");
-        this.busid = raw.getLongValue("busid");
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public long getSize() {
-        return this.size;
-    }
-
-    public long getBusid() {
-        return this.busid;
-    }
-
-    @Override
-    public String toString() {
-        return "FileInfo{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", size=" + size +
-                ", busid=" + busid +
-                '}';
-    }
+public record FileInfo(String id, String name, long size, long busid) {
+    public static final Codec<FileInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("id").forGetter(FileInfo::id),
+        Codec.STRING.fieldOf("name").forGetter(FileInfo::name),
+        Codec.LONG.fieldOf("size").forGetter(FileInfo::size),
+        Codec.LONG.fieldOf("busid").forGetter(FileInfo::busid)
+    ).apply(instance, FileInfo::new));
 }

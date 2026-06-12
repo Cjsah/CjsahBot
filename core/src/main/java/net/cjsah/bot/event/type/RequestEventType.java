@@ -4,11 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.FriendRequestEvent;
+import net.cjsah.bot.event.events.GroupRequestEvent;
 
 public enum RequestEventType implements IStrSerializable {
-//    FRIEND("friend", FriendRequestEvent::new),
-//    GROUP("group", GroupRequestEvent::new),
-    EMPTY("empty", null),
+    FRIEND("friend", FriendRequestEvent.CODEC),
+    GROUP("group", GroupRequestEvent.CODEC),
     ;
 
     public static final Codec<RequestEventType> CODEC = IStrSerializable.fromEnum(RequestEventType.class);

@@ -4,12 +4,20 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.GroupGrayTipEvent;
+import net.cjsah.bot.event.events.GroupMemberTitleEvent;
+import net.cjsah.bot.event.events.GroupNameEvent;
+import net.cjsah.bot.event.events.InputStatusEvent;
+import net.cjsah.bot.event.events.PokeEvent;
+import net.cjsah.bot.event.events.ProfileLikeEvent;
 
 public enum NotifyEventType implements IStrSerializable {
-//    POKE("poke", GroupPokeEvent::new),
-//    LUCKY_KING("lucky_king", GroupLuckyKingEvent::new),
-//    HONOR("honor", GroupHonorEvent::new),
-    EMPTY("empty", null),
+    GROUP_NAME("group_name", GroupNameEvent.CODEC),
+    TITLE("title", GroupMemberTitleEvent.CODEC),
+    GRAY_TIP("gray_tip", GroupGrayTipEvent.CODEC),
+    POKE("poke", PokeEvent.Builder.CODEC),
+    PROFILE_LIKE("profile_like", ProfileLikeEvent.CODEC),
+    INPUT_STATUS("input_status", InputStatusEvent.CODEC),
     ;
 
     public static final Codec<NotifyEventType> CODEC = IStrSerializable.fromEnum(NotifyEventType.class);
@@ -29,7 +37,7 @@ public enum NotifyEventType implements IStrSerializable {
 
     public record Builder(NotifyEventType type) implements IEventBuilder {
         public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            NotifyEventType.CODEC.fieldOf("meta_event_type").forGetter(Builder::type)
+            NotifyEventType.CODEC.fieldOf("sub_type").forGetter(Builder::type)
         ).apply(instance, Builder::new));
 
         @Override

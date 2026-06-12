@@ -4,11 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.HeartbeatEvent;
+import net.cjsah.bot.event.events.LifecycleEvent;
 
 public enum MetaEventType implements IStrSerializable {
-//    META("lifecycle", LifecycleEvent::new),
-//    MESSAGE("heartbeat", HeartbeatEvent::new),
-    EMPTY("empty", null),
+    HEARTBEAT("heartbeat", HeartbeatEvent.CODEC),
+    LIFECYCLE("lifecycle", LifecycleEvent.CODEC),
     ;
 
     public static final Codec<MetaEventType> CODEC = IStrSerializable.fromEnum(MetaEventType.class);

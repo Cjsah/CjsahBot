@@ -7,7 +7,7 @@ import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.data.GroupUserData;
-import net.cjsah.bot.data.UserData;
+import net.cjsah.bot.data.BaseUserData;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
@@ -39,21 +39,21 @@ public final class MainPlugin extends Plugin {
 //        });
 
         EventManager.subscribe(pluginId, LifecycleEvent.class, event -> {
-            if (event.getStatus() == LifecycleEvent.Status.CONNECT) {
-                Main.lifecycle(false, 0);
-            }
+//            if (event.getStatus() == LifecycleEvent.Status.CONNECT) {
+//                Main.lifecycle(false, 0);
+//            }
         });
 
         EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> Main.lifecycle(true, event.getInterval()));
 
         EventManager.subscribe(pluginId, FriendMessageEvent.class, event -> {
-            UserData sender = event.getSender();
+            BaseUserData sender = event.getSender();
             log.info("[{}] [{}({})] => {}", event.getMode().getType(), sender.getNickname(), sender.getUserId(), event.getMessage());
         });
 
         EventManager.subscribe(pluginId, GroupMessageEvent.class, event -> {
             GroupUserData sender = event.getSender();
-            log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
+//            log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
         });
 
 //        EventManager.subscribe(pluginId, CommandEvent.class, event -> {

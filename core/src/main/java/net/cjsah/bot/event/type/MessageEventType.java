@@ -4,10 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.FriendMessageEvent;
+import net.cjsah.bot.event.events.GroupMessageEvent;
 
 public enum MessageEventType implements IStrSerializable {
-//    FRIEND("private", FriendMessageEvent::new),
-//    GROUP("group", GroupMessageEvent::new),
+    FRIEND("private", FriendMessageEvent.CODEC),
+    GROUP("group", GroupMessageEvent.CODEC),
     EMPTY("empty", null),
     ;
 

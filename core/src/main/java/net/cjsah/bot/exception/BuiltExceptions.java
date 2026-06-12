@@ -46,7 +46,9 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory REGISTER_IN_PLUGIN = new CommandExceptionFactory("请在插件中注册命令");
     public static final CommandExceptionFactory UNSUPPORTED_TYPE  = new CommandExceptionFactory("不支持的类型: %s");
 
-    public static final CustomRuntimeExceptionFactory<? extends RuntimeException> REQUEST_FAILED = new CustomRuntimeExceptionFactory<>("请求失败: %s", RequestException::new);
+    public static final CustomRuntimeExceptionFactory<?> EVENT_NOT_INIT = CustomRuntimeExceptionFactory.runtime("事件还没有初始化!", EventException::new);
+
+    public static final CustomRuntimeExceptionFactory<?> REQUEST_FAILED = new CustomRuntimeExceptionFactory<>("请求失败: %s", RequestException::new);
 
     public static final CustomRuntimeExceptionFactory<?> CONFLICT_PERMISSION = new CustomRuntimeExceptionFactory<>("%s 与已有权限冲突", PermissionException::new);
     public static final CustomRuntimeExceptionFactory<?> CONFLICT_MERGE_PERMISSION = new CustomRuntimeExceptionFactory<>("%s已为 %s模式, 但受到了 %s 数据", PermissionException::new);

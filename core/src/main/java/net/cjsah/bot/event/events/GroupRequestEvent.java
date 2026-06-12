@@ -1,53 +1,26 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.enums.JoinType;
-import net.cjsah.bot.util.EnumUtil;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class GroupRequestEvent extends BotEvent {
-    private final JoinType requestType;
-    private final long groupId;
-    private final long userId;
-    private final String comment;
-    private final String flag;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GroupRequestEvent extends RequestEvent {
 
-    public GroupRequestEvent(JSONObject raw) {
-        super(raw);
-        this.requestType = EnumUtil.ofName(JoinType.class, raw.getString("sub_type"));
-        this.groupId = raw.getLongValue("group_id");
-        this.userId = raw.getLongValue("user_id");
-        this.comment = raw.getString("comment");
-        this.flag = raw.getString("flag");
+    public static final Codec<GroupRequestEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("user_id").forGetter(GroupRequestEvent::getUserId),
+        Codec.STRING.fieldOf("comment").forGetter(GroupRequestEvent::getComment),
+        Codec.STRING.fieldOf("flag").forGetter(GroupRequestEvent::getFlag),
+        Codec.STRING.fieldOf("sub_type").forGetter(GroupRequestEvent::getType)
+    ).apply(instance, GroupRequestEvent::new));
+
+    private final String type;
+
+    public GroupRequestEvent(long userId, String comment, String flag, String type) {
+        super(userId, comment, flag);
+        this.type = type;
     }
 
-    public JoinType getRequestType() {
-        return this.requestType;
-    }
-
-    public long getGroupId() {
-        return this.groupId;
-    }
-
-    public long getUserId() {
-        return this.userId;
-    }
-
-    public String getComment() {
-        return this.comment;
-    }
-
-    public String getFlag() {
-        return this.flag;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupRequestEvent{" +
-                "requestType=" + requestType +
-                ", groupId=" + groupId +
-                ", userId=" + userId +
-                ", comment='" + comment + '\'' +
-                ", flag='" + flag + '\'' +
-                '}';
-    }
 }

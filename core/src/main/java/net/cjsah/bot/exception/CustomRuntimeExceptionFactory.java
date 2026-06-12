@@ -8,4 +8,8 @@ public class CustomRuntimeExceptionFactory<T extends RuntimeException> extends C
         super(message, factory);
     }
 
+    public static  <E extends Exception> CustomRuntimeExceptionFactory<?> runtime(String message, Function<String, E> factory) {
+        return new CustomRuntimeExceptionFactory<>(message, msg -> new RuntimeException(factory.apply(msg)));
+    }
+
 }

@@ -1,38 +1,20 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.util.EnumUtil;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class FriendRequestEvent extends BotEvent {
-    private final long userId;
-    private final String comment;
-    private final String flag;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class FriendRequestEvent extends RequestEvent {
+    public static final Codec<FriendRequestEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("user_id").forGetter(FriendRequestEvent::getUserId),
+        Codec.STRING.fieldOf("comment").forGetter(FriendRequestEvent::getComment),
+        Codec.STRING.fieldOf("flag").forGetter(FriendRequestEvent::getFlag)
+    ).apply(instance, FriendRequestEvent::new));
 
-    public FriendRequestEvent(JSONObject raw) {
-        super(raw);
-        this.userId = raw.getLongValue("user_id");
-        this.comment = raw.getString("comment");
-        this.flag = raw.getString("flag");
-    }
-
-    public long getUserId() {
-        return this.userId;
-    }
-
-    public String getComment() {
-        return this.comment;
-    }
-
-    public String getFlag() {
-        return this.flag;
-    }
-
-    @Override
-    public String toString() {
-        return "FriendRequestEvent{" +
-                "userId=" + userId +
-                ", comment='" + comment + '\'' +
-                ", flag='" + flag + '\'' +
-                '}';
+    public FriendRequestEvent(long userId, String comment, String flag) {
+        super(userId, comment, flag);
     }
 }

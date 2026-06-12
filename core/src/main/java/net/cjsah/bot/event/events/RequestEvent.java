@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class MessageRecallEvent extends ReceivedEvent {
+public abstract class RequestEvent extends ReceivedEvent {
     protected final long userId;
-    protected final long messageId;
+    protected final String comment;
+    protected final String flag;
 }

@@ -1,40 +1,27 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.cjsah.bot.data.FileInfo;
 
-public class GroupUploadEvent extends BotEvent {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GroupUploadEvent extends ReceivedEvent {
+    public static final Codec<GroupUploadEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("group_id").forGetter(GroupUploadEvent::getGroupId),
+        Codec.LONG.fieldOf("user_id").forGetter(GroupUploadEvent::getUploaderId),
+        FileInfo.CODEC.fieldOf("file").forGetter(GroupUploadEvent::getFile)
+    ).apply(instance, GroupUploadEvent::new));
+
     private final long groupId;
     private final long uploaderId;
     private final FileInfo file;
 
-    public GroupUploadEvent(JSONObject raw) {
-        super(raw);
-        this.groupId = raw.getLongValue("group_id");
-        this.uploaderId = raw.getLongValue("user_id");
-        this.file = new FileInfo(raw.getJSONObject("file"));
-    }
-
-    public long getGroupId() {
-        return this.groupId;
-    }
-
-    public long getUploaderId() {
-        return this.uploaderId;
-    }
-
-    public FileInfo getFile() {
-        return this.file;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupUploadEvent{" +
-                "time=" + time +
-                ", selfId=" + selfId +
-                ", groupId=" + groupId +
-                ", uploaderId=" + uploaderId +
-                ", file=" + file +
-                '}';
+    public GroupUploadEvent(long groupId, long uploaderId, FileInfo file) {
+        this.groupId = groupId;
+        this.uploaderId = uploaderId;
+        this.file = file;
     }
 }

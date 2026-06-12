@@ -1,57 +1,33 @@
 package net.cjsah.bot.data;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import net.cjsah.bot.data.enums.GroupRole;
-import net.cjsah.bot.util.EnumUtil;
 
-public class GroupUserData extends UserData {
-    protected final String card;
-    protected final String area;
-    protected final String level;
-    protected final GroupRole role;
-    protected final String title;
+@Getter
+@EqualsAndHashCode(callSuper = true)
+public class GroupUserData extends BaseUserData {
+    public static final Codec<GroupUserData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("user_id").forGetter(GroupUserData::getUserId),
+        Codec.STRING.fieldOf("nickname").forGetter(GroupUserData::getNickname),
+        Codec.STRING.fieldOf("card").forGetter(GroupUserData::getCard),
+        GroupRole.CODEC.fieldOf("role").forGetter(GroupUserData::getRole),
+        Codec.STRING.fieldOf("title").forGetter(GroupUserData::getTitle),
+        Codec.STRING.fieldOf("level").forGetter(GroupUserData::getLevel)
+    ).apply(instance, GroupUserData::new));
 
-    public GroupUserData(JSONObject raw) {
-        super(raw);
-        this.card = raw.getString("card");
-        this.area = raw.getString("area");
-        this.level = raw.getString("level");
-        this.role = EnumUtil.ofName(GroupRole.class, raw.getString("role"));
-        this.title = raw.getString("title");
-    }
+    private final String card;
+    private final GroupRole role;
+    private final String title;
+    private final String level;
 
-    public String getCard() {
-        return this.card;
-    }
-
-    public String getArea() {
-        return this.area;
-    }
-
-    public String getLevel() {
-        return this.level;
-    }
-
-    public GroupRole getRole() {
-        return this.role;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupUserData{" +
-                "userId=" + userId +
-                ", nickname='" + nickname + '\'' +
-                ", sex=" + sex +
-                ", age=" + age +
-                ", card='" + card + '\'' +
-                ", area='" + area + '\'' +
-                ", level='" + level + '\'' +
-                ", role='" + role + '\'' +
-                ", title='" + title + '\'' +
-                '}';
+    public GroupUserData(long userId, String nickname, String card, GroupRole role, String title, String level) {
+        super(userId, nickname);
+        this.card = card;
+        this.role = role;
+        this.title = title;
+        this.level = level;
     }
 }

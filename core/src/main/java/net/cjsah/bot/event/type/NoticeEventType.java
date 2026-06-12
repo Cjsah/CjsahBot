@@ -4,18 +4,22 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.event.events.*;
 
 public enum NoticeEventType implements IStrSerializable {
-//    GROUP_UPLOAD("group_upload", GroupUploadEvent::new),
-    GROUP_ADMIN("group_admin", GroupAdminChangeEventType.Builder.CODEC),
-//    GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent::new),
-//    GROUP_INCREASE("group_increase", GroupMemberJoinEvent::new),
-//    GROUP_BAN("group_ban", GroupMuteEvent::new),
-//    FRIEND_ADD("friend_add", FriendAppendedEvent::new),
-//    GROUP_RECALL("group_recall", GroupRecallEvent::new),
-//    FRIEND_RECALL("friend_recall", FriendRecallEvent::new),
+    FRIEND_ADD("friend_add", FriendAddEvent.CODEC),
+    FRIEND_RECALL("friend_recall", FriendRecallEvent.CODEC),
+    GROUP_RECALL("group_recall", GroupRecallEvent.CODEC),
+    GROUP_INCREASE("group_increase", GroupMemberJoinEvent.CODEC),
+    GROUP_DECREASE("group_decrease", GroupMemberLeaveEvent.CODEC),
+    GROUP_ADMIN("group_admin", GroupMemberJoinEvent.CODEC),
+    GROUP_BAN("group_ban", GroupMuteEvent.CODEC),
+    GROUP_UPLOAD("group_upload", GroupUploadEvent.CODEC),
+    GROUP_CARD("group_card", GroupCardEvent.CODEC),
     NOTIFY("notify", NotifyEventType.Builder.CODEC),
-    EMPTY("empty", null),
+    ESSENCE("essence", GroupEssenceEvent.CODEC),
+    GROUP_EMOJI("group_msg_emoji_like", GroupMessageEmojiLikeEvent.CODEC),
+    BOT_OFFLINE("bot_offline", BotOfflineEvent.CODEC),
     ;
 
     public static final Codec<NoticeEventType> CODEC = IStrSerializable.fromEnum(NoticeEventType.class);

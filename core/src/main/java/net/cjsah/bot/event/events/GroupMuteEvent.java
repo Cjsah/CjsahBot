@@ -1,59 +1,33 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.enums.CountStatus;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.cjsah.bot.data.enums.ChangeType;
 
-public class GroupMuteEvent extends BotEvent {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GroupMuteEvent extends ReceivedEvent {
+    public static final Codec<GroupMuteEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("group_id").forGetter(GroupMuteEvent::getGroupId),
+        Codec.LONG.fieldOf("user_id").forGetter(GroupMuteEvent::getUserId),
+        Codec.LONG.fieldOf("operator_id").forGetter(GroupMuteEvent::getOperatorId),
+        ChangeType.CODEC_MUTE.fieldOf("sub_type").forGetter(GroupMuteEvent::getType),
+        Codec.LONG.fieldOf("duration").forGetter(GroupMuteEvent::getDuration)
+    ).apply(instance, GroupMuteEvent::new));
+
     private final long groupId;
-    private final long operatorId;
-    private final CountStatus type;
     private final long userId;
+    private final long operatorId;
+    private final ChangeType type;
     private final long duration;
 
-    public GroupMuteEvent(JSONObject raw) {
-        super(raw);
-        this.groupId = raw.getLongValue("group_id");
-        this.operatorId = raw.getLongValue("operator_id");
-        this.userId = raw.getLongValue("user_id");
-        this.duration = raw.getLongValue("duration");
-        String type = raw.getString("sub_type");
-        switch (type) {
-            case "ban" -> this.type = CountStatus.INCREASE;
-            case "lift_ban" -> this.type = CountStatus.DECREASE;
-            default -> throw new IllegalArgumentException("Unknown type: " + type);
-        }
-    }
-
-    public CountStatus getType() {
-        return this.type;
-    }
-
-    public long getGroupId() {
-        return this.groupId;
-    }
-
-    public long getOperatorId() {
-        return this.operatorId;
-    }
-
-    public long getUserId() {
-        return this.userId;
-    }
-
-    public long getDuration() {
-        return this.duration;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupMuteEvent{" +
-                "time=" + time +
-                ", selfId=" + selfId +
-                ", groupId=" + groupId +
-                ", operatorId=" + operatorId +
-                ", type=" + type +
-                ", userId=" + userId +
-                ", duration=" + duration +
-                '}';
+    public GroupMuteEvent(long groupId, long userId, long operatorId, ChangeType type, long duration) {
+        this.groupId = groupId;
+        this.userId = userId;
+        this.operatorId = operatorId;
+        this.type = type;
+        this.duration = duration;
     }
 }

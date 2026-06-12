@@ -1,61 +1,21 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonElement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.data.UserData;
+import net.cjsah.bot.data.BaseUserData;
 import net.cjsah.bot.data.enums.MessageType;
-import net.cjsah.bot.msg.MessageChain;
-import net.cjsah.bot.util.StringUtil;
 
-import java.util.function.Function;
-
-public abstract class MessageEvent<T extends UserData> extends BotEvent {
-    protected final MessageType msgType;
-    protected final int msgId;
+@Getter
+@RequiredArgsConstructor
+public abstract class MessageEvent<T extends BaseUserData> extends ReceivedEvent {
+    protected final long messageId;
     protected final long userId;
-    protected final String rawMsg;
-    protected final MessageChain message;
+    protected final JsonElement message;
+    protected final String rawMessage;
     protected final T sender;
-    protected final int font;
-
-    protected MessageEvent(JSONObject raw, MessageType type, Function<JSONObject, T> factory) {
-        super(raw);
-        this.msgType = type;
-        this.msgId = raw.getIntValue("message_id");
-        this.userId = raw.getLongValue("user_id");
-        this.rawMsg = StringUtil.netReplace(raw.getString("raw_message"));
-        this.font = raw.getIntValue("font");
-        this.message = MessageChain.parse(raw.getJSONArray("message"));
-        this.sender = factory.apply(raw.getJSONObject("sender"));
-    }
+    protected final MessageType type;
 
     public abstract CommandSource<?> genCommandSource();
-
-    public MessageType getMsgType() {
-        return this.msgType;
-    }
-
-    public int getMsgId() {
-        return this.msgId;
-    }
-
-    public long getUserId() {
-        return this.userId;
-    }
-
-    public String getRawMsg() {
-        return this.rawMsg;
-    }
-
-    public MessageChain getMessage() {
-        return this.message;
-    }
-
-    public T getSender() {
-        return this.sender;
-    }
-
-    public int getFont() {
-        return this.font;
-    }
 }

@@ -1,6 +1,8 @@
 package net.cjsah.bot.event;
 
 import com.google.gson.JsonElement;
+import lombok.AccessLevel;
+import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
@@ -12,8 +14,6 @@ import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,8 +23,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Slf4j(topic = "EventManager", access = AccessLevel.PUBLIC)
 public final class EventManager {
-    private static final Logger log = LoggerFactory.getLogger("EventManager");
 
     private static final List<EventNode<?>> events = new ArrayList<>();
 
@@ -152,15 +152,16 @@ public final class EventManager {
         });
     }
 
-    public static void parseEvent(JsonElement raw) throws EventException {
+    public static void parseWebSocketEvent(JsonElement raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
-        OB11BaseType baseType = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
-        IEventBuilder eventBuilder = baseType.getPostType();
+        OB11BaseType base = CodecUtil.decode(OB11BaseType.CODEC, raw, exception).orThrow();
+        IEventBuilder eventBuilder = base.getPostType();
         while (true) {
             Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
             if (obj instanceof IEventBuilder builder) {
                 eventBuilder = builder;
             } else if (obj instanceof ReceivedEvent event) {
+                event.init(base);
                 EventManager.broadcast(event);
                 return;
             } else {

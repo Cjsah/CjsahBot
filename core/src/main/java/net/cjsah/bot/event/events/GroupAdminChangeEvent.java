@@ -1,40 +1,30 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.data.enums.CountStatus;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.cjsah.bot.data.enums.ChangeType;
 
-public class GroupAdminChangeEvent extends BotEvent {
-    protected final long groupId;
-    protected final long userId;
-    protected final CountStatus type;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GroupAdminChangeEvent extends ReceivedEvent {
+    public static final Codec<GroupAdminChangeEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.LONG.fieldOf("group_id").forGetter(GroupAdminChangeEvent::getGroupId),
+        Codec.LONG.fieldOf("user_id").forGetter(GroupAdminChangeEvent::getUserId),
+        Codec.LONG.fieldOf("operator_id").forGetter(GroupAdminChangeEvent::getOperatorId),
+        ChangeType.CODEC_SET.fieldOf("sub_type").forGetter(GroupAdminChangeEvent::getType)
+    ).apply(instance, GroupAdminChangeEvent::new));
 
-    public GroupAdminChangeEvent(JSONObject raw, CountStatus type) {
-        super(raw);
+    private final long groupId;
+    private final long userId;
+    private final long operatorId;
+    private final ChangeType type;
+
+    public GroupAdminChangeEvent(long groupId, long userId, long operatorId, ChangeType type) {
+        this.groupId = groupId;
+        this.userId = userId;
+        this.operatorId = operatorId;
         this.type = type;
-        this.groupId = raw.getLongValue("group_id");
-        this.userId = raw.getLongValue("user_id");
-    }
-
-    public long getGroupId() {
-        return this.groupId;
-    }
-
-    public long getUserId() {
-        return this.userId;
-    }
-
-    public CountStatus getType() {
-        return this.type;
-    }
-
-    @Override
-    public String toString() {
-        return "GroupAdminChangeEvent{" +
-                "time=" + time +
-                ", selfId=" + selfId +
-                ", groupId=" + groupId +
-                ", userId=" + userId +
-                ", type=" + type +
-                '}';
     }
 }

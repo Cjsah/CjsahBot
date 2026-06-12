@@ -11,9 +11,13 @@ public interface IStrSerializable {
     String getSerializedName();
 
     static <E extends Enum<E> & IStrSerializable> Codec<E> fromEnum(Class<E> clazz) {
+        return fromEnum(clazz, IStrSerializable::getSerializedName);
+    }
+
+    static <E extends Enum<E>> Codec<E> fromEnum(Class<E> clazz, Function<E, String> mapper) {
         E[] enums = clazz.getEnumConstants();
-        Function<String, E> function = createNameLookup(enums, IStrSerializable::getSerializedName);
-        return Codec.stringResolver(IStrSerializable::getSerializedName, function);
+        Function<String, E> function = createNameLookup(enums, mapper);
+        return Codec.stringResolver(mapper, function);
     }
 
     static <T> Function<String, T> createNameLookup(T[] objects, Function<T, String> function) {

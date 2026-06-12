@@ -1,32 +1,24 @@
 package net.cjsah.bot.event.events;
 
-import com.alibaba.fastjson2.JSONObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import net.cjsah.bot.data.HeartbeatStatus;
 
-public class HeartbeatEvent extends BotEvent {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class HeartbeatEvent extends ReceivedEvent {
+    public static final Codec<HeartbeatEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        HeartbeatStatus.CODEC.fieldOf("status").forGetter(HeartbeatEvent::getStatus),
+        Codec.LONG.fieldOf("interval").forGetter(HeartbeatEvent::getInterval)
+    ).apply(instance, HeartbeatEvent::new));
+
+    private final HeartbeatStatus status;
     private final long interval;
-    private final JSONObject status;
 
-    public HeartbeatEvent(JSONObject raw) {
-        super(raw);
-        this.interval = raw.getLongValue("interval");
-        this.status = raw.getJSONObject("status");
-    }
-
-    public long getInterval() {
-        return this.interval;
-    }
-
-    public JSONObject getStatus() {
-        return this.status;
-    }
-
-    @Override
-    public String toString() {
-        return "HeartbeatEvent{" +
-                "time=" + time +
-                ", selfId=" + selfId +
-                ", interval=" + interval +
-                ", status=" + status +
-                '}';
+    public HeartbeatEvent(HeartbeatStatus status, long interval) {
+        this.interval = interval;
+        this.status = status;
     }
 }
