@@ -25,7 +25,7 @@ public final class MainApplication {
 
     @SneakyThrows
     private MainApplication() {
-        this.status = AppStatus.PREPARED;
+        this.status = AppStatus.INIT;
         log.info("初始化文件系统...");
         AppPaths.init();
         log.info("加载配置文件...");
