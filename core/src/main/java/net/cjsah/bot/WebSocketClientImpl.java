@@ -11,15 +11,20 @@ import org.quartz.SchedulerException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j(topic = "WebsocketClient")
 public final class WebSocketClientImpl extends WebSocketClient {
+    private static final AtomicLong ID_CACHE = new AtomicLong(0L);
     private final WebSocketThread thread;
     private final HeartBeatTimer heart = new HeartBeatTimer();
+    private final long id;
 
     public WebSocketClientImpl(WebSocketThread thread, String url, String token) throws URISyntaxException, SchedulerException {
         super(new URI(url + "?access_token=" + token));
         this.thread = thread;
+        this.id = ID_CACHE.incrementAndGet();
     }
 
     @Override
@@ -41,6 +46,8 @@ public final class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshake) {
         log.info("连接成功!");
+        MainApplication.getInstance().
+
         try {
             this.heart.start();
         } catch (SchedulerException e) {

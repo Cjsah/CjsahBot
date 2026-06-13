@@ -17,11 +17,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class MainApplication {
     private static final MainApplication INSTANCE = new MainApplication();
     private final AppConfig config;
+    private final WebSocketThread thread;
 
-    private WebSocketThread thread = null;
-    private volatile AppStatus status;
     private final AtomicBoolean StopSig = new AtomicBoolean(false);
+    private volatile AppStatus status;
 
+    static void main() {
+
+    }
 
     @SneakyThrows
     private MainApplication() {
@@ -30,6 +33,7 @@ public final class MainApplication {
         AppPaths.init();
         log.info("加载配置文件...");
         this.config = AppConfig.loadOrCreate();
+        this.thread = new WebSocketThread(this.config);
         log.info("初始化权限系统...");
         PermissionManager.getInstance().reload();
         log.info("正在加载插件...");
@@ -66,12 +70,11 @@ public final class MainApplication {
     }
 
     public synchronized void start() {
-        if (this.thread != null && this.thread.isAlive()) {
+        if (this.thread.isAlive()) {
             log.warn("Application has already started; there is no need to start it again.");
             return;
         }
         try {
-            this.thread = new WebSocketThread(this.config);
             this.thread.start();
         } catch (Throwable e) {
             throw new AppException("Failed to initialize Websocket Client", e);

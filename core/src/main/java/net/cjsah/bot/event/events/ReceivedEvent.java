@@ -1,13 +1,9 @@
 package net.cjsah.bot.event.events;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import net.cjsah.bot.data.OB11BaseInfo;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.exception.BuiltinExceptions;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
 public abstract class ReceivedEvent extends Event {
     private OB11BaseInfo base = null;
 

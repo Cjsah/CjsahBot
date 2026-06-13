@@ -1,5 +1,6 @@
 package net.cjsah.bot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -14,15 +15,13 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j(topic = "HeartBeat")
 public final class HeartBeatTimer {
-    private static final Logger log = LoggerFactory.getLogger(HeartBeatTimer.class);
     private final Scheduler scheduler;
     private final AtomicInteger count;
     private final AtomicBoolean lifecycle;
