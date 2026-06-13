@@ -2,9 +2,10 @@ package net.cjsah.bot.command;
 
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.plugin.PluginContextDep;
-import net.cjsah.bot.plugin.PluginInfoDep;
+import net.cjsah.bot.plugin.PluginManager;
+import net.cjsah.bot.plugin.PluginMetadata;
 
 import java.util.function.Predicate;
 
@@ -13,7 +14,10 @@ public class Commands {
     private static final CommandDispatcher dispatcher = new CommandDispatcher();
 
     public static CommandRegisterContext registerContext() {
-        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
+        PluginMetadata info = PluginManager.getCurrentInfo();
+        if (info == null) {
+            throw BuiltinExceptions.NOT_IN_PLUGIN.create();
+        }
         return new CommandRegisterContext(dispatcher, info);
     }
 
@@ -30,7 +34,7 @@ public class Commands {
     }
 
     public static <S> Predicate<S> passRequirement() {
-        return c -> true;
+        return _ -> true;
     }
 
 }

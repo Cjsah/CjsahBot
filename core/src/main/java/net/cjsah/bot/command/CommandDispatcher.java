@@ -7,7 +7,7 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.tree.CommandNode;
 import net.cjsah.bot.command.tree.LiteralCommandNode;
 import net.cjsah.bot.command.tree.RootCommandNode;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 import java.util.*;
@@ -62,9 +62,9 @@ public class CommandDispatcher {
             if (parse.exceptions().size() == 1) {
                 throw parse.exceptions().values().iterator().next();
             } else if (parse.context().getRange().isEmpty()) {
-                throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
+                throw BuiltinExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
             } else {
-                throw BuiltExceptions.DISPATCHER_UNKNOWN_ARGUMENT.create();
+                throw BuiltinExceptions.DISPATCHER_UNKNOWN_ARGUMENT.create();
             }
         }
 
@@ -72,7 +72,7 @@ public class CommandDispatcher {
         final CommandContext context = parse.context().build(command);
 
         if (context.getCommand() == null) {
-            throw BuiltExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
+            throw BuiltinExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
         }
 
         return context.getCommand().run(context);
@@ -103,11 +103,11 @@ public class CommandDispatcher {
                 try {
                     child.parse(reader, context);
                 } catch (final RuntimeException ex) {
-                    throw BuiltExceptions.DISPATCHER_PARSE_EXCEPTION.create(ex.getMessage());
+                    throw BuiltinExceptions.DISPATCHER_PARSE_EXCEPTION.create(ex.getMessage());
                 }
                 if (reader.canRead()) {
                     if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
-                        throw BuiltExceptions.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.create();
+                        throw BuiltinExceptions.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.create();
                     }
                 }
             } catch (final CommandException ex) {

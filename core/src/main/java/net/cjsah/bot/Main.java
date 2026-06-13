@@ -6,8 +6,7 @@ import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.permission.PermissionManager;
-import net.cjsah.bot.plugin.PluginLoader;
-import net.cjsah.bot.plugin.PluginContext;
+import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.enums.ReadyState;
 import org.slf4j.Logger;
@@ -126,11 +125,9 @@ public final class Main {
             log.info("初始化插件系统...");
             // Plugin thread pools are created via PluginContext.register() during loadPlugins()
             log.info("正在加载插件...");
-            PluginLoader.loadPlugins();
+            PluginManager.init();
 
             this.tryConnect();
-
-            PluginLoader.onStarted();
 
             running:
             while (true) {
@@ -145,9 +142,9 @@ public final class Main {
             log.info("执行关闭命令...");
             this.stop = true;
             log.info("正在卸载所有插件...");
-            PluginLoader.unloadPlugins();
+            PluginManager.shutdown();
             log.info("等待插件线程关闭...");
-            PluginContext.shutdownAll();
+
             log.info("正在断开连接...");
             this.wsc.shutdown();
             log.info("已关闭");

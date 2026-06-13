@@ -7,10 +7,10 @@ import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.data.OB11BaseInfo;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.EventException;
-import net.cjsah.bot.plugin.PluginContextDep;
-import net.cjsah.bot.plugin.PluginInfoDep;
-import net.cjsah.bot.plugin.PluginContext;
+import net.cjsah.bot.plugin.PluginManager;
+import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,9 +39,12 @@ public final class EventManager {
      */
     public static <T extends Event> void subscribe(Class<T> clazz, Consumer<T> handler) {
         // 获取当前插件上下文中的插件
-        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
+        PluginMetadata info = PluginManager.getCurrentInfo();
+        if (info == null) {
+            throw BuiltinExceptions.NOT_IN_PLUGIN.create();
+        }
         // 使用获取到的插件和事件处理程序进行订阅
-        subscribe(info.getId(), clazz, handler);
+        subscribe(info.id(), clazz, handler);
     }
 
 
@@ -120,10 +123,12 @@ public final class EventManager {
      * @param event 事件类型，必须是Event的子类
      */
     public static <T extends Event> void unsubscribe(Class<T> event) {
-        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
-        events.removeIf(it -> Objects.equals(it.pluginId, info.getId()) && it.event == event);
+        PluginMetadata info = PluginManager.getCurrentInfo();
+        if (info == null) {
+            throw BuiltinExceptions.NOT_IN_PLUGIN.create();
+        }
+        events.removeIf(it -> Objects.equals(it.pluginId, info.id()) && it.event == event);
     }
-
 
     /**
      * 广播事件
@@ -140,7 +145,7 @@ public final class EventManager {
         // 使用并行流过滤并执行匹配的事件处理函数
         events.stream().parallel().filter(it -> it.event.isAssignableFrom(event.getClass())).forEach(it -> {
             // 使用插件的线程池执行事件处理函数
-            PluginContext.execute(it.pluginId, () -> {
+            PluginManager.execute(it.pluginId, () -> {
                 try {
                     // 动态类型转换并调用事件处理函数
                     ((Consumer<T>) it.handler).accept(event);

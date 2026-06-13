@@ -2,9 +2,9 @@ package net.cjsah.bot.command.argument;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.plugin.MainPlugin;
+import net.cjsah.bot.plugin.builtin.CorePlugin;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -14,7 +14,7 @@ public class ArgumentManager {
 
     static {
         arguments = HashBasedTable.create();
-        String id = MainPlugin.PLUGIN_INFO.getId();
+        String id = CorePlugin.INSTANCE.id();
         register(id, arg -> BooleanArgument.bool(), "Boolean", "boolean", "bool");
         register(id, ByteArgument::byteArg, "Byte", "byte");
         register(id, ShortArgument::shortArg, "Short", "short");
@@ -37,7 +37,7 @@ public class ArgumentManager {
     public static Argument<?> getArgument(String type, String param) throws CommandException {
         Map<String, Function<String, Argument<?>>> column = arguments.column(type);
         if (column.isEmpty()) {
-            throw BuiltExceptions.PARSE_ARGUMENT_NOT_EXIST.create(type);
+            throw BuiltinExceptions.PARSE_ARGUMENT_NOT_EXIST.create(type);
         }
         Function<String, Argument<?>> factory = column.values().stream().findFirst().orElseThrow();
         return factory.apply(param);

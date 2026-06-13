@@ -26,7 +26,7 @@ public class CountdownLocker {
         }
     }
 
-    public void release() {
+    public void releaseOne() {
         this.lock.lock();
         try {
             int current = this.count.get();

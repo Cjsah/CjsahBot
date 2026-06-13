@@ -8,6 +8,7 @@ import net.cjsah.bot.exception.PluginException;
 import net.cjsah.bot.plugin.PluginContainer;
 import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.plugin.entry.LoaderEntryPointImpl;
+import net.cjsah.bot.plugin.entry.PluginEntryPoint;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,13 +22,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @Slf4j(topic = "PluginLoader", access = AccessLevel.PUBLIC)
-public class PluginClassLoader extends URLClassLoader {
+public class PluginClassLoader extends URLClassLoader implements CloseableClassLoader {
     private final PluginContainer container;
 
     private PluginClassLoader(Path path) throws Exception {
         super(new URL[]{path.toUri().toURL()});
         PluginMetadata metadata = this.readMetadata(path);
-        LoaderEntryPointImpl entrypoint = new LoaderEntryPointImpl(metadata.entrypoint(), this);
+        PluginEntryPoint entrypoint = new LoaderEntryPointImpl(metadata.entrypoint(), this);
         this.container = new PluginContainer(metadata, path, entrypoint, this);
     }
 
@@ -37,7 +38,7 @@ public class PluginClassLoader extends URLClassLoader {
         try {
             return new PluginClassLoader(path).getContainer();
         } catch (Exception e) {
-            log.error("Failed to load plugin", e);
+            log.error("Failed to load plugin: {}", path, e);
             return null;
         }
     }

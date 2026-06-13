@@ -1,6 +1,6 @@
 package net.cjsah.bot.exception;
 
-public final class BuiltExceptions{
+public final class BuiltinExceptions {
     public static final CommandExceptionFactory READER_INVALID_BOOL = new CommandExceptionFactory("无效的 Bool, 预期为 'true' 或 'false' 实际为 '%s'");
     public static final CommandExceptionFactory READER_EXPECTED_BOOL = new CommandExceptionFactory("无效的 bool");
     public static final CommandExceptionFactory READER_INVALID_INT = new CommandExceptionFactory("无效的 integer '%s'");
@@ -34,13 +34,14 @@ public final class BuiltExceptions{
     public static final CommandExceptionFactory PARSE_INVALID_NODE = new CommandExceptionFactory("Invalid node: %s");
     public static final CommandExceptionFactory FAILED_ACCESS_METHOD = new CommandExceptionFactory("Failed to access method: %s");
 
-
     public static final CommandExceptionFactory DISPATCHER_COMMAND_NO_PERMISSION = new CommandExceptionFactory("没有权限执行此命令");
     public static final CommandExceptionFactory COMMAND_PATTERN_ERROR = new CommandExceptionFactory("命令格式错误: %s");
     public static final CommandExceptionFactory ERROR_PARSE_PARAM_NAME = new CommandExceptionFactory("错误的参数名称: %s");
     public static final CommandExceptionFactory NO_PARAM_NAME = new CommandExceptionFactory("第 %d 个参数没有填写名称");
     public static final CommandExceptionFactory EXPECTED_STRING_MAP = new CommandExceptionFactory("只允许Map类型为 Map<String,String>");
     public static final CommandExceptionFactory REPEAT_COMMAND = new CommandExceptionFactory("此命令已注册");
+
+    public static final CustomRuntimeExceptionFactory<?> NOT_IN_PLUGIN = CustomRuntimeExceptionFactory.runtime("请在插件线程上下文中注册", PluginException::new);
 
     public static final CommandExceptionFactory PLUGIN_NOT_FOUND = new CommandExceptionFactory("没有找到插件: '%s'");
     public static final CommandExceptionFactory REGISTER_IN_PLUGIN = new CommandExceptionFactory("请在插件中注册命令");

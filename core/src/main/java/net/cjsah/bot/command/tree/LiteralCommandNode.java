@@ -7,7 +7,7 @@ import net.cjsah.bot.command.context.CommandContextBuilder;
 import net.cjsah.bot.command.context.StringRange;
 import net.cjsah.bot.command.execute.Command;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +46,7 @@ public class LiteralCommandNode extends CommandNode {
             return;
         }
 
-        throw BuiltExceptions.LITERAL_INCORRECT.create(this.literal);
+        throw BuiltinExceptions.LITERAL_INCORRECT.create(this.literal);
     }
 
     private int parse(final StringReader reader) {

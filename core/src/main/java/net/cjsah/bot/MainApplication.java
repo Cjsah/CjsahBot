@@ -1,12 +1,13 @@
 package net.cjsah.bot;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.config.AppConfig;
 import net.cjsah.bot.exception.AppException;
 import net.cjsah.bot.permission.PermissionManager;
 
-@Slf4j(topic = "Console")
+@Slf4j(topic = "Console", access = AccessLevel.PUBLIC)
 @Getter
 public final class MainApplication {
     private static final MainApplication INSTANCE = new MainApplication();

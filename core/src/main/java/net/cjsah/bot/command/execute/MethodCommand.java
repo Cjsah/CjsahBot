@@ -2,7 +2,7 @@ package net.cjsah.bot.command.execute;
 
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.simple.ParamInfo;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -50,7 +50,7 @@ public class MethodCommand implements Command {
             method.invoke(null, params);
             return 1;
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw BuiltExceptions.FAILED_ACCESS_METHOD.create(e.getMessage());
+            throw BuiltinExceptions.FAILED_ACCESS_METHOD.create(e.getMessage());
         }
     }
 }

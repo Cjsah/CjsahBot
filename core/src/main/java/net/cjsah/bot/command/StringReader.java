@@ -1,7 +1,7 @@
 package net.cjsah.bot.command;
 
 import lombok.Setter;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 @SuppressWarnings("unused")
@@ -92,13 +92,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_BYTE.create();
+            throw BuiltinExceptions.READER_EXPECTED_BYTE.create();
         }
         try {
             return Byte.parseByte(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_BYTE.create(number);
+            throw BuiltinExceptions.READER_INVALID_BYTE.create(number);
         }
     }
 
@@ -109,13 +109,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_SHORT.create();
+            throw BuiltinExceptions.READER_EXPECTED_SHORT.create();
         }
         try {
             return Short.parseShort(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_SHORT.create(number);
+            throw BuiltinExceptions.READER_INVALID_SHORT.create(number);
         }
     }
 
@@ -126,13 +126,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_INT.create();
+            throw BuiltinExceptions.READER_EXPECTED_INT.create();
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_INT.create(number);
+            throw BuiltinExceptions.READER_INVALID_INT.create(number);
         }
     }
 
@@ -143,13 +143,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_LONG.create();
+            throw BuiltinExceptions.READER_EXPECTED_LONG.create();
         }
         try {
             return Long.parseLong(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_LONG.create(number);
+            throw BuiltinExceptions.READER_INVALID_LONG.create(number);
         }
     }
 
@@ -160,13 +160,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_DOUBLE.create();
+            throw BuiltinExceptions.READER_EXPECTED_DOUBLE.create();
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_DOUBLE.create(number);
+            throw BuiltinExceptions.READER_INVALID_DOUBLE.create(number);
         }
     }
 
@@ -177,13 +177,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw BuiltExceptions.READER_EXPECTED_FLOAT.create();
+            throw BuiltinExceptions.READER_EXPECTED_FLOAT.create();
         }
         try {
             return Float.parseFloat(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw BuiltExceptions.READER_INVALID_FLOAT.create(number);
+            throw BuiltinExceptions.READER_INVALID_FLOAT.create(number);
         }
     }
 
@@ -209,7 +209,7 @@ public class StringReader {
         }
         final char next = peek();
         if (!isQuotedStringStart(next)) {
-            throw BuiltExceptions.READER_EXPECTED_START_OF_QUOTE.create();
+            throw BuiltinExceptions.READER_EXPECTED_START_OF_QUOTE.create();
         }
         skip();
         return readStringUntil(next);
@@ -226,7 +226,7 @@ public class StringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw BuiltExceptions.READER_INVALID_ESCAPE.create(c);
+                    throw BuiltinExceptions.READER_INVALID_ESCAPE.create(c);
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -237,7 +237,7 @@ public class StringReader {
             }
         }
 
-        throw BuiltExceptions.READER_EXPECTED_END_OF_QUOTE.create();
+        throw BuiltinExceptions.READER_EXPECTED_END_OF_QUOTE.create();
     }
 
     public String readString() throws CommandException {
@@ -256,19 +256,19 @@ public class StringReader {
         final int start = cursor;
         final String value = readString();
         return switch (value) {
-            case "" -> throw BuiltExceptions.READER_EXPECTED_BOOL.create();
+            case "" -> throw BuiltinExceptions.READER_EXPECTED_BOOL.create();
             case "true" -> true;
             case "false" -> false;
             default -> {
                 cursor = start;
-                throw BuiltExceptions.READER_INVALID_BOOL.create(value);
+                throw BuiltinExceptions.READER_INVALID_BOOL.create(value);
             }
         };
     }
 
     public void expect(final char c) throws CommandException {
         if (!canRead() || peek() != c) {
-            throw BuiltExceptions.READER_EXPECTED_SYMBOL.create(c);
+            throw BuiltinExceptions.READER_EXPECTED_SYMBOL.create(c);
         }
         skip();
     }

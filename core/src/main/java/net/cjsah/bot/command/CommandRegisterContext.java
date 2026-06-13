@@ -8,7 +8,7 @@ import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.simple.SimpleCommandParser;
 import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.plugin.PluginInfoDep;
+import net.cjsah.bot.plugin.PluginMetadata;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,19 +16,19 @@ import java.lang.reflect.Modifier;
 @Slf4j(topic = "CommandManager")
 public final class CommandRegisterContext {
     private final CommandDispatcher dispatcher;
-    private final PluginInfoDep info;
+    private final PluginMetadata pluginInfo;
 
-    public CommandRegisterContext(CommandDispatcher dispatcher, PluginInfoDep info) {
+    public CommandRegisterContext(CommandDispatcher dispatcher, PluginMetadata pluginInfo) {
         this.dispatcher = dispatcher;
-        this.info = info;
+        this.pluginInfo = pluginInfo;
     }
 
     public LiteralArgumentBuilder literal(String string) {
-        return LiteralArgumentBuilder.literal(this.info.getId(), string);
+        return LiteralArgumentBuilder.literal(this.pluginInfo.id(), string);
     }
 
     public <T> RequiredArgumentBuilder<T> argument(String string, Argument<T> argument) {
-        return RequiredArgumentBuilder.argument(this.info.getId(), string, argument);
+        return RequiredArgumentBuilder.argument(this.pluginInfo.id(), string, argument);
     }
 
     public LiteralArgumentBuilder register(LiteralArgumentBuilder literal) {
@@ -43,7 +43,7 @@ public final class CommandRegisterContext {
                 counter++;
             }
         }
-        log.debug("{} registered {} commands", this.info.getId(), counter);
+        log.debug("{} registered {} commands", this.pluginInfo.id(), counter);
         return counter;
     }
 

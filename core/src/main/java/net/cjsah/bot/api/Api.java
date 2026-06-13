@@ -4,7 +4,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.Method;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +178,7 @@ public final class Api {
             String bodyStr = new String(response.bodyBytes(), StandardCharsets.UTF_8);
             JSONObject json = JsonUtil.deserialize(bodyStr);
             if (!"ok".equals(json.getString("status"))) {
-                throw BuiltExceptions.REQUEST_FAILED.create(json.getString("msg"));
+                throw BuiltinExceptions.REQUEST_FAILED.create(json.getString("msg"));
             }
             return json;
         }

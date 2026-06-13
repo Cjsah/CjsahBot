@@ -10,7 +10,7 @@ import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.execute.MethodCommand;
 import net.cjsah.bot.command.source.CommandSource;
-import net.cjsah.bot.exception.BuiltExceptions;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 
 import java.lang.reflect.Method;
@@ -37,11 +37,11 @@ public class SimpleCommandParser {
 
     public LiteralArgumentBuilder parse(Method method) throws CommandException {
         if (!this.canRead()) {
-            throw BuiltExceptions.PARSE_EMPTY_STRING.create();
+            throw BuiltinExceptions.PARSE_EMPTY_STRING.create();
         }
         ArgumentBuilder<?> root = nextBuilder();
         if (!(root instanceof LiteralArgumentBuilder)) {
-            throw BuiltExceptions.PARSE_ROOT_ARGUMENT.create();
+            throw BuiltinExceptions.PARSE_ROOT_ARGUMENT.create();
         }
         Map<String, Class<?>> args = new HashMap<>();
         ArgumentBuilder<?> last = root;
@@ -96,7 +96,7 @@ public class SimpleCommandParser {
         }
         Matcher literalMatcher = PATTERN_LITERAL.matcher(node);
         if (!literalMatcher.matches()) {
-            throw BuiltExceptions.PARSE_INVALID_NODE.create(node);
+            throw BuiltinExceptions.PARSE_INVALID_NODE.create(node);
         }
         return this.context.literal(node);
     }

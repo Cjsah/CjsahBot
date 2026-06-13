@@ -1,11 +1,14 @@
-package net.cjsah.bot.plugin;
+package net.cjsah.bot.plugin.builtin;
 
+import com.google.gson.JsonNull;
 import net.cjsah.bot.Main;
+import net.cjsah.bot.MainApplication;
 import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.config.permission.UserRole;
+import net.cjsah.bot.data.AuthorInfo;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.BaseUserData;
 import net.cjsah.bot.event.EventManager;
@@ -13,21 +16,39 @@ import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
 import net.cjsah.bot.event.events.LifecycleEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.cjsah.bot.loader.DummyClassLoader;
+import net.cjsah.bot.plugin.Plugin;
+import net.cjsah.bot.plugin.PluginContainer;
+import net.cjsah.bot.plugin.PluginMetadata;
+import net.cjsah.bot.plugin.entry.BuiltinPluginEntryPointImpl;
 
-import java.util.Collections;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 
-public final class MainPlugin extends PluginDep {
-    private static final Logger log = LoggerFactory.getLogger("Console");
-    public static final MainPlugin INSTANCE = new MainPlugin();
-    public static final PluginInfoDep PLUGIN_INFO = new PluginInfoDep("core", "Core", "Core Plugin", "1.0", Collections.singletonMap("authors", Collections.singletonList("Cjsah")));
+public final class CorePlugin implements Plugin {
+    public static final PluginContainer INSTANCE;
+
+    static {
+       PluginMetadata metadata = new PluginMetadata(
+           "core", "2.0.0", "Core", "Builtin Core Plugin",
+           List.of(new AuthorInfo("Cjsah", Optional.of(""))),
+           "Builtin " + CorePlugin.class.getName(),
+           JsonNull.INSTANCE
+       );
+       INSTANCE = new PluginContainer(
+           metadata,
+           Paths.get("."),
+           new BuiltinPluginEntryPointImpl(new CorePlugin()),
+           new DummyClassLoader()
+       );
+   }
 
     @Override
-    public void onLoad() {
-        Commands.registerContext().register(MainPlugin.class);
+    public void load() {
+        Commands.registerContext().register(CorePlugin.class);
 
-        String pluginId = PLUGIN_INFO.getId();
+        String pluginId = INSTANCE.id();
 
 //        @Deprecated
 //        EventManager.subscribe(pluginId, MessageEvent.class, event ->
@@ -48,7 +69,7 @@ public final class MainPlugin extends PluginDep {
 
         EventManager.subscribe(pluginId, FriendMessageEvent.class, event -> {
             BaseUserData sender = event.getSender();
-            log.info("[{}] [{}({})] => {}", event.getMode().getType(), sender.getNickname(), sender.getUserId(), event.getMessage());
+            MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getType(), sender.getNickname(), sender.getUserId(), event.getMessage());
         });
 
         EventManager.subscribe(pluginId, GroupMessageEvent.class, event -> {
