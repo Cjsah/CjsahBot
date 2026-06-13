@@ -1,4 +1,4 @@
-package net.cjsah.bot.resolver;
+package net.cjsah.bot.data;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;

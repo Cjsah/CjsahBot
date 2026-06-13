@@ -1,21 +1,22 @@
 package net.cjsah.bot.msg.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.google.gson.JsonElement;
 import net.cjsah.bot.msg.MessageNodeType;
-import net.cjsah.bot.util.JsonUtil;
+import net.cjsah.bot.util.CodecUtil;
 
 public class JsonMessageNode extends MessageNode {
-    private final JSONObject json;
+    private final JsonElement json;
 
     public JsonMessageNode(String json) {
-        this(JsonUtil.deserialize(json), false);
+        this(CodecUtil.decode(CodecUtil.JSON, json).orThrow(), false);
     }
 
-    public JsonMessageNode(JSONObject json, boolean next) {
+    public JsonMessageNode(JsonElement json, boolean next) {
         super(MessageNodeType.JSON);
-        if (next) {
-            String data = json.getString("data");
-            this.json = JsonUtil.deserialize(data);
+        if (next && json.isJsonObject()) {
+            String data = json.getAsJsonObject().get("data").getAsString();
+            this.json = CodecUtil.decode(CodecUtil.JSON, data).orThrow();
         } else {
             this.json = json;
         }
@@ -23,8 +24,8 @@ public class JsonMessageNode extends MessageNode {
 
     @Override
     public void serializeData(JSONObject json) {
-        String str = JsonUtil.serialize(this.json);
-        json.put("data", str);
+        String data = CodecUtil.encode(CodecUtil.JSON, this.json).orThrow();
+        json.put("data", data);
     }
 
     @Override

@@ -19,4 +19,9 @@ public class WebSocketThread extends Thread {
     public void run() {
         this.status = WebSocketStatus.CONNECTING;
     }
+
+    public void halt() {
+        this.join();
+    }
+
 }

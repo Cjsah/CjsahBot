@@ -2,12 +2,10 @@ package net.cjsah.bot;
 
 import cn.hutool.core.lang.Validator;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.api.Api;
 import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginManager;
-import net.cjsah.bot.util.JsonUtil;
 import org.java_websocket.enums.ReadyState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +92,8 @@ public final class Main {
 
         public MainThread() throws Exception {
             try {
-                String content = FilePaths.ACCOUNT.read();
-                JSONObject json = JsonUtil.deserialize(content);
+                String content = "";
+                JSONObject json = new JSONObject();
                 String url = json.getString("url");
                 String token = json.getString("token");
                 if (Validator.isEmpty(url)) {
@@ -119,7 +117,7 @@ public final class Main {
 
         private void runApp() throws InterruptedException {
             log.info("初始化文件系统...");
-            FilePaths.init();
+//            FilePaths.init();
             log.info("初始化权限系统...");
             PermissionManager.init();
             log.info("初始化插件系统...");
