@@ -1,8 +1,8 @@
-package net.cjsah.bot.plugin;
+package net.cjsah.bot.plugin.entry;
 
 import net.cjsah.bot.exception.PluginAdapterException;
 import net.cjsah.bot.loader.PluginClassLoader;
-import org.jetbrains.annotations.Nullable;
+import net.cjsah.bot.plugin.Plugin;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleProxies;
@@ -13,17 +13,17 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PluginEntrypoint {
+public class LoaderEntryPointImpl implements PluginEntryPoint {
     private final String value;
     private final ClassLoader loader;
     private Plugin instance = null;
 
-    public PluginEntrypoint(String value, ClassLoader loader) {
+    public LoaderEntryPointImpl(String value, ClassLoader loader) {
         this.value = value;
         this.loader = loader;
     }
 
-    @Nullable
+    @Override
     public synchronized Plugin getOrCreate() {
         if (this.instance == null) {
             try {

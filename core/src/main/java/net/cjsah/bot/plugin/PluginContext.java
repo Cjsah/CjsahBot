@@ -13,16 +13,17 @@ public class PluginContext {
     private static final Map<String, PluginExecutor> EXECUTORS = new ConcurrentHashMap<>();
     private static final ScopedValue<PluginContainer> CURRENT = ScopedValue.newInstance();
 
-    public static void register(PluginContainer plugin) {
+    public static boolean register(PluginContainer plugin) {
         String id = plugin.id();
         if (PLUGINS.containsKey(id)) {
             PluginClassLoader.log.warn("Plugin {} has already registered.", id);
-            return;
+            return false;
         }
         PluginExecutor executor = new PluginExecutor(CURRENT, plugin);
         PLUGINS.put(id, plugin);
         EXECUTORS.put(id, executor);
         execute(id, invokePlugin(id, Plugin::load));
+        return true;
     }
 
     public static void deregister(String pluginId) {
