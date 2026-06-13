@@ -8,7 +8,7 @@ import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.simple.SimpleCommandParser;
 import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.plugin.PluginInfo;
+import net.cjsah.bot.plugin.PluginInfoDep;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,9 +16,9 @@ import java.lang.reflect.Modifier;
 @Slf4j(topic = "CommandManager")
 public final class CommandRegisterContext {
     private final CommandDispatcher dispatcher;
-    private final PluginInfo info;
+    private final PluginInfoDep info;
 
-    public CommandRegisterContext(CommandDispatcher dispatcher, PluginInfo info) {
+    public CommandRegisterContext(CommandDispatcher dispatcher, PluginInfoDep info) {
         this.dispatcher = dispatcher;
         this.info = info;
     }

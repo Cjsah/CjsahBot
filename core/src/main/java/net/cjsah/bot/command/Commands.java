@@ -3,8 +3,8 @@ package net.cjsah.bot.command;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.CommandException;
-import net.cjsah.bot.plugin.PluginContext;
-import net.cjsah.bot.plugin.PluginInfo;
+import net.cjsah.bot.plugin.PluginContextDep;
+import net.cjsah.bot.plugin.PluginInfoDep;
 
 import java.util.function.Predicate;
 
@@ -13,7 +13,7 @@ public class Commands {
     private static final CommandDispatcher dispatcher = new CommandDispatcher();
 
     public static CommandRegisterContext registerContext() {
-        PluginInfo info = PluginContext.getCurrentPluginInfo();
+        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
         return new CommandRegisterContext(dispatcher, info);
     }
 

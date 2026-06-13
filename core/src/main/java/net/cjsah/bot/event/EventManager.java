@@ -8,8 +8,8 @@ import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.data.OB11BaseInfo;
 import net.cjsah.bot.exception.EventException;
-import net.cjsah.bot.plugin.PluginContext;
-import net.cjsah.bot.plugin.PluginInfo;
+import net.cjsah.bot.plugin.PluginContextDep;
+import net.cjsah.bot.plugin.PluginInfoDep;
 import net.cjsah.bot.plugin.PluginThreadPools;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public final class EventManager {
      */
     public static <T extends Event> void subscribe(Class<T> clazz, Consumer<T> handler) {
         // 获取当前插件上下文中的插件
-        PluginInfo info = PluginContext.getCurrentPluginInfo();
+        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
         // 使用获取到的插件和事件处理程序进行订阅
         subscribe(info.getId(), clazz, handler);
     }
@@ -120,7 +120,7 @@ public final class EventManager {
      * @param event 事件类型，必须是Event的子类
      */
     public static <T extends Event> void unsubscribe(Class<T> event) {
-        PluginInfo info = PluginContext.getCurrentPluginInfo();
+        PluginInfoDep info = PluginContextDep.getCurrentPluginInfo();
         events.removeIf(it -> Objects.equals(it.pluginId, info.getId()) && it.event == event);
     }
 

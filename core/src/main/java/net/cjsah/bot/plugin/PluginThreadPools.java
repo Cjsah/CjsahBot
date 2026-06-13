@@ -32,7 +32,7 @@ public final class PluginThreadPools {
     }
 
     public static synchronized void execute(Runnable runnable) {
-        PluginInfo info = PluginContext.PLUGIN_INFO.get();
+        PluginInfoDep info = PluginContextDep.PLUGIN_INFO.get();
         if (info == null) info = MainPlugin.PLUGIN_INFO;
         PluginThreadPools.execute(info.getId(), runnable);
     }
@@ -40,7 +40,7 @@ public final class PluginThreadPools {
     public static synchronized void unloadPlugin(String pluginId) {
         PluginThread thread = Threads.get(pluginId);
         if (thread != null) {
-            PluginInfo info = PluginContext.getPluginInfo(pluginId);
+            PluginInfoDep info = PluginContextDep.getPluginInfo(pluginId);
             assert info != null;
             thread.terminate();
             try {
@@ -49,7 +49,7 @@ public final class PluginThreadPools {
                         thread.lock.wait();
                     }
                 }
-                PluginContext.PluginData data = PluginContext.removePlugin(pluginId);
+                PluginContextDep.PluginData data = PluginContextDep.removePlugin(pluginId);
                 Threads.remove(pluginId);
                 if (data == null || data.loader() == null) return;
                 try {
@@ -86,8 +86,8 @@ public final class PluginThreadPools {
 
         @Override
         public void run() {
-            Plugin plugin = PluginContext.getPlugin(this.pluginId);
-            PluginContext.PLUGIN.set(plugin);
+            Plugin plugin = PluginContextDep.getPlugin(this.pluginId);
+            PluginContextDep.PLUGIN.set(plugin);
             while (this.running || !this.tasks.isEmpty()) {
                 try {
                     Runnable task = tasks.take();
@@ -97,8 +97,8 @@ public final class PluginThreadPools {
                     Thread.currentThread().interrupt();
                 }
             }
-            PluginContext.PLUGIN.remove();
-            PluginContext.PLUGIN_INFO.remove();
+            PluginContextDep.PLUGIN.remove();
+            PluginContextDep.PLUGIN_INFO.remove();
             this.cancelled = true;
             synchronized (this.lock) {
                 this.lock.notifyAll();

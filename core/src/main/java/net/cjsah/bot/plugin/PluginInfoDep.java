@@ -6,14 +6,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class PluginInfo {
+@Deprecated
+public final class PluginInfoDep {
     private final String id;
     private final String name;
     private final String description;
     private final String version;
     private final Map<String, Object> info;
 
-    PluginInfo(String id, String name, String description, String version, Map<String, Object> info) {
+    PluginInfoDep(String id, String name, String description, String version, Map<String, Object> info) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,7 +22,7 @@ public final class PluginInfo {
         this.info = info;
     }
 
-    PluginInfo(JSONObject json) {
+    PluginInfoDep(JSONObject json) {
         this.id = json.getString("id");
         this.name = json.getString("name");
         Object descriptionOrigin = json.get("description");

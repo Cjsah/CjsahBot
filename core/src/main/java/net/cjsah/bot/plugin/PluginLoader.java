@@ -31,11 +31,11 @@ public class PluginLoader extends URLClassLoader {
 
     public static void loadPlugins() throws InterruptedException {
         Counter counter = new Counter();
-        PluginContext.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null);
+        PluginContextDep.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null);
         counter.increment();
         PluginThreadPools.execute(MainPlugin.PLUGIN_INFO.getId(), () -> {
             log.info("正在加载核心插件");
-            PluginContext.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO);
+            PluginContextDep.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO);
             MainPlugin.INSTANCE.onLoad();
             log.info("核心插件加载完成");
             counter.completed();
@@ -52,7 +52,7 @@ public class PluginLoader extends URLClassLoader {
                 PluginLoader loader = new PluginLoader(jar);
                 JarFile jarFile = new JarFile(jar);
                 JSONObject json = PluginLoader.readJarPluginInfo(jarFile);
-                PluginInfo info = new PluginInfo(json);
+                PluginInfoDep info = new PluginInfoDep(json);
                 if (PluginLoader.checkPluginExist(info, jar.getName())) {
                     continue;
                 }
@@ -64,14 +64,14 @@ public class PluginLoader extends URLClassLoader {
                 }
                 Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
                 counter.increment();
-                PluginContext.appendPlugin(plugin, info, loader);
+                PluginContextDep.appendPlugin(plugin, info, loader);
                 PluginThreadPools.execute(info.getId(), () -> {
                     try {
-                        PluginContext.PLUGIN_INFO.set(info);
+                        PluginContextDep.PLUGIN_INFO.set(info);
                         plugin.onLoad();
                         log.info("插件 {} {} 已加载", info.getName(), info.getVersion());
                     }catch (Exception e) {
-                        PluginContext.removePlugin(info.getId());
+                        PluginContextDep.removePlugin(info.getId());
                         log.error("插件 {} 加载失败", info.getId(), e);
                     } finally {
                         counter.completed();
@@ -86,19 +86,19 @@ public class PluginLoader extends URLClassLoader {
     }
 
     public static void onStarted() {
-        for (PluginContext.PluginData data : PluginContext.PLUGINS.values()) {
+        for (PluginContextDep.PluginData data : PluginContextDep.PLUGINS.values()) {
             PluginThreadPools.execute(data.info().getId(), () -> data.plugin().onStarted());
         }
     }
 
     public static void unloadPlugins() {
-        PluginContext.PLUGINS.values().forEach(it -> PluginLoader.unloadPlugin(it.info().getId()));
+        PluginContextDep.PLUGINS.values().forEach(it -> PluginLoader.unloadPlugin(it.info().getId()));
         log.info("已卸载所有插件!");
     }
 
     public static void unloadPlugin(String pluginId) {
         PluginThreadPools.execute(pluginId, () -> {
-            Plugin plugin = PluginContext.getCurrentPlugin();
+            Plugin plugin = PluginContextDep.getCurrentPlugin();
             EventManager.unsubscribe(pluginId);
             Commands.deregisterPlugin(pluginId);
             plugin.onUnload();
@@ -130,10 +130,10 @@ public class PluginLoader extends URLClassLoader {
         }
     }
 
-    private static boolean checkPluginExist(PluginInfo info, String jar) {
-        PluginContext.PluginData pluginData = PluginContext.PLUGINS.get(info.getId());
+    private static boolean checkPluginExist(PluginInfoDep info, String jar) {
+        PluginContextDep.PluginData pluginData = PluginContextDep.PLUGINS.get(info.getId());
         if (pluginData != null) {
-            PluginInfo alreadyInfo = pluginData.info();
+            PluginInfoDep alreadyInfo = pluginData.info();
             log.warn("插件 {} [{} ({}) v{}] 无法加载, 已有同名插件 [{} ({}) v{}]", jar,
                     info.getName(), info.getId(), info.getVersion(),
                     alreadyInfo.getName(), alreadyInfo.getId(), alreadyInfo.getVersion()
