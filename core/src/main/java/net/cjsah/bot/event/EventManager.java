@@ -10,7 +10,7 @@ import net.cjsah.bot.data.OB11BaseInfo;
 import net.cjsah.bot.exception.EventException;
 import net.cjsah.bot.plugin.PluginContextDep;
 import net.cjsah.bot.plugin.PluginInfoDep;
-import net.cjsah.bot.plugin.PluginThreadPools;
+import net.cjsah.bot.plugin.PluginContext;
 import net.cjsah.bot.util.CodecUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -140,7 +140,7 @@ public final class EventManager {
         // 使用并行流过滤并执行匹配的事件处理函数
         events.stream().parallel().filter(it -> it.event.isAssignableFrom(event.getClass())).forEach(it -> {
             // 使用插件的线程池执行事件处理函数
-            PluginThreadPools.execute(it.pluginId, () -> {
+            PluginContext.execute(it.pluginId, () -> {
                 try {
                     // 动态类型转换并调用事件处理函数
                     ((Consumer<T>) it.handler).accept(event);

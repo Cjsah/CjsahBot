@@ -27,7 +27,7 @@ public class PluginClassLoader extends URLClassLoader {
     private PluginClassLoader(Path path) throws Exception {
         super(new URL[]{path.toUri().toURL()});
         PluginMetadata metadata = this.readMetadata(path);
-        PluginEntrypoint entrypoint = new PluginEntrypoint(metadata.getEntrypoint(), this);
+        PluginEntrypoint entrypoint = new PluginEntrypoint(metadata.entrypoint(), this);
         this.container = new PluginContainer(metadata, path, entrypoint, this);
     }
 

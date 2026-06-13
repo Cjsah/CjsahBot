@@ -1,6 +1,5 @@
 package net.cjsah.bot.plugin;
 
-import lombok.Getter;
 import net.cjsah.bot.exception.PluginAdapterException;
 import net.cjsah.bot.loader.PluginClassLoader;
 import org.jetbrains.annotations.Nullable;
@@ -12,42 +11,32 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
-@Getter
 public class PluginEntrypoint {
     private final String value;
     private final ClassLoader loader;
-    private final Map<Class<?>, Object> instances;
+    private Plugin instance = null;
 
     public PluginEntrypoint(String value, ClassLoader loader) {
         this.value = value;
         this.loader = loader;
-        this.instances = new IdentityHashMap<>(1);
     }
 
     @Nullable
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T getOrCreate(Class<T> type) {
-        T ret = (T) this.instances.get(type);
-
-        if (ret == null) {
+    public synchronized Plugin getOrCreate() {
+        if (this.instance == null) {
             try {
-                ret = createPlugin(this.value, type, this.loader);
-                T prev = (T) this.instances.putIfAbsent(type, ret);
-                if (prev != null) ret = prev;
+                this.instance = createPlugin(this.value, this.loader);
             } catch (PluginAdapterException e) {
                 PluginClassLoader.log.error("Fail to create plugin instance: {}", e.getMessage(), e);
             }
         }
 
-        return ret;
+        return this.instance;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T createPlugin(String value, Class<T> type, ClassLoader loader) throws PluginAdapterException {
+    private static Plugin createPlugin(String value, ClassLoader loader) throws PluginAdapterException {
         String[] methodSplit = value.split("::");
 
         if (methodSplit.length >= 3) {
@@ -64,14 +53,14 @@ public class PluginEntrypoint {
         }
 
         if (methodSplit.length == 1) {
-            if (type.isAssignableFrom(c)) {
+            if (Plugin.class.isAssignableFrom(c)) {
                 try {
-                    return (T) c.getDeclaredConstructor().newInstance();
+                    return (Plugin) c.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
                     throw new PluginAdapterException(e);
                 }
             } else {
-                throw new PluginAdapterException("Class " + c.getName() + " cannot be cast to " + type.getName() + "!");
+                throw new PluginAdapterException("Class " + c.getName() + " cannot be cast to " + Plugin.class.getName() + "!");
             }
         } else /* length == 2 */ {
             List<Method> methodList = new ArrayList<>();
@@ -96,19 +85,15 @@ public class PluginEntrypoint {
                     throw new PluginAdapterException("Ambiguous " + value + " - refers to both field and method!");
                 }
 
-                if (!type.isAssignableFrom(fType)) {
-                    throw new PluginAdapterException("Field " + value + " cannot be cast to " + type.getName() + "!");
+                if (!Plugin.class.isAssignableFrom(fType)) {
+                    throw new PluginAdapterException("Field " + value + " cannot be cast to " + Plugin.class.getName() + "!");
                 }
 
-                return (T) field.get(null);
+                return (Plugin) field.get(null);
             } catch (NoSuchFieldException e) {
                 // ignore
             } catch (IllegalAccessException e) {
                 throw new PluginAdapterException("Field " + value + " cannot be accessed!", e);
-            }
-
-            if (!type.isInterface()) {
-                throw new PluginAdapterException("Cannot proxy method " + value + " to non-interface type " + type.getName() + "!");
             }
 
             if (methodList.isEmpty()) {
@@ -143,7 +128,7 @@ public class PluginEntrypoint {
 
             // uses proxy as well, but this handles default and object methods
             try {
-                return MethodHandleProxies.asInterfaceInstance(type, handle);
+                return MethodHandleProxies.asInterfaceInstance(Plugin.class, handle);
             } catch (Exception ex) {
                 throw new PluginAdapterException(ex);
             }

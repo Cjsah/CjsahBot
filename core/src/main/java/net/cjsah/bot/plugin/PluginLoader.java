@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+@Deprecated
 public class PluginLoader extends URLClassLoader {
     private static final Logger log = LoggerFactory.getLogger("PluginLoader");
 
@@ -33,7 +34,7 @@ public class PluginLoader extends URLClassLoader {
         Counter counter = new Counter();
         PluginContextDep.appendPlugin(MainPlugin.INSTANCE, MainPlugin.PLUGIN_INFO, null);
         counter.increment();
-        PluginThreadPools.execute(MainPlugin.PLUGIN_INFO.getId(), () -> {
+        PluginContext.execute(MainPlugin.PLUGIN_INFO.getId(), () -> {
             log.info("正在加载核心插件");
             PluginContextDep.PLUGIN_INFO.set(MainPlugin.PLUGIN_INFO);
             MainPlugin.INSTANCE.onLoad();
@@ -58,14 +59,14 @@ public class PluginLoader extends URLClassLoader {
                 }
                 String main = json.getString("main");
                 Class<?> clazz = loader.loadClass(main);
-                if (!Plugin.class.isAssignableFrom(clazz)) {
+                if (!PluginDep.class.isAssignableFrom(clazz)) {
                     log.error("插件 {} 的主类 {} 不是插件类", info.getId(), main);
                     continue;
                 }
-                Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+                PluginDep plugin = (PluginDep) clazz.getDeclaredConstructor().newInstance();
                 counter.increment();
                 PluginContextDep.appendPlugin(plugin, info, loader);
-                PluginThreadPools.execute(info.getId(), () -> {
+                PluginContext.execute(info.getId(), () -> {
                     try {
                         PluginContextDep.PLUGIN_INFO.set(info);
                         plugin.onLoad();
@@ -87,7 +88,7 @@ public class PluginLoader extends URLClassLoader {
 
     public static void onStarted() {
         for (PluginContextDep.PluginData data : PluginContextDep.PLUGINS.values()) {
-            PluginThreadPools.execute(data.info().getId(), () -> data.plugin().onStarted());
+            PluginContext.execute(data.info().getId(), () -> data.plugin().onStarted());
         }
     }
 
@@ -97,13 +98,13 @@ public class PluginLoader extends URLClassLoader {
     }
 
     public static void unloadPlugin(String pluginId) {
-        PluginThreadPools.execute(pluginId, () -> {
-            Plugin plugin = PluginContextDep.getCurrentPlugin();
+        PluginContext.execute(pluginId, () -> {
+            PluginDep plugin = PluginContextDep.getCurrentPlugin();
             EventManager.unsubscribe(pluginId);
             Commands.deregisterPlugin(pluginId);
             plugin.onUnload();
         });
-        PluginThreadPools.unloadPlugin(pluginId);
+        PluginContext.unloadPlugin(pluginId);
     }
 
     private static List<File> getPluginJars() {

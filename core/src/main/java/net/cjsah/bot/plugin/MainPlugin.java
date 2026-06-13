@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
-public final class MainPlugin extends Plugin {
+public final class MainPlugin extends PluginDep {
     private static final Logger log = LoggerFactory.getLogger("Console");
     public static final MainPlugin INSTANCE = new MainPlugin();
     public static final PluginInfoDep PLUGIN_INFO = new PluginInfoDep("core", "Core", "Core Plugin", "1.0", Collections.singletonMap("authors", Collections.singletonList("Cjsah")));

@@ -28,6 +28,11 @@ subprojects {
         testImplementation 'org.junit.jupiter:junit-jupiter'
     }
 
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release.set(25)
+    }
+
     test {
         useJUnitPlatform()
     }
