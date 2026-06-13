@@ -2,11 +2,14 @@ package net.cjsah.bot.loader;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import lombok.AccessLevel;
+import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.exception.PluginException;
-import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
+import net.cjsah.bot.plugin.PluginEntrypoint;
 import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.util.CodecUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,47 +20,53 @@ import java.nio.file.Path;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+@Slf4j(topic = "PluginLoader", access = AccessLevel.PUBLIC)
 public class PluginClassLoader extends URLClassLoader {
     private final PluginContainer container;
 
-    public PluginClassLoader(Path path) throws Exception {
+    private PluginClassLoader(Path path) throws Exception {
         super(new URL[]{path.toUri().toURL()});
+        PluginMetadata metadata = this.readMetadata(path);
+        PluginEntrypoint entrypoint = new PluginEntrypoint(metadata.getEntrypoint(), this);
+        this.container = new PluginContainer(metadata, path, entrypoint, this);
+    }
 
-        PluginMetadata metadata = readMetadata(path);
-
-        Class<?> clazz = this.loadClass(metadata.getEntrypoint());
-        if (!Plugin.class.isAssignableFrom(clazz)) {
-            throw new PluginException("Entrypoint " + metadata.getEntrypoint() + " does not extend Plugin");
+    @Nullable
+    @SuppressWarnings("resource")
+    public static PluginContainer plugin(Path path) {
+        try {
+            return new PluginClassLoader(path).getContainer();
+        } catch (Exception e) {
+            log.error("Failed to load plugin", e);
+            return null;
         }
-
-        Plugin entry = (Plugin) clazz.getDeclaredConstructor().newInstance();
-
-        this.container = new PluginContainer(metadata, path, entry, this);
     }
 
     public PluginContainer getContainer() {
         return this.container;
     }
 
-    @Override
-    public void close() {
-        try {
-            super.close();
-        } catch (Exception ignored) {}
-    }
-
-    private static PluginMetadata readMetadata(Path path) throws Exception {
+    private PluginMetadata readMetadata(Path path) throws Exception {
         try (JarFile jar = new JarFile(path.toFile())) {
             JarEntry entry = jar.getJarEntry("plugin.json");
             if (entry == null) {
                 throw new PluginException("plugin.json not found in " + path);
             }
             try (InputStream is = jar.getInputStream(entry);
-                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)
+            ) {
                 JsonElement json = JsonParser.parseReader(reader);
                 return CodecUtil.decode(PluginMetadata.CODEC, json).left()
                     .orElseThrow(() -> new PluginException("Failed to parse plugin.json"));
             }
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            super.close();
+        } catch (Exception ignored) {
         }
     }
 }

@@ -9,6 +9,6 @@ import java.nio.file.Path;
 public class PluginContainer {
     private final PluginMetadata metadata;
     private final Path path;
-    private final Plugin entry;
+    private final PluginEntrypoint entrypoint;
     private final PluginClassLoader loader;
 }
