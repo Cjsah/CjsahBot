@@ -7,6 +7,8 @@ import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.tree.CommandNode;
 import net.cjsah.bot.command.tree.LiteralCommandNode;
 import net.cjsah.bot.command.tree.RootCommandNode;
+import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.CommandEvent;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 
@@ -73,6 +75,12 @@ public class CommandDispatcher {
 
         if (context.getCommand() == null) {
             throw BuiltinExceptions.DISPATCHER_UNKNOWN_COMMAND.create();
+        }
+
+        CommandEvent event = new CommandEvent(context);
+        EventManager.broadcast(event, true);
+        if (event.isCanceled()) {
+            return 0;
         }
 
         return context.getCommand().run(context);

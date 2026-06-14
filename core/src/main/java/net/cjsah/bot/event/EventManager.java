@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import lombok.AccessLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.data.IEventBuilder;
+import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.events.ReceivedEvent;
 import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.data.OB11BaseInfo;
@@ -172,7 +173,7 @@ public final class EventManager {
             }
         });
 
-        if (await) {
+        if (await || event instanceof CancelableEvent) {
             try {
                 latch.await();
             } catch (InterruptedException ignored) {}
