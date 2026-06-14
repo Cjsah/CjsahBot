@@ -1,12 +1,10 @@
 package net.cjsah.bot.api.message;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.RequiredArgsConstructor;
+import com.mojang.serialization.MapCodec;
 import net.cjsah.bot.api.message.nodes.*;
 import net.cjsah.bot.data.IStrSerializable;
 
-@RequiredArgsConstructor
 public enum MessageNodeType implements IStrSerializable {
     TEXT("text", TextMessageNode.CODEC),                // 纯文本
     AT("at", AtMessageNode.CODEC),                      // at
@@ -26,25 +24,26 @@ public enum MessageNodeType implements IStrSerializable {
 
     public static final Codec<MessageNodeType> CODEC = IStrSerializable.fromEnum(MessageNodeType.class);
     private final String type;
-    private final Codec<? extends MessageNode> codec;
+    private final Codec<MessageNode> codec;
+    private final MapCodec<MessageNode> mapCodec;
+
+    @SuppressWarnings("unchecked")
+    MessageNodeType(String type, Codec<? extends MessageNode> codec) {
+        this.type = type;
+        this.codec = (Codec<MessageNode>) codec;
+        this.mapCodec = this.codec.fieldOf("data");
+    }
 
     @Override
     public String getSerializedName() {
         return this.type;
     }
 
-    public Codec<? extends MessageNode> codec() {
+    public Codec<MessageNode> codec() {
         return this.codec;
     }
 
-    public record Builder(MessageNodeType type) {
-        public static final Codec<Builder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            MessageNodeType.CODEC.fieldOf("notice_type").forGetter(Builder::type)
-        ).apply(instance, MessageNodeType.Builder::new));
-
-        public Codec<?> codec() {
-            return this.type.codec;
-        }
+    public MapCodec<MessageNode> mapCodec() {
+        return this.mapCodec;
     }
-
 }

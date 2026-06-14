@@ -31,7 +31,7 @@ public class MessageChainImpl extends ArrayList<MessageNode> implements MessageC
         for (MessageNode node : this) {
             builder.append(node.toString());
         }
-        return builder.toString();
+        return builder.toString().replace("\n", "\\n");
     }
 
     public static Collector<MessageNode, MessageChainImpl, MessageChain> list() {

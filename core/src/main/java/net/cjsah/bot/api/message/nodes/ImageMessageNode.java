@@ -5,34 +5,32 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 
-import java.util.Optional;
-
 @Getter
 public class ImageMessageNode extends MessageNode {
     public static final Codec<ImageMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("file").forGetter(ImageMessageNode::getFile),
-        Codec.STRING.optionalFieldOf("url").forGetter(ImageMessageNode::getUrl),
-        Codec.STRING.optionalFieldOf("summary").forGetter(ImageMessageNode::getSummary),
-        Codec.INT.optionalFieldOf("sub_type").forGetter(ImageMessageNode::getSubType),
-        Codec.INT.optionalFieldOf("file_size").forGetter(ImageMessageNode::getFileSize)
+        Codec.STRING.optionalFieldOf("url", "").forGetter(ImageMessageNode::getUrl),
+        Codec.STRING.optionalFieldOf("summary", "").forGetter(ImageMessageNode::getSummary),
+        Codec.INT.optionalFieldOf("sub_type", 0).forGetter(ImageMessageNode::getSubType),
+        Codec.STRING.optionalFieldOf("file_size", "0").forGetter(ImageMessageNode::getFileSize)
     ).apply(instance, ImageMessageNode::new));
 
     private final String file;
-    private final Optional<String> url;
-    private final Optional<String> summary;
-    private final Optional<Integer> subType;
-    private final Optional<Integer> fileSize;
+    private final String url;
+    private final String summary;
+    private final String fileSize;
+    private final Integer subType;
 
-    public ImageMessageNode(String file, Optional<String> url, Optional<String> summary, Optional<Integer> subType) {
+    public ImageMessageNode(String file, String url, String summary, Integer subType) {
         super(MessageNodeType.IMAGE);
         this.file = file;
         this.url = url;
         this.summary = summary;
         this.subType = subType;
-        this.fileSize = Optional.empty();
+        this.fileSize = "0";
     }
 
-    private ImageMessageNode(String file, Optional<String> url, Optional<String> summary, Optional<Integer> subType, Optional<Integer> fileSize) {
+    private ImageMessageNode(String file, String url, String summary, Integer subType, String fileSize) {
         super(MessageNodeType.IMAGE);
         this.file = file;
         this.url = url;

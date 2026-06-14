@@ -16,22 +16,20 @@ public abstract class MessageNode {
         private static final MapCodec<MessageNodeType> TYPE_CODEC = MessageNodeType.CODEC.fieldOf("type");
 
         @Override
-        @SuppressWarnings("unchecked")
         public <T> DataResult<Pair<MessageNode, T>> decode(DynamicOps<T> ops, T input) {
             return ops.getMap(input)
                 .setLifecycle(Lifecycle.stable())
                 .flatMap(map ->
                     TYPE_CODEC.decode(ops, map).flatMap(type ->
-                        ((Codec<MessageNode>) type.codec()).decode(ops, map.get("data"))
+                        type.codec().decode(ops, map.get("data"))
                     )
                 );
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public <T> DataResult<T> encode(MessageNode input, DynamicOps<T> ops, T prefix) {
             return TYPE_CODEC.encoder().encode(input.type, ops, prefix).flatMap(it ->
-                ((Codec<MessageNode>)input.type.codec()).fieldOf("data").encoder().encode(input, ops, it)
+                input.type.mapCodec().encoder().encode(input, ops, it)
             );
         }
     };
@@ -45,7 +43,6 @@ public abstract class MessageNode {
     public MessageNodeType getType() {
         return this.type;
     }
-
 
     public String toString() {
         return "[" + this.type.getSerializedName() + "]";
