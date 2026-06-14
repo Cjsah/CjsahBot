@@ -1,6 +1,5 @@
 package net.cjsah.bot.api.message.nodes;
 
-import com.alibaba.fastjson2.JSONObject;
 import net.cjsah.bot.api.message.MessageNodeType;
 
 // https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8

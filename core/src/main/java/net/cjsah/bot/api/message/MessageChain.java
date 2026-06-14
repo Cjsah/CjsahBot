@@ -12,7 +12,7 @@ import java.util.List;
 public interface MessageChain extends Collection<MessageNode> {
     Codec<MessageChain> CODEC = Codec.either(
         Codec.STRING,
-        MessageNode.CODEC.listOf()
+        MessageNode.NODE_CODEC.listOf()
     ).xmap(either -> either.map(MessageChain::raw, MessageChain::of), chain -> Either.right(chain.stream().toList()));
 
     MessageChain EMPTY = MessageChainImpl.EMPTY;

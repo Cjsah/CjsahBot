@@ -2,6 +2,7 @@ package net.cjsah.bot.api.message;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.api.message.nodes.*;
 import net.cjsah.bot.data.IStrSerializable;
@@ -37,6 +38,10 @@ public enum MessageNodeType implements IStrSerializable {
     @Override
     public String getSerializedName() {
         return this.type;
+    }
+
+    public Codec<? extends MessageNode> codec() {
+        return this.codec;
     }
 
     public record Builder(MessageNodeType type) {

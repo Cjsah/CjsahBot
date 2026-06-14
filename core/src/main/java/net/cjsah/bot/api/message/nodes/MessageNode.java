@@ -1,8 +1,11 @@
 package net.cjsah.bot.api.message.nodes;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import net.cjsah.bot.api.message.MessageChain;
 import net.cjsah.bot.api.message.MessageChainImpl;
 import net.cjsah.bot.api.message.MessageNodeType;
@@ -14,15 +17,42 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class MessageNode {
-    public static final Codec<MessageNode> CODEC = null;
+    public static final Codec<MessageNode> NODE_CODEC = new Codec<>() {
+        private static final MapCodec<MessageNodeType> TYPE_CODEC = MessageNodeType.CODEC.fieldOf("type");
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> DataResult<Pair<MessageNode, T>> decode(DynamicOps<T> ops, T input) {
+            return ops.getMap(input)
+                .setLifecycle(Lifecycle.stable())
+                .flatMap(map ->
+                    TYPE_CODEC.decode(ops, map).flatMap(type ->
+                        ((Codec<MessageNode>) type.codec()).decode(ops, map.get("data"))
+                    )
+                );
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> DataResult<T> encode(MessageNode input, DynamicOps<T> ops, T prefix) {
+            return TYPE_CODEC.encoder().encode(input.type, ops, prefix).flatMap(it ->
+                ((Codec<MessageNode>)input.type.codec()).fieldOf("data").encoder().encode(input, ops, it)
+            );
+        }
+    };
+
     private final MessageNodeType type;
 
     protected MessageNode(MessageNodeType type) {
         this.type = type;
     }
 
+    public MessageNodeType getType() {
+        return this.type;
+    }
+
     public void serialize(JSONObject json) {
-        json.put("type", this.type.getValue());
+        json.put("type", this.type.getSerializedName());
         JSONObject data = json.putObject("data");
         this.serializeData(data);
     }
@@ -54,7 +84,7 @@ public abstract class MessageNode {
     }
 
     public String toString() {
-        return "[" + this.type.getValue() + "]";
+        return "[" + this.type.getSerializedName() + "]";
     }
 
     protected String toString(String key, Object value) {
@@ -63,8 +93,8 @@ public abstract class MessageNode {
 
     protected String toString(String name, Map<String, Object> map) {
         String content = map.entrySet().stream()
-                .map(it -> it.getKey() + "=" + it.getValue())
-                .collect(Collectors.joining(",", "(", ")"));
+            .map(it -> it.getKey() + "=" + it.getValue())
+            .collect(Collectors.joining(",", "(", ")"));
         return "[" + name + content + "]";
     }
 
@@ -72,8 +102,8 @@ public abstract class MessageNode {
         return array.toList(JSONObject.class).stream().parallel().map(json -> {
             String typeStr = json.getString("type");
             MessageNodeType type = Arrays.stream(MessageNodeType.values())
-                    .filter(it -> it.getValue().equals(typeStr)).
-                    findFirst().orElse(null);
+                .filter(it -> it.getSerializedName().equals(typeStr))
+                .findFirst().orElse(null);
             if (type == null) return null;
             return type.getFactory().apply(json.getJSONObject("data"));
         }).filter(Objects::nonNull).collect(MessageChainImpl.list());
