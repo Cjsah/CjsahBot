@@ -1,10 +1,11 @@
-package net.cjsah.bot.msg.nodes;
+package net.cjsah.bot.api.message.nodes;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.msg.MessageChain;
-import net.cjsah.bot.msg.MessageChainImpl;
-import net.cjsah.bot.msg.MessageNodeType;
+import com.mojang.serialization.Codec;
+import net.cjsah.bot.api.message.MessageChain;
+import net.cjsah.bot.api.message.MessageChainImpl;
+import net.cjsah.bot.api.message.MessageNodeType;
 import net.cjsah.bot.util.StringUtil;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class MessageNode {
+    public static final Codec<MessageNode> CODEC = null;
     private final MessageNodeType type;
 
     protected MessageNode(MessageNodeType type) {

@@ -1,8 +1,8 @@
-package net.cjsah.bot.msg.nodes;
+package net.cjsah.bot.api.message.nodes;
 
 import com.alibaba.fastjson2.JSONObject;
+import net.cjsah.bot.api.message.MessageNodeType;
 import net.cjsah.bot.data.enums.MessageSourceDep;
-import net.cjsah.bot.msg.MessageNodeType;
 
 import java.util.Map;
 

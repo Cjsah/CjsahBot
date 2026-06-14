@@ -1,7 +1,7 @@
-package net.cjsah.bot.msg;
+package net.cjsah.bot.api.message;
 
 import cn.hutool.core.stream.CollectorUtil;
-import net.cjsah.bot.msg.nodes.MessageNode;
+import net.cjsah.bot.api.message.nodes.MessageNode;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -18,7 +18,11 @@ public class MessageChainImpl extends ArrayList<MessageNode> implements MessageC
     public static final MessageChain EMPTY = new EmptyMessageChain();
 
     public MessageChainImpl(MessageNode... nodes) {
-        this.addAll(Arrays.asList(nodes));
+        this(Arrays.asList(nodes));
+    }
+
+    public MessageChainImpl(List<MessageNode> nodes) {
+        this.addAll(nodes);
     }
 
     @Override

@@ -1,14 +1,20 @@
-package net.cjsah.bot.msg;
+package net.cjsah.bot.api.message;
 
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import net.cjsah.bot.msg.nodes.MessageNode;
-import net.cjsah.bot.msg.nodes.TextMessageNode;
+import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import net.cjsah.bot.api.message.nodes.MessageNode;
+import net.cjsah.bot.api.message.nodes.TextMessageNode;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface MessageChain extends Collection<MessageNode> {
+    Codec<MessageChain> CODEC = Codec.either(
+        Codec.STRING,
+        MessageNode.CODEC.listOf()
+    ).xmap(either -> either.map(MessageChain::raw, MessageChain::of), chain -> Either.right(chain.stream().toList()));
+
     MessageChain EMPTY = MessageChainImpl.EMPTY;
 
     static MessageChain raw(String text) {
@@ -16,11 +22,15 @@ public interface MessageChain extends Collection<MessageNode> {
         return new MessageChainImpl(node);
     }
 
-    static MessageChain parse(JSONArray array) {
+    static MessageChain parse(JsonElement array) {
         return MessageNode.parseMessage(array);
     }
 
     static MessageChain of(MessageNode... nodes) {
+        return new MessageChainImpl(nodes);
+    }
+
+    static MessageChain of(List<MessageNode> nodes) {
         return new MessageChainImpl(nodes);
     }
 
