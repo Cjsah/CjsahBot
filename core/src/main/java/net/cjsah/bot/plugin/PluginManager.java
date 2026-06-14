@@ -107,11 +107,10 @@ public class PluginManager {
         plugin.loader().close();
     }
 
-    public static void execute(String pluginId, Runnable task) {
+    public static boolean execute(String pluginId, Runnable task) {
         PluginExecutor executor = EXECUTORS.get(pluginId);
-        if (executor != null) {
-            executor.submit(task);
-        }
+        if (executor == null) return false;
+        return executor.submit(task);
     }
 
     @Nullable

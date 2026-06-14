@@ -8,7 +8,7 @@ public record RoledUser(long id, UserRole role, boolean enabled) implements IRow
     public static Codec<RoledUser> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.LONG.fieldOf("id").forGetter(RoledUser::id),
         UserRole.CODEC.fieldOf("role").forGetter(RoledUser::role),
-        Codec.BOOL.fieldOf("enabled").forGetter(RoledUser::enabled)
+        Codec.BOOL.optionalFieldOf("enabled", true).forGetter(RoledUser::enabled)
     ).apply(instance, RoledUser::new));
 
     @Override

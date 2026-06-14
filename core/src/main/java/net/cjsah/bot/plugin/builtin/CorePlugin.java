@@ -14,7 +14,7 @@ import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
-import net.cjsah.bot.event.events.LifecycleEvent;
+import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.loader.DummyClassLoader;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
@@ -29,19 +29,19 @@ public final class CorePlugin implements Plugin {
     public static final PluginContainer INSTANCE;
 
     static {
-       PluginMetadata metadata = new PluginMetadata(
-           "core", "2.0.0", "Core", "Builtin Core Plugin",
-           List.of(new AuthorInfo("Cjsah", Optional.of(""))),
-           "Builtin " + CorePlugin.class.getName(),
-           JsonNull.INSTANCE
-       );
-       INSTANCE = new PluginContainer(
-           metadata,
-           Paths.get("."),
-           new BuiltinPluginEntryPointImpl(new CorePlugin()),
-           new DummyClassLoader()
-       );
-   }
+        PluginMetadata metadata = new PluginMetadata(
+            "core", "2.0.0", "Core", "Builtin Core Plugin",
+            List.of(new AuthorInfo("Cjsah", Optional.of(""))),
+            "Builtin " + CorePlugin.class.getName(),
+            JsonNull.INSTANCE
+        );
+        INSTANCE = new PluginContainer(
+            metadata,
+            Paths.get("."),
+            new BuiltinPluginEntryPointImpl(new CorePlugin()),
+            new DummyClassLoader()
+        );
+    }
 
     @Override
     public void load() {
@@ -49,19 +49,11 @@ public final class CorePlugin implements Plugin {
 
         String pluginId = INSTANCE.id();
 
-//        @Deprecated
-//        EventManager.subscribe(pluginId, MessageEvent.class, event ->
-//                log.info("[{}] [{}] [{}({})] => {}", event.getRoomName(), event.getChannelName(), event.getUserName(), event.getUserId(), event.getMsg())
-//        );
-
-//        EventManager.subscribe(pluginId, MessageEmojiPinEvent.class, event -> {
-//            log.info("{} {} {} {}", event.getUserId(), event.getEmoji(), event.getChannelId(), event.getMsgId());
-//        });
-
-        EventManager.subscribe(pluginId, LifecycleEvent.class, event -> {
-//            if (event.getStatus() == LifecycleEvent.Status.CONNECT) {
-//                Main.lifecycle(false, 0);
-//            }
+        EventManager.subscribe(pluginId, MessageEvent.class, event -> {
+            if (event.getRawMessage().startsWith("/")) {
+                CommandSource<?> source = event.getCommandSource();
+                Commands.execute(source, event.getRawMessage().substring(1));
+            }
         });
 
         EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> {
@@ -77,18 +69,6 @@ public final class CorePlugin implements Plugin {
             GroupUserData sender = event.getSender();
             MainApplication.log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
         });
-
-//        EventManager.subscribe(pluginId, CommandEvent.class, event -> {
-////            log.info("[{}({})] [{}({})] ==> 触发命令: /{}",
-////                    event.getRoomInfo().getName(),
-////                    event.getRoomInfo().getId(),
-////                    event.getSenderInfo().getNickname(),
-////                    event.getSenderInfo().getId(),
-////                    event.getCommandInfo().getCommand()
-////            );
-//            CommandSource source = new CommandSource(event);
-//            CommandManager.execute(event.getCommandInfo(), source);
-//        });
     }
 
     @SimpleCommand(value = "/botstop", permission = UserRole.ADMIN)

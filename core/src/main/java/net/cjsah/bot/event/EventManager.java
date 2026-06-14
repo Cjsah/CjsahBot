@@ -20,21 +20,22 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j(topic = "EventManager", access = AccessLevel.PUBLIC)
 public final class EventManager {
 
-    private static final List<EventNode<?>> events = new ArrayList<>();
+    private static final List<EventNode<?>> Events = new ArrayList<>();
 
     /**
      * 订阅给定类型的事件。
      * <p>
      * 该方法允许插件上下文中的当前插件订阅特定类型的事件，使用提供的事件处理程序。
      *
-     * @param <T> 继承自Event的事件类型，表示要订阅的事件类型。
-     * @param clazz 要订阅的事件的具体类。
+     * @param <T>     继承自Event的事件类型，表示要订阅的事件类型。
+     * @param clazz   要订阅的事件的具体类。
      * @param handler 用于处理事件的消费者，定义了如何处理事件。
      */
     public static <T extends Event> void subscribe(Class<T> clazz, Consumer<T> handler) {
@@ -91,12 +92,12 @@ public final class EventManager {
      * <p>
      * 该方法允许插件订阅特定类型的事件，当事件发生时，指定的事件处理程序会被调用
      *
-     * @param pluginId  订阅事件的插件ID
-     * @param clazz     被订阅事件的类类型
-     * @param handler   事件发生时调用的事件处理程序，接受事件类型的实例作为参数
+     * @param pluginId 订阅事件的插件ID
+     * @param clazz    被订阅事件的类类型
+     * @param handler  事件发生时调用的事件处理程序，接受事件类型的实例作为参数
      */
     public static <T extends Event> void subscribe(String pluginId, Class<T> clazz, Consumer<T> handler) {
-        events.add(new EventNode<>(pluginId, clazz, handler));
+        Events.add(new EventNode<>(pluginId, clazz, handler));
     }
 
 
@@ -109,7 +110,7 @@ public final class EventManager {
      */
     public static void unsubscribe(String pluginId) {
         // 移除所有属于指定插件的事件监听器
-        events.removeIf(it -> Objects.equals(it.pluginId, pluginId));
+        Events.removeIf(it -> Objects.equals(it.pluginId, pluginId));
     }
 
 
@@ -127,34 +128,55 @@ public final class EventManager {
         if (info == null) {
             throw BuiltinExceptions.NOT_IN_PLUGIN.create();
         }
-        events.removeIf(it -> Objects.equals(it.pluginId, info.id()) && it.event == event);
+        Events.removeIf(it -> Objects.equals(it.pluginId, info.id()) && it.event == event);
     }
 
     /**
      * 广播事件
      *
-     * @param <T> 继承自Event的事件类型
+     * @param <T>   继承自Event的事件类型
      * @param event 要广播的事件对象，如果为null，则不执行任何操作
      */
-    @SuppressWarnings("unchecked")
     public static <T extends Event> void broadcast(@Nullable T event) {
+        broadcast(event, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Event> void broadcast(@Nullable T event, boolean await) {
         // 检查事件对象是否为null
         if (event == null) return;
         log.debug("触发事件: {}", event);
 
-        // 使用并行流过滤并执行匹配的事件处理函数
-        events.stream().parallel().filter(it -> it.event.isAssignableFrom(event.getClass())).forEach(it -> {
-            // 使用插件的线程池执行事件处理函数
-            PluginManager.execute(it.pluginId, () -> {
+        List<EventNode<?>> events = Events
+            .stream()
+            .parallel()
+            .filter(it -> it.event.isAssignableFrom(event.getClass()))
+            .toList();
+
+        CountDownLatch latch = new CountDownLatch(events.size());
+
+        events.stream().parallel().forEach(it -> {
+            boolean appended = PluginManager.execute(it.pluginId, () -> {
                 try {
                     // 动态类型转换并调用事件处理函数
                     ((Consumer<T>) it.handler).accept(event);
                 } catch (Exception e) {
                     // 记录异常信息
                     log.error("Error while handling event", e);
+                } finally {
+                    latch.countDown();
                 }
             });
+            if (!appended) {
+                latch.countDown();
+            }
         });
+
+        if (await) {
+            try {
+                latch.await();
+            } catch (InterruptedException ignored) {}
+        }
     }
 
     public static void parseWebSocketEvent(long id, JsonElement raw) throws EventException {

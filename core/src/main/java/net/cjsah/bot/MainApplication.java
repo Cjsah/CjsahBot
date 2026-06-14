@@ -3,6 +3,8 @@ package net.cjsah.bot;
 import lombok.AccessLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.config.AppConfig;
+import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.events.AppStopEvent;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginManager;
@@ -80,11 +82,16 @@ public final class MainApplication {
         PluginManager.halt(true);
         log.info("正在断开连接...");
         this.webSocketClient.get().halt(true);
+        HeartBeatTimer.getInstance().shutdown();
         this.status = AppStatus.STOPPED;
     }
 
     public void halt() {
-        this.stopLatch.countDown();
+        AppStopEvent event = new AppStopEvent();
+        EventManager.broadcast(event, true);
+        if (!event.isCanceled()) {
+            this.stopLatch.countDown();
+        }
     }
 
     public static MainApplication getInstance() {

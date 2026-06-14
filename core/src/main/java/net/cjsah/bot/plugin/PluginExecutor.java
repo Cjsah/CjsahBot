@@ -49,11 +49,13 @@ public class PluginExecutor {
         }
     }
 
-    public void submit(Runnable runnable) {
+    public boolean submit(Runnable runnable) {
         if (this.shutdown.get()) {
             this.plugin.log().warn("PluginExecutor is shutdown");
+            return false;
         }
         this.tasks.add(runnable);
+        return true;
     }
 
     public void awaitTermination() throws InterruptedException {
