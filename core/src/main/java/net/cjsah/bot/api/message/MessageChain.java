@@ -1,6 +1,5 @@
 package net.cjsah.bot.api.message;
 
-import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.cjsah.bot.api.message.nodes.MessageNode;
@@ -22,23 +21,11 @@ public interface MessageChain extends Collection<MessageNode> {
         return new MessageChainImpl(node);
     }
 
-    static MessageChain parse(JsonElement array) {
-        return MessageNode.parseMessage(array);
-    }
-
     static MessageChain of(MessageNode... nodes) {
         return new MessageChainImpl(nodes);
     }
 
     static MessageChain of(List<MessageNode> nodes) {
         return new MessageChainImpl(nodes);
-    }
-
-    default List<JSONObject> toJson() {
-        return this.stream().map(it -> {
-            JSONObject json = new JSONObject();
-            it.serialize(json);
-            return json;
-        }).toList();
     }
 }

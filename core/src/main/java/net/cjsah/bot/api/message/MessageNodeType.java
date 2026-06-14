@@ -2,7 +2,6 @@ package net.cjsah.bot.api.message;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.api.message.nodes.*;
 import net.cjsah.bot.data.IStrSerializable;
@@ -11,26 +10,18 @@ import net.cjsah.bot.data.IStrSerializable;
 public enum MessageNodeType implements IStrSerializable {
     TEXT("text", TextMessageNode.CODEC),                // 纯文本
     AT("at", AtMessageNode.CODEC),                      // at
-
-
+    REPLY("reply", ReplyMessageNode.CODEC),             // 回复
     FACE("face", FaceMessageNode.CODEC),                // QQ 表情
+    MFACE("mface", MFaceMessageNode.CODEC),                // QQ 表情
+    DICE("dice", DiceMessageNode.CODEC),                // 掷骰子
+    RPS("rps", RpsMessageNode.CODEC),                   // 猜拳
+    POKE("poke", PokeMessageNode.CODEC),                // 戳一戳
     IMAGE("image", ImageMessageNode.CODEC),             // 图片
     RECORD("record", RecordMessageNode.CODEC),          // 语音
     VIDEO("video", VideoMessageNode.CODEC),             // 短视频
-    RPS("rps", RpsMessageNode.CODEC),                   // 猜拳
-    DICE("dice", DiceMessageNode.CODEC),                // 掷骰子
-    SHAKE("shake", ShakeMessageNode.CODEC),             // 窗口抖动
-    POKE("poke", PokeMessageNode.CODEC),                // 戳一戳
-    ANONYMOUS("anonymous", AnonymousMessageNode.CODEC), // 匿名消息
-    SHARE("share", ShakeMessageNode.CODEC),             // 链接分享
-    CONTACT("contact", ContactMessageNode.CODEC),       // 推荐好友/群
-    LOCATION("location", LocationMessageNode.CODEC),    // 位置
-    MUSIC("music", MusicMessageNode.CODEC),             // 音乐分享
-    REPLY("reply", ReplyMessageNode.CODEC),             // 回复
-    FORWARD("forward", ForwardMessageNode.CODEC),       // 合并转发
-    NODE("node", NodeMessageNode.CODEC),                // 合并转发节点
-    XML("xml", XMLMessageNode.CODEC),                   // XML消息
+    FILE("file", FileMessageNode.CODEC),             // 短视频
     JSON("json", JsonMessageNode.CODEC),                // json消息
+    FORWARD("forward", ForwardMessageNode.CODEC),       // 合并转发
     ;
 
     public static final Codec<MessageNodeType> CODEC = IStrSerializable.fromEnum(MessageNodeType.class);

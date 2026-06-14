@@ -1,30 +1,24 @@
 package net.cjsah.bot.api.message.nodes;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 import net.cjsah.bot.util.CodecUtil;
 
+@Getter
 public class JsonMessageNode extends MessageNode {
+    public static final Codec<JsonMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        CodecUtil.JSON.fieldOf("data").forGetter(JsonMessageNode::getJson)
+    ).apply(instance, JsonMessageNode::new));
+
+
     private final JsonElement json;
 
-    public JsonMessageNode(String json) {
-        this(CodecUtil.decode(CodecUtil.JSON, json).orThrow(), false);
-    }
-
-    public JsonMessageNode(JsonElement json, boolean next) {
+    public JsonMessageNode(JsonElement json) {
         super(MessageNodeType.JSON);
-        if (next && json.isJsonObject()) {
-            String data = json.getAsJsonObject().get("data").getAsString();
-            this.json = CodecUtil.decode(CodecUtil.JSON, data).orThrow();
-        } else {
-            this.json = json;
-        }
-    }
-
-    @Override
-    public void serializeData(JSONObject json) {
-        String data = CodecUtil.encode(CodecUtil.JSON, this.json).orThrow();
-        json.put("data", data);
+        this.json = json;
     }
 
     @Override

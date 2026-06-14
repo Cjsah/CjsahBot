@@ -1,55 +1,48 @@
 package net.cjsah.bot.api.message.nodes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
-import net.cjsah.bot.util.MsgUtil;
 
-import java.util.Map;
+import java.util.Optional;
 
+@Getter
 public class ImageMessageNode extends MessageNode {
-    private final String file;
-    private final boolean isFlash;
-    private final String url;
-    private final String local;
+    public static final Codec<ImageMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("file").forGetter(ImageMessageNode::getFile),
+        Codec.STRING.optionalFieldOf("url").forGetter(ImageMessageNode::getUrl),
+        Codec.STRING.optionalFieldOf("summary").forGetter(ImageMessageNode::getSummary),
+        Codec.INT.optionalFieldOf("sub_type").forGetter(ImageMessageNode::getSubType),
+        Codec.INT.optionalFieldOf("file_size").forGetter(ImageMessageNode::getFileSize)
+    ).apply(instance, ImageMessageNode::new));
 
-    /**
-     * @param file
-     * <ul>
-     *     <li>绝对路径，例如 file:///C:\\Users\xxx\Pictures\1.png，格式使用 file URI</li>
-     *     <li>网络 URL，例如 http://img.img.com/12345.jpg</li>
-     *     <li>Base64 编码，例如 base64://abcde==</li>
-     * </ul>
-     * @param isFlash 是否为闪照
-     */
-    public ImageMessageNode(String file, boolean isFlash) {
+    private final String file;
+    private final Optional<String> url;
+    private final Optional<String> summary;
+    private final Optional<Integer> subType;
+    private final Optional<Integer> fileSize;
+
+    public ImageMessageNode(String file, Optional<String> url, Optional<String> summary, Optional<Integer> subType) {
         super(MessageNodeType.IMAGE);
         this.file = file;
-        this.isFlash = isFlash;
-        this.url = null;
-        this.local = null;
+        this.url = url;
+        this.summary = summary;
+        this.subType = subType;
+        this.fileSize = Optional.empty();
     }
 
-    public ImageMessageNode(JSONObject json) {
+    private ImageMessageNode(String file, Optional<String> url, Optional<String> summary, Optional<Integer> subType, Optional<Integer> fileSize) {
         super(MessageNodeType.IMAGE);
-        this.file = this.parsetoString(json, "file", true);
-        this.isFlash = "flush".equals(json.getString("type"));
-        this.url = this.parsetoString(json, "url", true);
-        this.local = MsgUtil.saveImage(this.url);
-    }
-
-    @Override
-    public void serializeData(JSONObject json) {
-        json.put("file", this.file);
-        if (this.isFlash) {
-            json.put("type", "flush");
-        }
+        this.file = file;
+        this.url = url;
+        this.summary = summary;
+        this.subType = subType;
+        this.fileSize = fileSize;
     }
 
     @Override
     public String toString() {
-        return this.pair("image", Map.of(
-                "file", this.file,
-                "flash", this.isFlash
-        ));
+        return this.pair("image", this.file);
     }
-
 }

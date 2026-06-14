@@ -1,24 +1,36 @@
 package net.cjsah.bot.api.message.nodes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 
-// https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8
-public class FaceMessageNode extends MessageNode {
-    private final int id;
+import java.util.Optional;
 
-    public FaceMessageNode(int id) {
+@Getter
+public class FaceMessageNode extends MessageNode {
+    public static final Codec<FaceMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("id").forGetter(FaceMessageNode::getId),
+        Codec.STRING.optionalFieldOf("resultId").forGetter(FaceMessageNode::getResultId),
+        Codec.INT.optionalFieldOf("chainCount").forGetter(FaceMessageNode::getChainCount)
+    ).apply(instance, FaceMessageNode::new));
+
+    private final String id;
+    private final Optional<String> resultId;
+    private final Optional<Integer> chainCount;
+
+    public FaceMessageNode(String id) {
         super(MessageNodeType.FACE);
         this.id = id;
+        this.resultId = Optional.empty();
+        this.chainCount = Optional.empty();
     }
 
-    public FaceMessageNode(JSONObject json) {
+    private FaceMessageNode(String id, Optional<String> resultId, Optional<Integer> chainCount) {
         super(MessageNodeType.FACE);
-        this.id = this.parseToInt(json, "id");
-    }
-
-    @Override
-    public void serializeData(JSONObject json) {
-        json.put("id", String.valueOf(this.id));
+        this.id = id;
+        this.resultId = resultId;
+        this.chainCount = chainCount;
     }
 
     @Override

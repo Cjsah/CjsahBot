@@ -1,23 +1,21 @@
 package net.cjsah.bot.api.message.nodes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 
+@Getter
 public class ReplyMessageNode extends MessageNode {
-    private final int messageId;
+    public static final Codec<ReplyMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("id").forGetter(ReplyMessageNode::getMessageId)
+    ).apply(instance, ReplyMessageNode::new));
 
-    public ReplyMessageNode(int messageId) {
+    private final String messageId;
+
+    public ReplyMessageNode(String messageId) {
         super(MessageNodeType.REPLY);
         this.messageId = messageId;
-    }
-
-    public ReplyMessageNode(JSONObject json) {
-        super(MessageNodeType.REPLY);
-        this.messageId = this.parseToInt(json, "id");
-    }
-
-    @Override
-    public void serializeData(JSONObject json) {
-        json.put("id", String.valueOf(this.messageId));
     }
 
     @Override

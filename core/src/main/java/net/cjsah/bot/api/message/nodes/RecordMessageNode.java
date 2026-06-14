@@ -1,46 +1,39 @@
 package net.cjsah.bot.api.message.nodes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 
-import java.util.Map;
-
+@Getter
 public class RecordMessageNode extends MessageNode {
-    private final String file;
-    private final boolean magic;
-    private final String url;
+    public static final Codec<RecordMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        Codec.STRING.fieldOf("file").forGetter(RecordMessageNode::getFile),
+        Codec.INT.optionalFieldOf("file_size", 0).forGetter(RecordMessageNode::getFileSize),
+        Codec.STRING.optionalFieldOf("path", "").forGetter(RecordMessageNode::getPath)
+    ).apply(instance, RecordMessageNode::new));
 
-    /**
-     *
-     * @param file 见{@linkplain ImageMessageNode}
-     * @param magic 是否变声
-     */
-    public RecordMessageNode(String file, boolean magic) {
+    private final String file;
+    private final int fileSize;
+    private final String path;
+
+    public RecordMessageNode(String file) {
         super(MessageNodeType.RECORD);
         this.file = file;
-        this.magic = magic;
-        this.url = null;
+        this.fileSize = 0;
+        this.path = "";
     }
 
-    public RecordMessageNode(JSONObject json) {
+    private RecordMessageNode(String file, int fileSize, String path) {
         super(MessageNodeType.RECORD);
-        this.file = this.parsetoString(json, "file", true);
-        this.magic = json.getIntValue("magic") == 1;
-        this.url = this.parsetoString(json, "url", true);
-    }
-
-    @Override
-    public void serializeData(JSONObject json) {
-        json.put("file", this.file);
-        json.put("magic", this.magic ? 1 : 0);
+        this.file = file;
+        this.fileSize = fileSize;
+        this.path = path;
     }
 
     @Override
     public String toString() {
-        return this.pair("record", Map.of(
-                "file", this.file,
-                "magic", this.magic,
-                "url", this.url
-        ));
+        return this.pair("record", this.file);
     }
 
 }
