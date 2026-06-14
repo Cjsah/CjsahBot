@@ -13,21 +13,13 @@ public class GroupUserData extends BaseUserData {
         Codec.LONG.fieldOf("user_id").forGetter(GroupUserData::getUserId),
         Codec.STRING.fieldOf("nickname").forGetter(GroupUserData::getNickname),
         Codec.STRING.fieldOf("card").forGetter(GroupUserData::getCard),
-        GroupRole.CODEC.fieldOf("role").forGetter(GroupUserData::getRole),
-        Codec.STRING.fieldOf("title").forGetter(GroupUserData::getTitle),
-        Codec.STRING.fieldOf("level").forGetter(GroupUserData::getLevel)
+        GroupRole.CODEC.fieldOf("role").forGetter(GroupUserData::getRole)
     ).apply(instance, GroupUserData::new));
 
-    private final String card;
     private final GroupRole role;
-    private final String title;
-    private final String level;
 
-    public GroupUserData(long userId, String nickname, String card, GroupRole role, String title, String level) {
-        super(userId, nickname);
-        this.card = card;
+    public GroupUserData(long userId, String nickname, String card, GroupRole role) {
+        super(userId, nickname, card);
         this.role = role;
-        this.title = title;
-        this.level = level;
     }
 }

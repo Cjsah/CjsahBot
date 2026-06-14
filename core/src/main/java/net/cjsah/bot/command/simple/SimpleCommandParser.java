@@ -69,12 +69,12 @@ public class SimpleCommandParser {
                 if (CommandContext.class.isAssignableFrom(type)) {
                     return new ParamInfo(type, ParamInfo.self());
                 }
-                Class<?> clazz = args.get(name);
-                if (type.isAssignableFrom(clazz)) {
-                    return new ParamInfo(type, ParamInfo.arg(name, clazz));
-                }
-                if (CommandSource.class.isAssignableFrom(clazz)) {
+                if (CommandSource.class.isAssignableFrom(type)) {
                     return new ParamInfo(type, ParamInfo.source());
+                }
+                Class<?> clazz = args.get(name);
+                if (clazz != null && type.isAssignableFrom(clazz)) {
+                    return new ParamInfo(type, ParamInfo.arg(name, clazz));
                 }
                 return new ParamInfo(type, ParamInfo.empty());
             })

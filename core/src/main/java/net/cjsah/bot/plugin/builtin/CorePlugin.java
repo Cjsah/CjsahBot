@@ -70,12 +70,12 @@ public final class CorePlugin implements Plugin {
 
         EventManager.subscribe(pluginId, FriendMessageEvent.class, event -> {
             BaseUserData sender = event.getSender();
-            MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getType(), sender.getNickname(), sender.getUserId(), event.getMessage());
+            MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getText(), sender.getNickname(), sender.getUserId(), event.getMessage());
         });
 
         EventManager.subscribe(pluginId, GroupMessageEvent.class, event -> {
             GroupUserData sender = event.getSender();
-//            log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
+            MainApplication.log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
         });
 
 //        EventManager.subscribe(pluginId, CommandEvent.class, event -> {

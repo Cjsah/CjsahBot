@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <conversionRule conversionWord="colorLevel"  converterClass="net.cjsah.bot.resolver.LogLevelColorConverter" />
     <property name="log.path" value="./logs"/>
     <property name="console.log.pattern"
@@ -33,12 +34,12 @@
         </filter>
     </appender>
 
-    <logger name="*" level="info"/>
+    <logger name="ch.qos.logback" level="warn"/>
     <logger name="org.quartz" level="warn"/>
     <!--    <logger name="net.cjsah" level="debug" />-->
 
     <!--系统操作日志-->
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="console" />
         <appender-ref ref="file_console" />
     </root>

@@ -10,7 +10,6 @@ import net.cjsah.bot.command.source.GroupCommandSource;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.enums.MessageSource;
 import net.cjsah.bot.util.CodecUtil;
-import org.jetbrains.annotations.Nullable;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -22,17 +21,16 @@ public class GroupMessageEvent extends MessageEvent<GroupUserData> {
         Codec.STRING.fieldOf("raw_message").forGetter(GroupMessageEvent::getRawMessage),
         GroupUserData.CODEC.fieldOf("sender").forGetter(GroupMessageEvent::getSender),
         Codec.LONG.fieldOf("group_id").forGetter(GroupMessageEvent::getGroupId),
-        CodecUtil.JSON.optionalFieldOf("anonymous", null).forGetter(GroupMessageEvent::getAnonymous)
+        Codec.STRING.fieldOf("group_name").forGetter(GroupMessageEvent::getGroupName)
     ).apply(instance, GroupMessageEvent::new));
 
     private final long groupId;
-    @Nullable
-    private final JsonElement anonymous;
+    private final String groupName;
 
-    public GroupMessageEvent(long messageId, long userId, JsonElement message, String rawMessage, GroupUserData sender, long groupId, @Nullable JsonElement anonymous) {
+    public GroupMessageEvent(long messageId, long userId, JsonElement message, String rawMessage, GroupUserData sender, long groupId, String groupName) {
         super(messageId, userId, message, rawMessage, sender, MessageSource.GROUP);
         this.groupId = groupId;
-        this.anonymous = anonymous;
+        this.groupName = groupName;
     }
     
     @Override

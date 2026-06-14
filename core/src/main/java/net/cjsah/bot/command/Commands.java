@@ -1,5 +1,6 @@
 package net.cjsah.bot.command;
 
+import lombok.AccessLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltinExceptions;
@@ -9,7 +10,7 @@ import net.cjsah.bot.plugin.PluginMetadata;
 
 import java.util.function.Predicate;
 
-@Slf4j(topic = "CommandManager")
+@Slf4j(topic = "CommandManager", access = AccessLevel.PUBLIC)
 public class Commands {
     private static final CommandDispatcher dispatcher = new CommandDispatcher();
 

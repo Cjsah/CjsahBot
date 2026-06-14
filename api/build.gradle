@@ -1,1 +1,3 @@
-archivesBaseName = rootProject.name + '-api'
+base {
+    archivesName.set(rootProject.name + '-api')
+}

@@ -13,7 +13,6 @@ import net.cjsah.bot.plugin.PluginMetadata;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-@Slf4j(topic = "CommandManager")
 public final class CommandRegisterContext {
     private final CommandDispatcher dispatcher;
     private final PluginMetadata pluginInfo;
@@ -43,7 +42,7 @@ public final class CommandRegisterContext {
                 counter++;
             }
         }
-        log.debug("{} registered {} commands", this.pluginInfo.id(), counter);
+        Commands.log.debug("{} registered {} commands", this.pluginInfo.id(), counter);
         return counter;
     }
 
@@ -66,7 +65,7 @@ public final class CommandRegisterContext {
             this.dispatcher.register(root);
             return true;
         } catch (CommandException e) {
-            log.warn("Failed to parse simple command", e);
+            Commands.log.warn("Failed to parse simple command", e);
             return false;
         }
     }

@@ -8,4 +8,5 @@ import lombok.RequiredArgsConstructor;
 public abstract class BaseUserData {
     protected final long userId;
     protected final String nickname;
+    protected final String card;
 }

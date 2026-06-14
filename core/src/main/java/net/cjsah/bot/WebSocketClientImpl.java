@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Slf4j(topic = "WebsocketClient")
+@Slf4j(topic = "WebSocket")
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final AtomicLong ID_CACHE = new AtomicLong(0L);
     private final Thread workerThread;

@@ -1,28 +1,24 @@
 package net.cjsah.bot.data.enums;
 
 import com.mojang.serialization.Codec;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.cjsah.bot.data.IStrSerializable;
 
-public enum FriendMsgMode {
-    FRIEND("好友"),
-    GROUP("临时"),
-    OTHER("其他");
+@RequiredArgsConstructor
+public enum FriendMsgMode implements IStrSerializable {
+    FRIEND("friend", "好友"),
+    GROUP("group", "临时"),
+    OTHER("other", "其他");
 
-    public static final Codec<FriendMsgMode> CODEC = Codec.STRING.xmap(
-        s -> switch (s) {
-            case "好友" -> FRIEND;
-            case "临时" -> GROUP;
-            default -> OTHER;
-        },
-        FriendMsgMode::getType
-    );
+    public static final Codec<FriendMsgMode> CODEC = IStrSerializable.fromEnum(FriendMsgMode.class);
 
     private final String type;
+    @Getter
+    private final String text;
 
-    FriendMsgMode(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
+    @Override
+    public String getSerializedName() {
         return this.type;
     }
 }

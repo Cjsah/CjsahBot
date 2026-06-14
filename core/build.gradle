@@ -4,7 +4,9 @@ plugins {
     id 'io.freefair.lombok' version '9.5.0'
 }
 
-archivesBaseName = rootProject.name
+base {
+    archivesName.set(rootProject.name)
+}
 
 repositories {
     maven {
@@ -57,7 +59,7 @@ jar {
     from("LICENSE")
     manifest {
         attributes([
-                "Main-Class": "net.cjsah.bot.Main",
+                "Main-Class": "net.cjsah.bot.MainApplication",
                 "Class-Path": configurations.runtimeClasspath.files.collect { "lib/$it.name" }.join(' ')
         ])
     }
@@ -92,7 +94,7 @@ repositories {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
+            artifactId project.name
             from components.java
             artifact sourcesJar
             artifact docJar

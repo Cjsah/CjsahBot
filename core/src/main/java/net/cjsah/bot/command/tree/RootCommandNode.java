@@ -5,10 +5,13 @@ import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContextBuilder;
 import net.cjsah.bot.exception.CommandException;
+import net.cjsah.bot.plugin.builtin.CorePlugin;
+
+import java.util.List;
 
 public class RootCommandNode extends CommandNode {
     public RootCommandNode() {
-        super(null, null, Commands.passRequirement());
+        super(List.of(CorePlugin.INSTANCE.id()), null, Commands.passRequirement());
     }
 
     @Override
