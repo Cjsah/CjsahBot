@@ -22,7 +22,7 @@ public class ReplyMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("reply", this.messageId);
+        return this.pair("reply", this.messageId);
     }
 
 }

@@ -27,7 +27,7 @@ public class VideoMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("video", Map.of("file", this.file, "url", this.url));
+        return this.pair("video", Map.of("file", this.file, "url", this.url));
     }
 
 }

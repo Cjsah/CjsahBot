@@ -10,11 +10,13 @@ import net.cjsah.bot.data.IStrSerializable;
 @RequiredArgsConstructor
 public enum MessageNodeType implements IStrSerializable {
     TEXT("text", TextMessageNode.CODEC),                // 纯文本
+    AT("at", AtMessageNode.CODEC),                      // at
+
+
     FACE("face", FaceMessageNode.CODEC),                // QQ 表情
     IMAGE("image", ImageMessageNode.CODEC),             // 图片
     RECORD("record", RecordMessageNode.CODEC),          // 语音
     VIDEO("video", VideoMessageNode.CODEC),             // 短视频
-    AT("at", AtMessageNode.CODEC),                      // at
     RPS("rps", RpsMessageNode.CODEC),                   // 猜拳
     DICE("dice", DiceMessageNode.CODEC),                // 掷骰子
     SHAKE("shake", ShakeMessageNode.CODEC),             // 窗口抖动

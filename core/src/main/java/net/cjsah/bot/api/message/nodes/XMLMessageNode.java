@@ -21,6 +21,6 @@ public class XMLMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("xml", this.xml);
+        return this.pair("xml", this.xml);
     }
 }

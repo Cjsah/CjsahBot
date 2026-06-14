@@ -20,6 +20,6 @@ public class ForwardMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("forward", this.messageId);
+        return this.pair("forward", this.messageId);
     }
 }

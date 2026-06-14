@@ -30,7 +30,7 @@ public class ContactMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("contact", Map.of(
+        return this.pair("contact", Map.of(
                 "source", this.source.name().toLowerCase(),
                 "id", this.id
         ));

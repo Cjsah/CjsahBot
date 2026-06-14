@@ -38,7 +38,7 @@ public class LocationMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("location", Map.of(
+        return this.pair("location", Map.of(
                 "lat", this.lat,
                 "lon", this.lon,
                 "title", this.title,

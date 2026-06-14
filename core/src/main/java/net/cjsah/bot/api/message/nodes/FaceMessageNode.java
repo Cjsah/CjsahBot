@@ -23,6 +23,6 @@ public class FaceMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("face", this.id);
+        return this.pair("face", this.id);
     }
 }

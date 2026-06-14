@@ -29,7 +29,7 @@ public class ShareMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("share", Map.of(
+        return this.pair("share", Map.of(
                 "url", this.url,
                 "title", this.title,
                 "content", this.content,

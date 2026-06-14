@@ -29,6 +29,6 @@ public class JsonMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("json", this.json);
+        return this.pair("json", this.json);
     }
 }

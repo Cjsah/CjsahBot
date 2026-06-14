@@ -57,7 +57,7 @@ public abstract class MessageNode {
         this.serializeData(data);
     }
 
-    protected abstract void serializeData(JSONObject json);
+//    protected abstract void serializeData(JSONObject json);
 
     protected int parseToInt(JSONObject json, String key) {
         String val = json.getString(key);
@@ -87,11 +87,11 @@ public abstract class MessageNode {
         return "[" + this.type.getSerializedName() + "]";
     }
 
-    protected String toString(String key, Object value) {
+    protected String pair(String key, Object value) {
         return "[" + key + "=" + value + "]";
     }
 
-    protected String toString(String name, Map<String, Object> map) {
+    protected String pair(String name, Map<String, Object> map) {
         String content = map.entrySet().stream()
             .map(it -> it.getKey() + "=" + it.getValue())
             .collect(Collectors.joining(",", "(", ")"));

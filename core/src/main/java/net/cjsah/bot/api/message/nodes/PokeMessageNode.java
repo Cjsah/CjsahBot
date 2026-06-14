@@ -32,7 +32,7 @@ public class PokeMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("poke", Map.of(
+        return this.pair("poke", Map.of(
                 "type", this.pokeType,
                 "id", this.id,
                 "name", this.name

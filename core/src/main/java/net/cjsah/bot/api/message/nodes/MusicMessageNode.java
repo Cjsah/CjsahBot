@@ -80,7 +80,7 @@ public class MusicMessageNode extends MessageNode {
     @Override
     public String toString() {
         if (this.musicType == MusicType.CUSTOM) {
-            return this.toString("music", Map.of(
+            return this.pair("music", Map.of(
                     "type", this.musicType.getValue(),
                     "url", this.url,
                     "audio", this.audio,
@@ -89,7 +89,7 @@ public class MusicMessageNode extends MessageNode {
                     "imageUrl", this.imageUrl
             ));
         } else {
-            return this.toString("music", this.id);
+            return this.pair("music", this.id);
         }
 
     }

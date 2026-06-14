@@ -36,7 +36,7 @@ public class RecordMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("record", Map.of(
+        return this.pair("record", Map.of(
                 "file", this.file,
                 "magic", this.magic,
                 "url", this.url

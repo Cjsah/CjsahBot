@@ -46,7 +46,7 @@ public class ImageMessageNode extends MessageNode {
 
     @Override
     public String toString() {
-        return this.toString("image", Map.of(
+        return this.pair("image", Map.of(
                 "file", this.file,
                 "flash", this.isFlash
         ));

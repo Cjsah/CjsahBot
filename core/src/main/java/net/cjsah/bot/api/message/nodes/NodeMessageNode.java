@@ -54,10 +54,10 @@ public class NodeMessageNode extends MessageNode {
     @Override
     public String toString() {
         if (this.message == null) {
-            return this.toString("node", this.messageId);
+            return this.pair("node", this.messageId);
         } else {
             assert this.nickname != null;
-            return this.toString("node", Map.of(
+            return this.pair("node", Map.of(
                     "qq", this.qq,
                     "nickname", this.nickname,
                     "content", this.message.toString()
