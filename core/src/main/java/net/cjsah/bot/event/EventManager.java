@@ -157,7 +157,7 @@ public final class EventManager {
         });
     }
 
-    public static void parseWebSocketEvent(JsonElement raw) throws EventException {
+    public static void parseWebSocketEvent(long id, JsonElement raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
         OB11BaseInfo base = CodecUtil.decode(OB11BaseInfo.CODEC, raw, exception).orThrow();
         IEventBuilder eventBuilder = base.getPostType();
@@ -166,7 +166,7 @@ public final class EventManager {
             if (obj instanceof IEventBuilder builder) {
                 eventBuilder = builder;
             } else if (obj instanceof ReceivedEvent event) {
-                event.init(base);
+                event.init(id, base);
                 EventManager.broadcast(event);
                 return;
             } else {

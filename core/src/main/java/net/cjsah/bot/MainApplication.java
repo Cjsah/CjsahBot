@@ -23,14 +23,14 @@ public final class MainApplication {
     private volatile AppStatus status;
 
     static void main() {
+        log.info("正在初始化文件系统...");
+        AppPaths.init();
 
     }
 
     @SneakyThrows
     private MainApplication() {
         this.status = AppStatus.INIT;
-        log.info("初始化文件系统...");
-        AppPaths.init();
         log.info("加载配置文件...");
         this.config = AppConfig.loadOrCreate();
         this.thread = new WebSocketThread(this.config);
