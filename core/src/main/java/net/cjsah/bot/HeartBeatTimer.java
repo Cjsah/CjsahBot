@@ -2,34 +2,39 @@ package net.cjsah.bot;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.JobDataMap;
+import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j(topic = "HeartBeat")
 public final class HeartBeatTimer {
     private static final HeartBeatTimer INSTANCE = new HeartBeatTimer();
+    private static final int MAX_MISSES = 3;
+    private static final long DEFAULT_INTERVAL = 30000L;
 
     private final Scheduler scheduler;
-    private final AtomicInteger count;
-    private final AtomicBoolean lifecycle;
-    private final JobDataMap jobMap;
+    private final Map<Long, BeatState> states;
 
     @SneakyThrows
     public HeartBeatTimer() {
         SchedulerFactory factory = new StdSchedulerFactory();
         this.scheduler = factory.getScheduler();
-        this.count = new AtomicInteger(0);
-        this.lifecycle = new AtomicBoolean(false);
-        this.jobMap = new JobDataMap();
-        this.jobMap.put("this", this);
+        this.states = new ConcurrentHashMap<>();
     }
 
     public static HeartBeatTimer getInstance() {
@@ -37,119 +42,125 @@ public final class HeartBeatTimer {
     }
 
     public void register(WebSocketClientImpl ws) {
+        long wsId = ws.getId();
+        BeatState state = new BeatState(ws);
+        this.states.put(wsId, state);
 
-    }
-
-
-
-//    private void waitLifeCycle() throws SchedulerException {
-//        if (lifecycle.get()) return;
-//        JobDetail job = JobBuilder
-//                .newJob(LifeCycleJob.class)
-//                .withIdentity("Job", "LifeCycle")
-//                .usingJobData(this.jobMap)
-//                .build();
-//        Trigger trigger = TriggerBuilder
-//                .newTrigger()
-//                .withIdentity("Trigger", "LifeCycle")
-//                .startAt(new Date(System.currentTimeMillis() + 3000L))
-//                .withSchedule(SimpleScheduleBuilder.simpleSchedule())
-//                .build();
-//        this.scheduler.scheduleJob(job, trigger);
-//    }
-//
-//    private void appendHeartJob(long time) throws SchedulerException {
-//        TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
-//        JobKey jobKey = new JobKey("Job", "Heart");
-//        JobDetail job = JobBuilder
-//                .newJob(HeartBeatJob.class)
-//                .withIdentity(jobKey)
-//                .usingJobData(this.jobMap)
-//                .build();
-//        Trigger trigger = TriggerBuilder
-//                .newTrigger()
-//                .withIdentity(triggerKey)
-//                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(time).repeatForever())
-//                .build();
-//        this.scheduler.pauseTrigger(triggerKey);
-//        this.scheduler.deleteJob(jobKey);
-//        this.scheduler.scheduleJob(job, trigger);
-//    }
-
-    public void start() throws SchedulerException {
-        this.waitLifeCycle();
-        this.appendHeartJob(30000L);
-        this.count.set(0);
-        if (!this.scheduler.isStarted()) {
-            this.scheduler.start();
-        }
-    }
-
-    public synchronized void stop() {
-        TriggerKey triggerKey = new TriggerKey("Trigger", "Heart");
-        JobKey heartJobKey = new JobKey("Job", "Heart");
-        JobKey lifecycleJobKey = new JobKey("Job", "LifeCycle");
         try {
-            this.scheduler.pauseTrigger(triggerKey);
-            this.scheduler.deleteJob(lifecycleJobKey);
-            this.scheduler.deleteJob(heartJobKey);
+            JobKey jobKey = jobKey(wsId);
+            JobDetail job = JobBuilder
+                .newJob(HeartBeatJob.class)
+                .withIdentity(jobKey)
+                .usingJobData("wsId", wsId)
+                .build();
+            Trigger trigger = newTrigger(wsId, DEFAULT_INTERVAL);
+
+            this.scheduler.scheduleJob(job, trigger);
+            if (!this.scheduler.isStarted()) {
+                this.scheduler.start();
+            }
+            log.info("Registered heartbeat for ws-{} interval={}ms", wsId, DEFAULT_INTERVAL);
         } catch (SchedulerException e) {
-            log.error("Error stopping heartbeat timer", e);
+            log.error("Failed to register heartbeat for ws-{}", wsId, e);
+            this.states.remove(wsId);
         }
     }
 
-//    public void lifecycle() {
-//        this.lifecycle.set(true);
-//        try {
-//            JobKey jobKey = new JobKey("Job", "LifeCycle");
-//            this.scheduler.deleteJob(jobKey);
-//        } catch (SchedulerException e) {
-//            log.error("Error stopping lifeCycle timer", e);
-//        }
-//    }
-//
-//    public void heart(long nextTime) {
-//        try {
-//            this.appendHeartJob(nextTime + 1000L);
-//            this.count.set(0);
-//        } catch (SchedulerException e) {
-//            log.error("Error stopping lifeCycle timer", e);
-//        }
-//    }
-//
-//    private synchronized void heartCheck() {
-//        if (this.count.incrementAndGet() >= 3) {
-//            this.stop();
-//            Main.sendSignal(SignalType.RE_CONNECT);
-//        }
-//    }
-//
-//    public void cancel() {
-//        try {
-//            this.scheduler.shutdown(true);
-//        } catch (SchedulerException e) {
-//            log.error("Error stopping heartbeat timer", e);
-//        }
-//    }
-//
-//    public static class HeartBeatJob implements Job {
-//        @Override
-//        public void execute(JobExecutionContext context) {
-//            JobDataMap map = context.getJobDetail().getJobDataMap();
-//            HeartBeatTimer timer = (HeartBeatTimer) map.get("this");
-//            timer.heartCheck();
-//        }
-//    }
-//
-//    public static class LifeCycleJob implements Job {
-//        @Override
-//        public void execute(JobExecutionContext context) {
-//            JobDataMap map = context.getJobDetail().getJobDataMap();
-//            HeartBeatTimer timer = (HeartBeatTimer) map.get("this");
-//            if (timer.lifecycle.get()) return;
-//            log.warn("未收到生命周期事件, 连接已丢失.");
-//            timer.stop();
-//            Main.sendSignal(SignalType.RE_CONNECT);
-//        }
-//    }
+    public void heartbeatReceived(long wsId, long interval) {
+        BeatState state = this.states.get(wsId);
+        if (state == null) return;
+
+        state.misses.set(0);
+
+        if (interval != 0 && state.interval != interval) {
+            state.interval = interval;
+            reschedule(wsId, interval);
+        }
+    }
+
+    public void heartbeatReceived(long wsId) {
+        heartbeatReceived(wsId, 0);
+    }
+
+    public void deregister(long wsId) {
+        this.states.remove(wsId);
+        try {
+            this.scheduler.deleteJob(jobKey(wsId));
+            log.info("Deregistered heartbeat for ws-{}", wsId);
+        } catch (SchedulerException e) {
+            log.error("Failed to deregister heartbeat for ws-{}", wsId, e);
+        }
+    }
+
+    private void reschedule(long wsId, long intervalMs) {
+        try {
+            TriggerKey triggerKey = triggerKey(wsId);
+            Trigger newTrigger = newTrigger(wsId, intervalMs);
+            this.scheduler.rescheduleJob(triggerKey, newTrigger);
+            log.debug("ws-{} heartbeat interval changed to {}ms", wsId, intervalMs);
+        } catch (SchedulerException e) {
+            log.error("Failed to reschedule heartbeat for ws-{}", wsId, e);
+        }
+    }
+
+    private void checkMiss(long wsId) {
+        BeatState state = this.states.get(wsId);
+        if (state == null) return;
+
+        if (state.misses.incrementAndGet() >= MAX_MISSES) {
+            log.warn("ws-{} heartbeat lost after {} misses, closing connection", wsId, MAX_MISSES);
+            deregister(wsId);
+            state.ws.close();
+        }
+    }
+
+    public void shutdown() {
+        for (long wsId : this.states.keySet()) {
+            deregister(wsId);
+        }
+        try {
+            this.scheduler.shutdown(true);
+        } catch (SchedulerException e) {
+            log.error("Error shutting down scheduler", e);
+        }
+    }
+
+    private static Trigger newTrigger(long wsId, long intervalMs) {
+        return TriggerBuilder
+            .newTrigger()
+            .withIdentity(triggerKey(wsId))
+            .startAt(new Date(System.currentTimeMillis() + intervalMs))
+            .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                .withIntervalInMilliseconds(intervalMs)
+                .repeatForever())
+            .build();
+    }
+
+    private static JobKey jobKey(long wsId) {
+        return new JobKey("heartbeat-" + wsId);
+    }
+
+    private static TriggerKey triggerKey(long wsId) {
+        return new TriggerKey("trigger-" + wsId);
+    }
+
+    private static final class BeatState {
+        final WebSocketClientImpl ws;
+        final AtomicInteger misses;
+        volatile long interval;
+
+        BeatState(WebSocketClientImpl ws) {
+            this.ws = ws;
+            this.misses = new AtomicInteger(0);
+            this.interval = DEFAULT_INTERVAL;
+        }
+    }
+
+    public static class HeartBeatJob implements Job {
+        @Override
+        public void execute(JobExecutionContext context) {
+            long wsId = context.getJobDetail().getJobDataMap().getLong("wsId");
+            HeartBeatTimer.getInstance().checkMiss(wsId);
+        }
+    }
 }

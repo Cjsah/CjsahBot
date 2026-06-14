@@ -1,9 +1,8 @@
 package net.cjsah.bot.plugin.builtin;
 
 import com.google.gson.JsonNull;
-import net.cjsah.bot.Main;
+import net.cjsah.bot.HeartBeatTimer;
 import net.cjsah.bot.MainApplication;
-import net.cjsah.bot.SignalType;
 import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
@@ -65,7 +64,9 @@ public final class CorePlugin implements Plugin {
 //            }
         });
 
-        EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> Main.lifecycle(true, event.getInterval()));
+        EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> {
+            HeartBeatTimer.getInstance().heartbeatReceived(event.getWebSocketId(), event.getInterval());
+        });
 
         EventManager.subscribe(pluginId, FriendMessageEvent.class, event -> {
             BaseUserData sender = event.getSender();
@@ -93,12 +94,11 @@ public final class CorePlugin implements Plugin {
     @SimpleCommand(value = "/botstop", permission = UserRole.ADMIN)
     public static void botStop(CommandSource<?> source) {
         source.sendFeedback("bot正在关闭...");
-        Main.sendSignal(SignalType.STOP);
+        MainApplication.getInstance().halt();
     }
 
     @SimpleCommand(value = "/test", permission = UserRole.OWNER)
     public static void test(CommandSource<?> source) {
-        Main.sendSignal(SignalType.RESTART);
     }
 
 }

@@ -1,93 +1,93 @@
 package net.cjsah.bot;
 
 import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.config.AppConfig;
-import net.cjsah.bot.exception.AppException;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.permission.PermissionManager;
 import net.cjsah.bot.plugin.PluginManager;
+import net.cjsah.bot.util.LateInit;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j(topic = "Console", access = AccessLevel.PUBLIC)
-@Getter
 public final class MainApplication {
-    private static final MainApplication INSTANCE = new MainApplication();
-    private final AppConfig config;
-    private final WebSocketThread thread;
+    private static final LateInit<MainApplication> INSTANCE = LateInit.of();
 
-    private final AtomicBoolean StopSig = new AtomicBoolean(false);
+    private final LateInit<WebSocketClientImpl> webSocketClient = LateInit.of();
+    private final AppConfig config;
+    private final CountDownLatch stopLatch;
+
     private volatile AppStatus status;
 
-    static void main() {
+    static void main(String[] args) throws InterruptedException {
         log.info("正在初始化文件系统...");
         AppPaths.init();
 
-    }
+        MainApplication app = new MainApplication();
+        INSTANCE.set(app);
 
-    @SneakyThrows
-    private MainApplication() {
-        this.status = AppStatus.INIT;
-        log.info("加载配置文件...");
-        this.config = AppConfig.loadOrCreate();
-        this.thread = new WebSocketThread(this.config);
-        log.info("初始化权限系统...");
+        log.info("正在初始化权限系统...");
         PermissionManager.getInstance().reload();
         log.info("正在加载插件...");
-        PluginManager.init();
+        PluginManager.registry();
 
-        this.status = AppStatus.STARTING;
+        app.status = AppStatus.RUNNING;
 
-        log.info("正在连接到服务器...");
-        this.start();
-        this.status = AppStatus.STARTED;
+        app.onStart();
 
-        while (!StopSig.get()) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(100);
-            } catch (InterruptedException ignored) {}
-        }
+        app.stopLatch.await();
 
-        log.info("已触发关闭进程...");
-        this.status = AppStatus.STOPPING;
-        log.info("正在卸载所有插件...");
-        PluginManager.shutdown();
-        log.info("等待插件线程关闭...");
+        log.info("正在执行关闭流程...");
+        app.onStop();
+    }
 
-        log.info("正在断开连接...");
-        this.thread.halt();
-        this.status = AppStatus.STOPPED;
+    private MainApplication() {
+        this.stopLatch = new CountDownLatch(1);
+        this.status = AppStatus.INIT;
+        log.info("正在加载配置文件...");
+        this.config = AppConfig.loadOrCreate();
     }
 
     public AppInstantStatus getStatus() {
         return new AppInstantStatus(
             this.status,
-            this.thread == null ? WebSocketStatus.DISCONNECTED : this.thread.getStatus()
+            this.webSocketClient.getOptional()
+                .map(WebSocketClientImpl::getStatus)
+                .orElse(WebSocketStatus.DISCONNECTED)
         );
     }
 
-    public synchronized void start() {
-        if (this.thread.isAlive()) {
-            log.warn("Application has already started; there is no need to start it again.");
-            return;
+    public synchronized void onStart() {
+        log.info("正在连接到服务器...");
+        AtomicReference<WebSocketClientImpl> reference = new AtomicReference<>();
+        Thread thread = new Thread(() -> reference.get().start(), "Websocket thread");
+        thread.setUncaughtExceptionHandler((_, throwable) -> log.error("Uncaught exception in server thread", throwable));
+        if (Runtime.getRuntime().availableProcessors() > 4) {
+            thread.setPriority(8);
         }
-        try {
-            this.thread.start();
-        } catch (Throwable e) {
-            throw new AppException("Failed to initialize Websocket Client", e);
-        }
+
+        WebSocketClientImpl ws = new WebSocketClientImpl(thread, this.config.toURI());
+        reference.set(ws);
+        thread.start();
+        this.webSocketClient.set(ws);
     }
 
-    public void shutdown() {
-        this.StopSig.set(true);
+    private void onStop() throws InterruptedException {
+        this.status = AppStatus.STOPPING;
+        log.info("正在卸载所有插件...");
+        PluginManager.halt(true);
+        log.info("正在断开连接...");
+        this.webSocketClient.get().halt(true);
+        this.status = AppStatus.STOPPED;
+    }
+
+    public void halt() {
+        this.stopLatch.countDown();
     }
 
     public static MainApplication getInstance() {
-        return INSTANCE;
+        return INSTANCE.orElseThrow(BuiltinExceptions.APP_NOT_INIT::create);
     }
-
-
 }

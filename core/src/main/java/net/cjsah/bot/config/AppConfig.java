@@ -2,11 +2,13 @@ package net.cjsah.bot.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.AppPaths;
 import net.cjsah.bot.exception.AppException;
 import net.cjsah.bot.util.CodecUtil;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +38,11 @@ public record AppConfig(String url, String token) {
             log.warn("Failed to load config file, using default config.", e);
             return EMPTY;
         }
+    }
+
+    @SneakyThrows
+    public URI toURI() {
+        return new URI(this.url + "?access_token=" + this.token);
     }
 
 }

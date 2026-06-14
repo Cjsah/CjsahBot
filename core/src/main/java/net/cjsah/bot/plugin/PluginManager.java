@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -26,12 +27,10 @@ public class PluginManager {
     private static final Map<String, PluginExecutor> EXECUTORS = new ConcurrentHashMap<>();
     private static final ScopedValue<PluginContainer> CURRENT = ScopedValue.newInstance();
 
-    public static void init() {
+    public static void registry() throws InterruptedException {
         List<Path> plugins = getPluginJars();
         int size = plugins.size() + 1;
         log.info("共发现 {} 个插件", size);
-
-//        CountdownLocker locker = new CountdownLocker(size);
 
         List<PluginContainer> containers = new ArrayList<>(size);
         containers.add(CorePlugin.INSTANCE);
@@ -40,40 +39,62 @@ public class PluginManager {
             PluginContainer container = PluginClassLoader.plugin(path);
 
             if (container == null) {
-//                locker.releaseOne();
                 continue;
             }
 
             containers.add(container);
         }
 
-        long success = containers.stream().filter(PluginManager::register).count();
+        CountDownLatch latch = new CountDownLatch(containers.size());
+        Consumer<Plugin> countdown = _ -> latch.countDown();
+
+        long success = containers.stream()
+            .filter(plugin -> PluginManager.register(plugin, countdown))
+            .count();
+
+        latch.await();
 
         log.info("成功加载 {} 个插件", success);
     }
 
-    public static void shutdown() {
+    public static void halt(boolean await) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(PLUGINS.size());
+        Consumer<PluginContainer> countdown = _ -> latch.countDown();
+
         for (PluginContainer plugin : PLUGINS.values()) {
-            deregister(plugin.id());
+            deregister(plugin.id(), countdown);
+        }
+        if (await) {
+            latch.await();
         }
     }
 
     public static boolean register(PluginContainer plugin) {
+        return register(plugin, _ -> {});
+    }
+
+    public static boolean register(PluginContainer plugin, Consumer<Plugin> fallback) {
         String id = plugin.id();
         if (PLUGINS.containsKey(id)) {
             PluginClassLoader.log.warn("Plugin {} has already registered.", id);
+            fallback.accept(null);
             return false;
         }
         PluginExecutor executor = new PluginExecutor(CURRENT, plugin);
         PLUGINS.put(id, plugin);
         EXECUTORS.put(id, executor);
-        execute(id, invokePlugin(id, Plugin::load));
+        execute(id, invokePluginFallback(id, Plugin::load, fallback));
         return true;
     }
 
     public static void deregister(String pluginId) {
+        deregister(pluginId, _ -> {});
+    }
+
+    public static void deregister(String pluginId, Consumer<PluginContainer> fallback) {
         if (!PLUGINS.containsKey(pluginId)) {
             PluginClassLoader.log.warn("Plugin {} is not exist.", pluginId);
+            fallback.accept(null);
             return;
         }
         EventManager.unsubscribe(pluginId);
@@ -82,6 +103,7 @@ public class PluginManager {
         PluginContainer plugin = PLUGINS.remove(pluginId);
         PluginExecutor executor = EXECUTORS.remove(pluginId);
         executor.shutdown(true);
+        fallback.accept(plugin);
         plugin.loader().close();
     }
 
@@ -127,6 +149,22 @@ public class PluginManager {
             Optional<Plugin> instance = getPluginInstance(id);
             if (instance.isEmpty()) return;
             runnable.accept(instance.get());
+        };
+    }
+
+    private static Runnable invokePluginFallback(String id, Consumer<Plugin> runnable, Consumer<Plugin> fallback) {
+        return () -> {
+            Optional<Plugin> instance = getPluginInstance(id);
+            if (instance.isEmpty()) {
+                fallback.accept(null);
+                return;
+            }
+            Plugin plugin = instance.get();
+            try {
+                runnable.accept(plugin);
+            } finally {
+                fallback.accept(plugin);
+            }
         };
     }
 

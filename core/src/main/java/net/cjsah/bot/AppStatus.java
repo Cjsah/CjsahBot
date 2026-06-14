@@ -2,14 +2,12 @@ package net.cjsah.bot;
 
 public enum AppStatus {
     INIT,
-    PREPARED,
-    STARTING,
-    STARTED,
+    RUNNING,
     STOPPING,
     STOPPED,
     ;
 
     public boolean isRunning() {
-        return this == STARTED;
+        return this == RUNNING;
     }
 }

@@ -1,6 +1,7 @@
 package net.cjsah.bot.util;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class LateInit<T> implements Supplier<T> {
@@ -34,6 +35,10 @@ public final class LateInit<T> implements Supplier<T> {
             throw new IllegalStateException("LateInit has not been initialized");
         }
         return this.value;
+    }
+
+    public Optional<T> getOptional() {
+        return Optional.ofNullable(this.value);
     }
 
     public T orElse(T fallback) {

@@ -2,59 +2,78 @@ package net.cjsah.bot;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.cjsah.bot.data.Countdown;
 import net.cjsah.bot.event.EventManager;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.enums.ReadyState;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ServerHandshake;
-import org.quartz.SchedulerException;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j(topic = "WebsocketClient")
 public final class WebSocketClientImpl extends WebSocketClient {
     private static final AtomicLong ID_CACHE = new AtomicLong(0L);
-    private final WebSocketThread thread;
-    private final HeartBeatTimer heart = new HeartBeatTimer();
+    private final Thread workerThread;
+    @Getter
     private final long id;
+    private final Countdown connectCountdown = new Countdown(60);
+    @Getter
+    private WebSocketStatus status;
+    private volatile boolean running = true;
 
-    public WebSocketClientImpl(WebSocketThread thread, String url, String token) throws URISyntaxException, SchedulerException {
-        super(new URI(url + "?access_token=" + token));
-        this.thread = thread;
+    public WebSocketClientImpl(Thread thread, URI uri) {
+        super(uri);
+        this.workerThread = thread;
         this.id = ID_CACHE.incrementAndGet();
+        this.status = WebSocketStatus.DISCONNECTED;
     }
 
-    @Override
-    public void close() {
-        super.close();
-        this.heart.stop();
-    }
+    @SneakyThrows
+    public void start() {
+        while (this.running) {
+            if (this.connectCountdown.tick()) {
+                this.status = WebSocketStatus.CONNECTING;
 
-    public void shutdown() throws InterruptedException {
+                if (this.getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+                    this.connect();
+                } else {
+                    this.reconnect();
+                }
+            }
+            TimeUnit.MILLISECONDS.sleep(50);
+        }
         this.closeBlocking();
-        this.heart.cancel();
     }
 
-    public void lifecycle(boolean heart, long addition) {
-        if (heart) this.heart.heart(addition);
-        else this.heart.lifecycle();
+    public void halt(boolean await) {
+        this.running = false;
+        if (await) {
+            try {
+                this.workerThread.join();
+            } catch (InterruptedException ignored) {}
+        }
     }
 
     @Override
     public void onOpen(ServerHandshake handshake) {
+        HeartBeatTimer.getInstance().register(this);
+        this.status = WebSocketStatus.CONNECTED;
         log.info("连接成功!");
-        MainApplication.getInstance().
+    }
 
-        try {
-            this.heart.start();
-        } catch (SchedulerException e) {
-            log.error("无法启动心跳服务!", e);
-            this.heart.stop();
-            Main.sendSignal(SignalType.RE_CONNECT);
-        }
+    @Override
+    public void onClose(int code, String reason, boolean remote) {
+        HeartBeatTimer.getInstance().deregister(this.id);
+        this.status = WebSocketStatus.DISCONNECTED;
+        if (code == CloseFrame.NORMAL) return;
+        this.connectCountdown.reset();
+        log.warn("连接断开: [{}]{}, 将在 3 秒后重试...", code, reason);
     }
 
     @Override
@@ -69,19 +88,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
     }
 
     @Override
-    public void onClose(int code, String reason, boolean remote) {
-        if (code == CloseFrame.NORMAL) return;
-        log.warn("连接断开: [{}]{}", code, reason);
-        if (Main.isRunning()) {
-            Main.sendSignal(SignalType.RE_CONNECT);
-        }
-    }
-
-    @Override
     public void onError(Exception e) {
         log.error("出现错误", e);
-//        if (Main.isRunning()) {
-//            Main.sendSignal(SignalType.RE_CONNECT);
-//        }
     }
 }

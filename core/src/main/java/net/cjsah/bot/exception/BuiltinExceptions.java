@@ -45,8 +45,9 @@ public final class BuiltinExceptions {
 
     public static final CommandExceptionFactory PLUGIN_NOT_FOUND = new CommandExceptionFactory("没有找到插件: '%s'");
     public static final CommandExceptionFactory REGISTER_IN_PLUGIN = new CommandExceptionFactory("请在插件中注册命令");
-    public static final CommandExceptionFactory UNSUPPORTED_TYPE  = new CommandExceptionFactory("不支持的类型: %s");
+    public static final CommandExceptionFactory UNSUPPORTED_TYPE = new CommandExceptionFactory("不支持的类型: %s");
 
+    public static final CustomRuntimeExceptionFactory<?> APP_NOT_INIT = new CustomRuntimeExceptionFactory<>("事件还没有初始化!", AppException::new);
     public static final CustomRuntimeExceptionFactory<?> EVENT_NOT_INIT = CustomRuntimeExceptionFactory.runtime("事件还没有初始化!", EventException::new);
 
     public static final CustomRuntimeExceptionFactory<?> REQUEST_FAILED = new CustomRuntimeExceptionFactory<>("请求失败: %s", RequestException::new);
