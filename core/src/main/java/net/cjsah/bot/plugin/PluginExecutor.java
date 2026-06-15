@@ -14,8 +14,8 @@ public class PluginExecutor {
 
     private final PluginContainer plugin;
     private final BlockingQueue<Runnable> tasks = new LinkedBlockingQueue<>();
-    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final Thread workerThread;
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
     private final AtomicBoolean shutdown = new AtomicBoolean(false);
     private final ScopedValue.Carrier carrier;
 

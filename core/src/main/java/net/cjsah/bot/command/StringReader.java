@@ -1,5 +1,6 @@
 package net.cjsah.bot.command;
 
+import cn.hutool.core.lang.Pair;
 import lombok.Setter;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
@@ -9,6 +10,8 @@ public class StringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_DOUBLE_QUOTE = '"';
     private static final char SYNTAX_SINGLE_QUOTE = '\'';
+    private static final char SYNTAX_PAIR_START = '[';
+    private static final char SYNTAX_PAIR_END = ']';
 
     private final String string;
     @Setter
@@ -77,6 +80,10 @@ public class StringReader {
 
     public static boolean isQuotedStringStart(char c) {
         return c == SYNTAX_DOUBLE_QUOTE || c == SYNTAX_SINGLE_QUOTE;
+    }
+
+    public static boolean isPairStart(char c) {
+        return c == SYNTAX_PAIR_START;
     }
 
     public void skipWhitespace() {
@@ -201,6 +208,20 @@ public class StringReader {
             skip();
         }
         return string.substring(start, cursor);
+    }
+
+    public Pair<String, String> readPair() throws CommandException {
+        if (!canRead()) {
+            throw BuiltinExceptions.READER_EXPECTED_SYMBOL.create("[");
+        }
+        final char next = peek();
+        if (!isPairStart(next)) {
+            throw BuiltinExceptions.READER_EXPECTED_START_OF_QUOTE.create();
+        }
+        skip();
+        String value = readStringUntil(SYNTAX_PAIR_END);
+        String[] kv = value.split("=", 2);
+        return Pair.of(kv[0], kv[1]);
     }
 
     public String readQuotedString() throws CommandException {

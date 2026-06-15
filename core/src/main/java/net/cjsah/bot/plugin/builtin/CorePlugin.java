@@ -52,9 +52,10 @@ public final class CorePlugin implements Plugin {
         String pluginId = INSTANCE.id();
 
         EventManager.subscribe(pluginId, MessageEvent.class, event -> {
-            if (event.getRawMessage().startsWith("/")) {
+            String message = event.getMessage().toString().trim();
+            if (message.startsWith("/")) {
                 CommandSource<?> source = event.getCommandSource();
-                Commands.execute(source, event.getRawMessage().substring(1));
+                Commands.execute(source, message.substring(1));
             }
         });
 
@@ -79,7 +80,7 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
-    @SimpleCommand(value = "/test")
+    @SimpleCommand(value = "/test abc")
     public static void test(CommandSource<?> source) {
         source.sendFeedback("test");
     }
@@ -87,9 +88,26 @@ public final class CorePlugin implements Plugin {
     @SimpleCommand(value = "/jrrp")
     public static void jrrp(CommandSource<?> source) {
         long senderId = source.getSender().getUserId();
+        jrrpOther(source, senderId);
+    }
+
+    @SimpleCommand(value = "/jrrp <qq:at>")
+    public static void jrrpOther(CommandSource<?> source, long qq) {
+        
+
+        int rp = getRp(qq);
+        source.sendFeedback("您的今日人品为: %s".formatted(rp % 101));
+    }
+
+    public static int getRp(long senderId) {
+        if (senderId == 2684117397L) {
+            return 100;
+        }
+        if (senderId == 1270399267L) {
+            return -1;
+        }
         long seed = LocalDate.now().toEpochDay() ^ (senderId * 0x9E3779B97F4A7C15L);
-        int rp = new Random(seed).nextInt(101);
-        source.sendFeedback("您的今日人品为: %s".formatted(rp));
+        return new Random(seed).nextInt(101) % 101;
     }
 
 }

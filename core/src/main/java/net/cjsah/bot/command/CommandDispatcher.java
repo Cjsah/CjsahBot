@@ -126,6 +126,7 @@ public class CommandDispatcher {
 
             context.withCommand(child.getCommand());
             if (reader.canRead(2)) {
+                reader.skip();
                 final ParseResults parse = parseNodes(child, reader, context);
                 potentials.add(parse);
 

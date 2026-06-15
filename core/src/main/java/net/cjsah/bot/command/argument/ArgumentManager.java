@@ -2,6 +2,7 @@ package net.cjsah.bot.command.argument;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import net.cjsah.bot.command.argument.more.AtArgument;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.builtin.CorePlugin;
@@ -15,7 +16,7 @@ public class ArgumentManager {
     static {
         arguments = HashBasedTable.create();
         String id = CorePlugin.INSTANCE.id();
-        register(id, arg -> BooleanArgument.bool(), "Boolean", "boolean", "bool");
+        register(id, _ -> BooleanArgument.bool(), "Boolean", "boolean", "bool");
         register(id, ByteArgument::byteArg, "Byte", "byte");
         register(id, ShortArgument::shortArg, "Short", "short");
         register(id, IntArgument::intArg, "Integer", "integer", "int");
@@ -23,6 +24,7 @@ public class ArgumentManager {
         register(id, FloatArgument::floatArg, "Float", "float");
         register(id, DoubleArgument::doubleArg, "Double", "double");
         register(id, StringArgument::byArg, "String", "string", "str");
+        register(id, _ -> AtArgument.atArg(), "At", "at");
     }
 
     public static void register(String id, Function<String, Argument<?>> factory, String... keys) {

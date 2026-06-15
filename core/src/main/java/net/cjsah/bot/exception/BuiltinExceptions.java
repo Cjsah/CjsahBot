@@ -19,9 +19,11 @@ public final class BuiltinExceptions {
     public static final CommandExceptionFactory LITERAL_INCORRECT = new CommandExceptionFactory("Expected literal %s");
 
     public static final CommandExceptionFactory READER_EXPECTED_START_OF_QUOTE = new CommandExceptionFactory("Expected quote to start a string");
+    public static final CommandExceptionFactory READER_EXPECTED_START_OF_PAIR = new CommandExceptionFactory("Expected quote to start a pair");
     public static final CommandExceptionFactory READER_INVALID_ESCAPE = new CommandExceptionFactory("Invalid escape sequence '%s' in quoted string");
     public static final CommandExceptionFactory READER_EXPECTED_END_OF_QUOTE = new CommandExceptionFactory("Unclosed quoted string");
     public static final CommandExceptionFactory READER_EXPECTED_SYMBOL = new CommandExceptionFactory("Expected '%s'");
+    public static final CommandExceptionFactory NOT_EXPECTED = new CommandExceptionFactory("Expected '%s', but founded '%s'");
 
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_COMMAND = new CommandExceptionFactory("未知指令");
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_ARGUMENT = new CommandExceptionFactory("参数错误 / 没有权限");

@@ -47,8 +47,6 @@ public class SimpleCommandParser {
         ArgumentBuilder<?> last = root;
         while (this.canRead()) {
             ArgumentBuilder<?> next = nextBuilder();
-            last.then(next);
-            last = next;
 
             if (next instanceof RequiredArgumentBuilder<?> builder) {
                 try {
@@ -57,30 +55,35 @@ public class SimpleCommandParser {
                 } catch (NoSuchMethodException ignored) {
                 }
             }
+
+            if (!this.canRead()) {
+                Parameter[] parameters = method.getParameters();
+
+                List<ParamInfo> types = Arrays.stream(parameters)
+                    .map(parameter -> {
+                        CommandParam annotation = parameter.getAnnotation(CommandParam.class);
+                        String name = annotation != null && !annotation.value().isEmpty() ? annotation.value() : parameter.getName();
+                        Class<?> type = parameter.getType();
+                        if (CommandContext.class.isAssignableFrom(type)) {
+                            return new ParamInfo(type, ParamInfo.self());
+                        }
+                        if (CommandSource.class.isAssignableFrom(type)) {
+                            return new ParamInfo(type, ParamInfo.source());
+                        }
+                        Class<?> clazz = args.get(name);
+                        if (clazz != null && type.isAssignableFrom(clazz)) {
+                            return new ParamInfo(type, ParamInfo.arg(name, clazz));
+                        }
+                        return new ParamInfo(type, ParamInfo.empty());
+                    })
+                    .toList();
+
+                next.executes(new MethodCommand(method, types));
+            }
+
+            last.then(next);
+            last = next;
         }
-
-        Parameter[] parameters = method.getParameters();
-
-        List<ParamInfo> types = Arrays.stream(parameters)
-            .map(parameter -> {
-                CommandParam annotation = parameter.getAnnotation(CommandParam.class);
-                String name = annotation != null && !annotation.value().isEmpty() ? annotation.value() : parameter.getName();
-                Class<?> type = parameter.getType();
-                if (CommandContext.class.isAssignableFrom(type)) {
-                    return new ParamInfo(type, ParamInfo.self());
-                }
-                if (CommandSource.class.isAssignableFrom(type)) {
-                    return new ParamInfo(type, ParamInfo.source());
-                }
-                Class<?> clazz = args.get(name);
-                if (clazz != null && type.isAssignableFrom(clazz)) {
-                    return new ParamInfo(type, ParamInfo.arg(name, clazz));
-                }
-                return new ParamInfo(type, ParamInfo.empty());
-            })
-            .toList();
-
-        last.executes(new MethodCommand(method, types));
         return (LiteralArgumentBuilder) root;
     }
 

@@ -25,6 +25,8 @@ public final class MainApplication {
     private volatile AppStatus status;
 
     static void main(String[] args) throws InterruptedException {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> MainApplication.INSTANCE.get().halt()));
+
         log.info("正在初始化文件系统...");
         AppPaths.init();
 
