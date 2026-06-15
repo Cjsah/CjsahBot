@@ -3,7 +3,6 @@ package net.cjsah.bot.packet.request.payload;
 import com.mojang.serialization.Codec;
 import net.cjsah.bot.packet.request.RequestPayload;
 import net.cjsah.bot.packet.request.RequestType;
-import net.cjsah.bot.packet.response.payload.ResponsePacket;
 
 public interface RequestPacket {
     RequestType getPacketType();
@@ -13,5 +12,5 @@ public interface RequestPacket {
         return new RequestPayload<>(requestType, this);
     }
 
-    Codec<? extends ResponsePacket> getResponse();
+    Codec<?> getResponse();
 }

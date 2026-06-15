@@ -13,12 +13,14 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.JsonOps;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class CodecUtil {
     public static final Codec<JsonElement> JSON = converter(JsonOps.INSTANCE);
+    public static final Codec<Instant> TIMESTAMP = Codec.LONG.xmap(Instant::ofEpochSecond, Instant::getEpochSecond);
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 

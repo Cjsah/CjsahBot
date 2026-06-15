@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.data.IStrSerializable;
+import net.cjsah.bot.packet.request.payload.GetGroupMember;
+import net.cjsah.bot.packet.request.payload.GetGroupMembers;
 import net.cjsah.bot.packet.request.payload.RequestPacket;
 import net.cjsah.bot.packet.request.payload.SendFriendMsg;
 import net.cjsah.bot.packet.request.payload.SendGroupMsg;
@@ -16,6 +18,8 @@ import java.util.Map;
 public enum RequestType implements IStrSerializable {
     SEND_GROUP_MSG("send_group_msg", SendGroupMsg.CODEC),
     SEND_FRIEND_MSG("send_private_msg", SendFriendMsg.CODEC),
+    GET_GROUP_MEMBER_LIST("get_group_member_list", GetGroupMembers.CODEC),
+    GET_GROUP_MEMBER_INFO("get_group_member_info", GetGroupMember.CODEC),
     ;
 
     public static final Codec<RequestType> CODEC = IStrSerializable.fromEnum(RequestType.class);

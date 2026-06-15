@@ -1,5 +1,6 @@
 package net.cjsah.bot.command.execute;
 
+import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.command.simple.ParamInfo;
 import net.cjsah.bot.exception.BuiltinExceptions;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class MethodCommand implements Command {
     private static final Map<Class<?>, Object> PRIMITIVE_DEFAULT_VAL = new HashMap<>();
 
@@ -50,6 +52,7 @@ public class MethodCommand implements Command {
             this.method.invoke(null, params);
             return 1;
         } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error(e.getMessage(), e);
             throw BuiltinExceptions.FAILED_ACCESS_METHOD.create(e.getMessage());
         }
     }

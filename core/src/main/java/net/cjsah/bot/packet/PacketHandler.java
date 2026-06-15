@@ -34,7 +34,7 @@ public class PacketHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ResponsePacket> Either<T, String> send(RequestPacket request) {
+    public <T> Either<T, String> send(RequestPacket request) {
         if (this.sender == null) {
             return Either.right("WebSocket sender not configured");
         }
@@ -92,7 +92,7 @@ public class PacketHandler {
         log.info("Cleared all pending packets");
     }
 
-    private record Pending<T extends ResponsePacket>(CompletableFuture<Either<T, String>> future, Codec<T> codec) {
+    private record Pending<T>(CompletableFuture<Either<T, String>> future, Codec<T> codec) {
     }
 
     public static PacketHandler getInstance() {
