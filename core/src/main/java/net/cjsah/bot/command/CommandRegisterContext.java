@@ -12,6 +12,7 @@ import net.cjsah.bot.plugin.PluginMetadata;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Function;
 
 public final class CommandRegisterContext {
     private final CommandDispatcher dispatcher;
@@ -31,6 +32,12 @@ public final class CommandRegisterContext {
     }
 
     public LiteralArgumentBuilder register(LiteralArgumentBuilder literal) {
+        this.dispatcher.register(literal);
+        return literal;
+    }
+
+    public LiteralArgumentBuilder register(Function<CommandRegisterContext, LiteralArgumentBuilder> factory) {
+        LiteralArgumentBuilder literal = factory.apply(this);
         this.dispatcher.register(literal);
         return literal;
     }
