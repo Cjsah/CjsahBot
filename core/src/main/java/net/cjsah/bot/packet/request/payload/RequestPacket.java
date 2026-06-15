@@ -13,7 +13,5 @@ public interface RequestPacket {
         return new RequestPayload<>(requestType, this);
     }
 
-    default Codec<? extends ResponsePacket> getResponse() {
-        return null;
-    }
+    Codec<? extends ResponsePacket> getResponse();
 }

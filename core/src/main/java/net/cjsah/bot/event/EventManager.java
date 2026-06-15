@@ -3,6 +3,8 @@ package net.cjsah.bot.event;
 import com.google.gson.JsonElement;
 import lombok.AccessLevel;
 import lombok.extern.slf4j.Slf4j;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import net.cjsah.bot.data.IEventBuilder;
 import net.cjsah.bot.event.events.CancelableEvent;
 import net.cjsah.bot.event.events.ReceivedEvent;
@@ -10,6 +12,8 @@ import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.data.OB11BaseInfo;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.EventException;
+import net.cjsah.bot.packet.PacketHandler;
+import net.cjsah.bot.packet.response.ResponseBuilder;
 import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.util.CodecUtil;
@@ -21,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -180,9 +185,21 @@ public final class EventManager {
         }
     }
 
+    private static final Codec<Either<OB11BaseInfo, ResponseBuilder>> WS_CODEC = Codec.either(OB11BaseInfo.CODEC, ResponseBuilder.CODEC);
+
     public static void parseWebSocketEvent(long id, JsonElement raw) throws EventException {
         Function<String, EventException> exception = EventException::new;
-        OB11BaseInfo base = CodecUtil.decode(OB11BaseInfo.CODEC, raw, exception).orThrow();
+
+        Either<OB11BaseInfo, ResponseBuilder> result = CodecUtil.decode(WS_CODEC, raw, exception).orThrow();
+        Optional<OB11BaseInfo> event = result.left();
+        if (event.isPresent()) {
+            handleEvent(id, event.get(), raw, exception);
+        }else {
+            PacketHandler.getInstance().receive(result.right().get());
+        }
+    }
+
+    private static void handleEvent(long id, OB11BaseInfo base, JsonElement raw, Function<String, EventException> exception) throws EventException {
         IEventBuilder eventBuilder = base.getPostType();
         while (true) {
             Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();

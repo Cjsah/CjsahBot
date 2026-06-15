@@ -1,5 +1,6 @@
 package net.cjsah.bot.packet.request;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.cjsah.bot.data.IStrSerializable;
 import net.cjsah.bot.packet.request.payload.RequestPacket;
@@ -27,9 +28,7 @@ public enum RequestType implements IStrSerializable {
         return type;
     }
 
-    public static String encode(RequestPacket data) {
-        RequestType requestType = data.getPacketType();
-        RequestPayload<?> packet = new RequestPayload<>(requestType, data);
-        return CodecUtil.encode(requestType.codec, packet).orThrow();
+    public static Either<String, String> encode(RequestPayload<?> payload) {
+        return CodecUtil.encode(payload.getAction().codec, payload);
     }
 }
