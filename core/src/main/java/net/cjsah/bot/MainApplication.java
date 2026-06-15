@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j(topic = "Console", access = AccessLevel.PUBLIC)
 public final class MainApplication {
+    public static final long PID = ProcessHandle.current().pid();
     private static final LateInit<MainApplication> INSTANCE = LateInit.of();
 
     private final LateInit<WebSocketClientImpl> webSocketClient = LateInit.of();

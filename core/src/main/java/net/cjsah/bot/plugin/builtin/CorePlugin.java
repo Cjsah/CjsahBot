@@ -77,8 +77,9 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
-    @SimpleCommand(value = "/test", permission = UserRole.OWNER)
+    @SimpleCommand(value = "/test")
     public static void test(CommandSource<?> source) {
+
     }
 
 }
