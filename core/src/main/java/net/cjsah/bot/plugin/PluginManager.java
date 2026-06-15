@@ -92,6 +92,11 @@ public class PluginManager {
     }
 
     public static void deregister(String pluginId, Consumer<PluginContainer> fallback) {
+        if (CorePlugin.INSTANCE.id().equals(pluginId)) {
+            PluginClassLoader.log.warn("Core plugin cannot be uninstalled");
+            fallback.accept(CorePlugin.INSTANCE);
+            return;
+        }
         if (!PLUGINS.containsKey(pluginId)) {
             PluginClassLoader.log.warn("Plugin {} is not exist.", pluginId);
             fallback.accept(null);
