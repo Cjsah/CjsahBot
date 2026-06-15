@@ -22,8 +22,10 @@ import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.plugin.entry.BuiltinPluginEntryPointImpl;
 
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public final class CorePlugin implements Plugin {
     public static final PluginContainer INSTANCE;
@@ -80,6 +82,14 @@ public final class CorePlugin implements Plugin {
     @SimpleCommand(value = "/test")
     public static void test(CommandSource<?> source) {
         source.sendFeedback("test");
+    }
+
+    @SimpleCommand(value = "/jrrp")
+    public static void jrrp(CommandSource<?> source) {
+        long senderId = source.getSender().getUserId();
+        long seed = LocalDate.now().toEpochDay() ^ (senderId * 0x9E3779B97F4A7C15L);
+        int rp = new Random(seed).nextInt(101);
+        source.sendFeedback("您的今日人品为: %s".formatted(rp));
     }
 
 }

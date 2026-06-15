@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.cjsah.bot.api.message.MessageChain;
+import net.cjsah.bot.command.source.CommandSender;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.command.source.GroupCommandSource;
 import net.cjsah.bot.data.GroupUserData;
@@ -12,7 +13,7 @@ import net.cjsah.bot.data.enums.MessageSource;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GroupMessageEvent extends MessageEvent<GroupUserData> {
+public class GroupMessageEvent extends MessageEvent<GroupUserData> implements CommandSender {
     public static final Codec<GroupMessageEvent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.LONG.fieldOf("message_id").forGetter(GroupMessageEvent::getMessageId),
         Codec.LONG.fieldOf("user_id").forGetter(GroupMessageEvent::getUserId),
