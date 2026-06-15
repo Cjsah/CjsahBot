@@ -88,13 +88,12 @@ public final class CorePlugin implements Plugin {
     @SimpleCommand(value = "/jrrp")
     public static void jrrp(CommandSource<?> source) {
         long senderId = source.getSender().getUserId();
-        jrrpOther(source, senderId);
+        jrrp(source, senderId);
     }
 
     @SimpleCommand(value = "/jrrp <qq:at>")
-    public static void jrrpOther(CommandSource<?> source, long qq) {
-        
-
+    public static void jrrp(CommandSource<?> source, long qq) {
+        System.out.println(qq);
         int rp = getRp(qq);
         source.sendFeedback("您的今日人品为: %s".formatted(rp % 101));
     }

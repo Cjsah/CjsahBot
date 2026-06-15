@@ -8,6 +8,7 @@ import net.cjsah.bot.command.builder.ArgumentBuilder;
 import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
 import net.cjsah.bot.command.context.CommandContext;
+import net.cjsah.bot.command.execute.Command;
 import net.cjsah.bot.command.execute.MethodCommand;
 import net.cjsah.bot.command.source.CommandSource;
 import net.cjsah.bot.exception.BuiltinExceptions;
@@ -44,46 +45,55 @@ public class SimpleCommandParser {
             throw BuiltinExceptions.PARSE_ROOT_ARGUMENT.create();
         }
         Map<String, Class<?>> args = new HashMap<>();
-        ArgumentBuilder<?> last = root;
+        ArgumentBuilder<?> current = root;
+        ArgumentBuilder<?> next = null;
+
         while (this.canRead()) {
-            ArgumentBuilder<?> next = nextBuilder();
+            if (next != null) {
+                current.then(next);
+                current = next;
+            }
+            next = nextBuilder();
 
             if (next instanceof RequiredArgumentBuilder<?> builder) {
                 try {
-                    Method parseMethod = builder.getClass().getDeclaredMethod("parse", StringReader.class);
+                    Method parseMethod = builder.getArgument().getClass().getDeclaredMethod("parse", StringReader.class);
                     args.put(builder.getName(), parseMethod.getReturnType());
                 } catch (NoSuchMethodException ignored) {
                 }
             }
-
-            if (!this.canRead()) {
-                Parameter[] parameters = method.getParameters();
-
-                List<ParamInfo> types = Arrays.stream(parameters)
-                    .map(parameter -> {
-                        CommandParam annotation = parameter.getAnnotation(CommandParam.class);
-                        String name = annotation != null && !annotation.value().isEmpty() ? annotation.value() : parameter.getName();
-                        Class<?> type = parameter.getType();
-                        if (CommandContext.class.isAssignableFrom(type)) {
-                            return new ParamInfo(type, ParamInfo.self());
-                        }
-                        if (CommandSource.class.isAssignableFrom(type)) {
-                            return new ParamInfo(type, ParamInfo.source());
-                        }
-                        Class<?> clazz = args.get(name);
-                        if (clazz != null && type.isAssignableFrom(clazz)) {
-                            return new ParamInfo(type, ParamInfo.arg(name, clazz));
-                        }
-                        return new ParamInfo(type, ParamInfo.empty());
-                    })
-                    .toList();
-
-                next.executes(new MethodCommand(method, types));
-            }
-
-            last.then(next);
-            last = next;
         }
+
+        Parameter[] parameters = method.getParameters();
+
+        List<ParamInfo> types = Arrays.stream(parameters)
+            .map(parameter -> {
+                CommandParam annotation = parameter.getAnnotation(CommandParam.class);
+                String name = annotation != null && !annotation.value().isEmpty() ? annotation.value() : parameter.getName();
+                Class<?> type = ArgumentManager.getDefaultClass(parameter.getType());
+                if (CommandContext.class.isAssignableFrom(type)) {
+                    return new ParamInfo(type, ParamInfo.self());
+                }
+                if (CommandSource.class.isAssignableFrom(type)) {
+                    return new ParamInfo(type, ParamInfo.source());
+                }
+                Class<?> clazz = args.get(name);
+                if (clazz != null && type.isAssignableFrom(clazz)) {
+                    return new ParamInfo(type, ParamInfo.arg(name, clazz));
+                }
+                return new ParamInfo(type, ParamInfo.empty());
+            })
+            .toList();
+
+        Command command = new MethodCommand(method, types);
+
+        if (next != null) {
+            next.executes(command);
+            current.then(next);
+        } else {
+            current.executes(command);
+        }
+
         return (LiteralArgumentBuilder) root;
     }
 
