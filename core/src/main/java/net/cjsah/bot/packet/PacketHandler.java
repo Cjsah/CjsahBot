@@ -78,8 +78,9 @@ public class PacketHandler {
             log.debug("No pending packet for echo={}", response.getEcho());
             return;
         }
-        log.debug("Received response for echo={} status={}", response.getEcho(), response.getStatus());
-        p.future.complete(response.build(p.codec));
+        Either data = response.build(p.codec);
+        log.debug("Received response for echo={}: [{}]{}", response.getEcho(), response.getStatus(), data);
+        p.future.complete(data);
     }
 
     public void clean() {

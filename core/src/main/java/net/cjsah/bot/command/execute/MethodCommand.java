@@ -47,7 +47,7 @@ public class MethodCommand implements Command {
             .toArray();
 
         try {
-            method.invoke(null, params);
+            this.method.invoke(null, params);
             return 1;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw BuiltinExceptions.FAILED_ACCESS_METHOD.create(e.getMessage());

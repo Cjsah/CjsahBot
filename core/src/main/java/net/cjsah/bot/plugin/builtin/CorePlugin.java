@@ -16,6 +16,7 @@ import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.loader.DummyClassLoader;
+import net.cjsah.bot.packet.request.RequestType;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
 import net.cjsah.bot.plugin.PluginMetadata;
@@ -79,7 +80,11 @@ public final class CorePlugin implements Plugin {
 
     @SimpleCommand(value = "/test")
     public static void test(CommandSource<?> source) {
-
+        try {
+            source.sendFeedback("test");
+        } catch (Exception e) {
+            MainApplication.log.warn("unknown error", e);
+        }
     }
 
 }

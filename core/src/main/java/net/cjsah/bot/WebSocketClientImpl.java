@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.data.Countdown;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.packet.PacketHandler;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.framing.CloseFrame;
@@ -63,6 +64,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshake) {
         HeartBeatTimer.getInstance().register(this);
+        PacketHandler.getInstance().setSender(this::send);
         this.status = WebSocketStatus.CONNECTED;
         log.info("连接成功!");
     }
@@ -70,6 +72,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         HeartBeatTimer.getInstance().deregister(this.id);
+        PacketHandler.getInstance().clean();
         this.status = WebSocketStatus.DISCONNECTED;
         if (code == CloseFrame.NORMAL) return;
         this.connectCountdown.reset();

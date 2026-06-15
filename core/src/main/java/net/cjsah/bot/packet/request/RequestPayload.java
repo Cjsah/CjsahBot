@@ -16,7 +16,7 @@ public class RequestPayload<T extends RequestPacket> {
     private final T payload;
 
     public RequestPayload(RequestType action, T payload) {
-        this.echo = "p%s-i%s".formatted(MainApplication.PID, ID_CACHE.incrementAndGet());
+        this.echo = "p%s-t%s".formatted(MainApplication.PID, ID_CACHE.incrementAndGet());
         this.action = action;
         this.payload = payload;
     }
