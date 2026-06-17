@@ -63,6 +63,22 @@ jar {
                 "Class-Path": configurations.runtimeClasspath.files.collect { "lib/$it.name" }.join(' ')
         ])
     }
+
+    doLast {
+        def builtJarName = archiveFileName.get()
+        copy {
+            from(rootProject.file('scripts'))
+            into(destinationDirectory)
+            filteringCharset = 'UTF-8'
+            // Replace placeholder token in script templates with the actual jar filename.
+            filter { String line -> line.replace('$filename$', builtJarName) }
+        }
+        copy {
+            from("README.md")
+            into(destinationDirectory)
+        }
+    }
+
 }
 
 tasks.register('runMain', JavaExec) {
