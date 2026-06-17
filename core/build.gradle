@@ -1,11 +1,10 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
     id 'io.freefair.lombok' version '9.5.0'
 }
 
 base {
-    archivesName.set(rootProject.name)
+    archivesName.set(rootProject.name + '-core')
 }
 
 repositories {
@@ -110,10 +109,29 @@ repositories {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.name
+            artifactId 'CjsahBot-core'
             from components.java
             artifact sourcesJar
             artifact docJar
+
+            pom {
+                name = 'CjsahBot-core'
+                description = "CjsahBot"
+                url = "https://github.com/Cjsah/CjsahBot"
+
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://apache.ac.cn/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "Cjsah"
+                        email = "cjsah@cjsah.net"
+                    }
+                }
+            }
         }
     }
 

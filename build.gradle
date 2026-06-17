@@ -62,4 +62,4 @@ tasks.register('collectCoreOutput', Copy) {
     into layout.buildDirectory
 }
 
-tasks.build.dependsOn(collectCoreOutput)
+build.dependsOn([collectCoreOutput])
