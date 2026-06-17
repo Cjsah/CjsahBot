@@ -181,7 +181,8 @@ public final class EventManager {
         if (await || event instanceof CancelableEvent) {
             try {
                 latch.await();
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
@@ -194,9 +195,8 @@ public final class EventManager {
         Optional<OB11BaseInfo> event = result.left();
         if (event.isPresent()) {
             handleEvent(id, event.get(), raw, exception);
-        }else {
-            PacketHandler.getInstance().receive(result.right().get());
         }
+        result.ifRight(builder -> PacketHandler.getInstance().receive(builder));
     }
 
     private static void handleEvent(long id, OB11BaseInfo base, JsonElement raw, Function<String, EventException> exception) throws EventException {
