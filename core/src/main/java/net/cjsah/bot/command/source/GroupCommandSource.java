@@ -21,6 +21,16 @@ public final class GroupCommandSource extends CommandSource<GroupMessageEvent> {
     }
 
     @Override
+    public boolean isGroup() {
+        return true;
+    }
+
+    @Override
+    public boolean isConsole() {
+        return false;
+    }
+
+    @Override
     public void sendFeedback(String message) {
         this.sendFeedback(new SendGroupMsg(this.sender.getGroupId(), message));
     }

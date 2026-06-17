@@ -21,6 +21,16 @@ public final class FriendCommandSource extends CommandSource<FriendMessageEvent>
     }
 
     @Override
+    public boolean isGroup() {
+        return false;
+    }
+
+    @Override
+    public boolean isConsole() {
+        return false;
+    }
+
+    @Override
     public void sendFeedback(String message) {
         this.sendFeedback(new SendFriendMsg(this.sender.getUserId(), message));
     }

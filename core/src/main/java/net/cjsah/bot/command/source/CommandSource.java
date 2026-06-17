@@ -45,4 +45,8 @@ public abstract class CommandSource<T extends CommandSender> {
     public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         return this.permission.hasPermission(role, pluginIds);
     }
+
+    public abstract boolean isGroup();
+
+    public abstract boolean isConsole();
 }

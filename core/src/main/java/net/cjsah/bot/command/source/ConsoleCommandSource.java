@@ -20,6 +20,16 @@ public final class ConsoleCommandSource extends CommandSource<ConsoleCommandSour
     }
 
     @Override
+    public boolean isGroup() {
+        return false;
+    }
+
+    @Override
+    public boolean isConsole() {
+        return true;
+    }
+
+    @Override
     public void sendFeedback(String message) {
         for (String line : message.split("\n")) {
             MainApplication.log.info(line);

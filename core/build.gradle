@@ -84,7 +84,7 @@ tasks.register('runMain', JavaExec) {
     group = "application"
     description = "Runs the main class"
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'net.cjsah.bot.Main'
+    mainClass = 'net.cjsah.bot.MainApplication'
 
     File runDir = rootProject.file("run")
 
