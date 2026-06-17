@@ -1,12 +1,9 @@
 plugins {
-    id 'java-library'
+    id 'base'
     id 'maven-publish'
 }
 
 allprojects {
-    apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
-
     group = rootProject.group
     version = rootProject.version
 
@@ -16,6 +13,9 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
     dependencies {
         api "ch.qos.logback:logback-classic:$logback_version"
         api "cn.hutool:hutool-all:$hutool_version"
@@ -42,3 +42,24 @@ subprojects {
     }
 
 }
+
+// ========== 根项目配置 ==========
+// 根项目不生成自己的 jar，而是收集 core 模块的所有构建产物
+
+// 如果没有 java-library 插件，根项目不会有 jar 任务；
+// 使 assemble/ build 生命周期依赖 core 模块的完整构建
+assemble.dependsOn(':core:build')
+
+tasks.register('collectCoreOutput', Copy) {
+    dependsOn ':core:build'
+    description = '将 core 模块的所有构建产物收集到根项目 build 目录'
+    group = 'build'
+
+    from(project(':core').layout.buildDirectory) {
+        include 'libs/**'
+        include 'resources/**'
+    }
+    into layout.buildDirectory
+}
+
+tasks.build.dependsOn(collectCoreOutput)
