@@ -21,13 +21,12 @@ public class ImageMessageNode extends MessageNode {
     private final String fileSize;
     private final Integer subType;
 
+    public ImageMessageNode(String file) {
+        this(file, "", "", 0, "0");
+    }
+
     public ImageMessageNode(String file, String url, String summary, Integer subType) {
-        super(MessageNodeType.IMAGE);
-        this.file = file;
-        this.url = url;
-        this.summary = summary;
-        this.subType = subType;
-        this.fileSize = "0";
+        this(file, url, summary, subType, "0");
     }
 
     private ImageMessageNode(String file, String url, String summary, Integer subType, String fileSize) {

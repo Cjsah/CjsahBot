@@ -131,12 +131,10 @@ public class PluginManager {
         return PLUGINS.values();
     }
 
-    @Nullable
     public static PluginContainer getCurrent() {
         return CURRENT.get();
     }
 
-    @Nullable
     public static PluginMetadata getCurrentInfo() {
         PluginContainer current = getCurrent();
         return current == null ? null : current.metadata();
