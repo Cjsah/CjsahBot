@@ -44,4 +44,8 @@ public record GroupMember(
         Codec.STRING.fieldOf("title").forGetter(GroupMember::title)
     ).apply(instance, GroupMember::new));
 
+    public String getShowName() {
+        return this.card.isEmpty() ? this.nickname : this.card;
+    }
+
 }
