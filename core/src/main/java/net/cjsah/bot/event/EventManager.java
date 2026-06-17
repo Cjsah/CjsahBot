@@ -188,18 +188,18 @@ public final class EventManager {
 
     private static final Codec<Either<OB11BaseInfo, ResponseBuilder>> WS_CODEC = Codec.either(OB11BaseInfo.CODEC, ResponseBuilder.CODEC);
 
-    public static void parseWebSocketEvent(long id, JsonElement raw) throws EventException {
+    public static void parseWebSocketEvent(long id, JsonElement raw) {
         Function<String, EventException> exception = EventException::new;
 
         Either<OB11BaseInfo, ResponseBuilder> result = CodecUtil.decode(WS_CODEC, raw, exception).orThrow();
-        Optional<OB11BaseInfo> event = result.left();
-        if (event.isPresent()) {
-            handleEvent(id, event.get(), raw, exception);
-        }
-        result.ifRight(builder -> PacketHandler.getInstance().receive(builder));
+
+        result.consume(
+            event -> handleEvent(id, event, raw, exception),
+            builder -> PacketHandler.getInstance().receive(builder)
+        );
     }
 
-    private static void handleEvent(long id, OB11BaseInfo base, JsonElement raw, Function<String, EventException> exception) throws EventException {
+    private static void handleEvent(long id, OB11BaseInfo base, JsonElement raw, Function<String, EventException> exception) {
         IEventBuilder eventBuilder = base.getPostType();
         while (true) {
             Object obj = CodecUtil.decode(eventBuilder.codec(), raw, exception).orThrow();
@@ -210,7 +210,8 @@ public final class EventManager {
                 EventManager.broadcast(event);
                 return;
             } else {
-                throw new EventException("Unsupported decoding data");
+                log.warn("Unsupported decoding data: {}", obj);
+                return;
             }
         }
     }
