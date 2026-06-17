@@ -7,7 +7,6 @@ import net.cjsah.bot.packet.request.RequestPayload;
 import net.cjsah.bot.packet.request.RequestType;
 import net.cjsah.bot.packet.request.payload.RequestPacket;
 import net.cjsah.bot.packet.response.ResponseBuilder;
-import net.cjsah.bot.packet.response.payload.ResponsePacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
