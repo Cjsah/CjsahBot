@@ -42,8 +42,8 @@ tasks.register('copyJar', Copy) {
 
 tasks.register('sourcesJar', Jar) {
     dependsOn classes
+    from sourceSets.main.delombokTask
     archiveClassifier = 'sources'
-    from sourceSets.main.allSource
 }
 
 tasks.register('docJar', Jar) {

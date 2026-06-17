@@ -6,6 +6,7 @@ import net.cjsah.bot.exception.CommandException;
 public record StringArgument(ArgType type) implements Argument<String> {
 
     public static StringArgument byArg(String param) {
+        if (param == null) return word();
         return switch (param) {
             case "word", "single_word" -> word();
             case "string", "quotable" -> string();
