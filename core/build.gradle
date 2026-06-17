@@ -9,8 +9,8 @@ base {
 
 repositories {
     maven {
-        name 'mojang'
-        url 'https://libraries.minecraft.net'
+        name 'CjsahMaven'
+        url 'https://server.cjsah.net:1002/maven/'
     }
 }
 
