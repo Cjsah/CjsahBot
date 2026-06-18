@@ -3,6 +3,7 @@
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <conversionRule conversionWord="colorLevel"  converterClass="net.cjsah.bot.resolver.LogLevelColorConverter" />
     <property name="log.path" value="./logs"/>
+    <property name="root.level" value="${root.level:-info}"/>
     <property name="console.log.pattern"
               value="[%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})] [%cyan(%logger{36})] [%colorLevel] %msg%n"/>
     <property name="log.pattern" value="[%d{yyyy-MM-dd HH:mm:ss,GMT+8}] [%logger{36}] [%level] %msg%n"/>
@@ -39,7 +40,7 @@
     <!--    <logger name="net.cjsah" level="debug" />-->
 
     <!--系统操作日志-->
-    <root level="debug">
+    <root level="${root.level}">
         <appender-ref ref="console" />
         <appender-ref ref="file_console" />
     </root>

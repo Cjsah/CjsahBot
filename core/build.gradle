@@ -99,8 +99,7 @@ tasks.register('runMain', JavaExec) {
     workingDir = runDir
 
     // 如果需要传递 JVM 参数或程序参数，可以在这里添加
-    // jvmArgs = listOf("-Xmx512m")
-    // args = listOf("arg1", "arg2")
+    jvmArgs += "-Droot.level=debug"
 }
 repositories {
     mavenCentral()
