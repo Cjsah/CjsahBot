@@ -35,5 +35,9 @@ public class RequestUtil {
     }
 
     public record Error(int code, String message) {
+        @Override
+        public String toString() {
+            return "[" + this.code + "]" + this.message;
+        }
     }
 }
