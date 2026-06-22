@@ -15,4 +15,9 @@ public class ConsolePermissionContext extends PermissionContext {
     public boolean hasPermission(UserRole role, Collection<String> pluginIds) {
         return true;
     }
+
+    @Override
+    public boolean hasPermission(String pluginId) {
+        return true;
+    }
 }

@@ -1,20 +1,21 @@
 package net.cjsah.bot.data;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 
 public class CachedValue<T> {
     private static final ExecutorService EXECUTOR = Executors.newThreadPerTaskExecutor(
             Thread.ofVirtual().name("cached-value-", 0).factory());
 
-    private final Supplier<T> fetcher;
+    private final Fetcher<T> fetcher;
     private final long timeout;
     private volatile T value;
     private volatile long lastUpdateTime;
     private volatile boolean refreshing;
+    private String error;
 
-    public CachedValue(Supplier<T> fetcher, long timeoutSeconds) {
+    public CachedValue(Fetcher<T> fetcher, long timeoutSeconds) {
         this.fetcher = fetcher;
         this.timeout = timeoutSeconds * 1000;
     }
@@ -23,8 +24,12 @@ public class CachedValue<T> {
         if (value == null) {
             synchronized (this) {
                 if (value == null) {
-                    value = fetcher.get();
-                    lastUpdateTime = System.currentTimeMillis();
+                    try {
+                        value = fetcher.fetch();
+                        lastUpdateTime = System.currentTimeMillis();
+                    } catch (Exception e) {
+                        error = e.getMessage();
+                    }
                 }
             }
             return value;
@@ -43,14 +48,24 @@ public class CachedValue<T> {
         }
         EXECUTOR.execute(() -> {
             try {
-                T newValue = fetcher.get();
+                T newValue = fetcher.fetch();
                 synchronized (CachedValue.this) {
                     value = newValue;
                     lastUpdateTime = System.currentTimeMillis();
                 }
+            } catch (Exception e) {
+                error = e.getMessage();
             } finally {
                 refreshing = false;
             }
         });
+    }
+
+    public Optional<String> getError() {
+        return Optional.ofNullable(this.error);
+    }
+
+    public interface Fetcher<T> {
+        T fetch() throws Exception;
     }
 }

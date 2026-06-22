@@ -60,4 +60,22 @@ public class FriendPermissionContext extends PermissionContext {
         }
         return pluginIds.isEmpty() && this.hasPermission(role);
     }
+
+    @Override
+    public boolean hasPermission(String pluginId) {
+        PermissionPlugin plugin = this.permissions.plugins().get(pluginId);
+        Enabled enabled = this.enabled;
+
+        if (plugin != null) {
+            Optional<OverrideRoleUser> optional = plugin.getUser(this.userId);
+            enabled = optional
+                .flatMap(OverrideRoleUser::enabled)
+                .map(Enabled::from)
+                .orElse(enabled);
+            if (enabled == Enabled.UNSET) {
+                enabled = Enabled.from(plugin.defaultEnabled());
+            }
+        }
+        return enabled.enabled();
+    }
 }

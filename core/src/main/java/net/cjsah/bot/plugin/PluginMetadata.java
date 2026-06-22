@@ -5,7 +5,7 @@ import com.google.gson.JsonNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.AuthorInfo;
-import net.cjsah.bot.util.CodecUtil;
+import net.cjsah.bot.util.ExtraCodecs;
 
 import java.util.List;
 
@@ -17,6 +17,6 @@ public record PluginMetadata(String id, String version, String name, String desc
         Codec.STRING.optionalFieldOf("desc", "").forGetter(PluginMetadata::desc),
         AuthorInfo.CODEC.listOf().optionalFieldOf("authors", List.of()).forGetter(PluginMetadata::authors),
         Codec.STRING.fieldOf("entrypoint").forGetter(PluginMetadata::entrypoint),
-        CodecUtil.JSON.optionalFieldOf("extra", JsonNull.INSTANCE).forGetter(PluginMetadata::extra)
+        ExtraCodecs.JSON.optionalFieldOf("extra", JsonNull.INSTANCE).forGetter(PluginMetadata::extra)
     ).apply(instance, PluginMetadata::new));
 }

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.cjsah.bot.data.enums.GroupRole;
 import net.cjsah.bot.data.enums.Sex;
-import net.cjsah.bot.util.CodecUtil;
+import net.cjsah.bot.util.ExtraCodecs;
 
 import java.time.Instant;
 
@@ -35,8 +35,8 @@ public record GroupMember(
         Codec.INT.fieldOf("age").forGetter(GroupMember::age),
         Codec.STRING.fieldOf("level").forGetter(GroupMember::level),
         Codec.INT.fieldOf("qq_level").forGetter(GroupMember::qqLevel),
-        CodecUtil.TIMESTAMP.fieldOf("join_time").forGetter(GroupMember::joinTime),
-        CodecUtil.TIMESTAMP.fieldOf("last_sent_time").forGetter(GroupMember::lastSentTime),
+        ExtraCodecs.TIMESTAMP.fieldOf("join_time").forGetter(GroupMember::joinTime),
+        ExtraCodecs.TIMESTAMP.fieldOf("last_sent_time").forGetter(GroupMember::lastSentTime),
         Codec.BOOL.fieldOf("unfriendly").forGetter(GroupMember::unfriendly),
         Codec.BOOL.fieldOf("card_changeable").forGetter(GroupMember::cardChangeable),
         Codec.BOOL.fieldOf("is_robot").forGetter(GroupMember::isRobot),

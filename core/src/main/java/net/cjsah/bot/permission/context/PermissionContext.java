@@ -10,6 +10,8 @@ public abstract class PermissionContext {
 
     public abstract boolean hasPermission(UserRole role, Collection<String> pluginIds);
 
+    public abstract boolean hasPermission(String pluginId);
+
     protected enum Enabled {
         UNSET(true),
         ENABLED(true),

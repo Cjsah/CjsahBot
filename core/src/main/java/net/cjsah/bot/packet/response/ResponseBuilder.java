@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.util.CodecUtil;
+import net.cjsah.bot.util.ExtraCodecs;
 
 @Getter
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class ResponseBuilder {
     public static final Codec<ResponseBuilder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         ResponseStatus.CODEC.fieldOf("status").forGetter(ResponseBuilder::getStatus),
         Codec.INT.fieldOf("retcode").forGetter(ResponseBuilder::getRetcode),
-        CodecUtil.JSON.fieldOf("data").forGetter(ResponseBuilder::getData),
+        ExtraCodecs.JSON.fieldOf("data").forGetter(ResponseBuilder::getData),
         Codec.STRING.fieldOf("echo").forGetter(ResponseBuilder::getEcho)
     ).apply(instance, ResponseBuilder::new));
 

@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.cjsah.bot.util.CodecUtil;
+import net.cjsah.bot.util.ExtraCodecs;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,7 +16,7 @@ public class GroupGrayTipEvent extends ReceivedEvent {
         Codec.LONG.fieldOf("message_id").forGetter(GroupGrayTipEvent::getMessageId),
         Codec.STRING.fieldOf("busi_id").forGetter(GroupGrayTipEvent::getBusiId),
         Codec.STRING.fieldOf("content").forGetter(GroupGrayTipEvent::getContent),
-        CodecUtil.JSON.optionalFieldOf("raw_info", null).forGetter(GroupGrayTipEvent::getRawInfo)
+        ExtraCodecs.JSON.optionalFieldOf("raw_info", null).forGetter(GroupGrayTipEvent::getRawInfo)
     ).apply(instance, GroupGrayTipEvent::new));
 
     private final long groupId;
