@@ -16,7 +16,9 @@ import net.cjsah.bot.exception.CommandException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,15 +47,12 @@ public class SimpleCommandParser {
             throw BuiltinExceptions.PARSE_ROOT_ARGUMENT.create();
         }
         Map<String, Class<?>> args = new HashMap<>();
-        ArgumentBuilder<?> current = root;
-        ArgumentBuilder<?> next = null;
+        Deque<ArgumentBuilder<?>> stack = new ArrayDeque<>();
+        stack.push(root);
 
         while (this.canRead()) {
-            if (next != null) {
-                current.then(next);
-                current = next;
-            }
-            next = nextBuilder().description(desc);
+            ArgumentBuilder<?> next = nextBuilder().description(desc);
+            stack.push(next);
 
             if (next instanceof RequiredArgumentBuilder<?> builder) {
                 try {
@@ -87,11 +86,13 @@ public class SimpleCommandParser {
 
         Command command = new MethodCommand(method, types);
 
-        if (next != null) {
-            next.executes(command);
-            current.then(next);
-        } else {
-            current.executes(command);
+        ArgumentBuilder<?> current = stack.pop();
+        current.executes(command);
+
+        while (!stack.isEmpty()) {
+            ArgumentBuilder<?> last = stack.pop();
+            last.then(current);
+            current = last;
         }
 
         return (LiteralArgumentBuilder) root;
