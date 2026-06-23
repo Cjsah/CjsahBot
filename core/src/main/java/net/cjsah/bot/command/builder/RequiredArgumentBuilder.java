@@ -39,7 +39,8 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
             this.getArgument(),
             this.getPluginIds(),
             this.getCommand(),
-            this.getRequirement()
+            this.getRequirement(),
+            this.getDescription()
         );
 
         for (final CommandNode argument : this.getArguments()) {

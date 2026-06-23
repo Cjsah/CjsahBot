@@ -17,8 +17,8 @@ import java.util.function.Predicate;
 public class LiteralCommandNode extends CommandNode {
     private final String literal;
 
-    public LiteralCommandNode(String literal, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
-        super(pluginIds, command, requirement);
+    public LiteralCommandNode(String literal, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement, String description) {
+        super(pluginIds, command, requirement, description);
         this.literal = literal;
     }
 
@@ -69,6 +69,7 @@ public class LiteralCommandNode extends CommandNode {
     protected ArgumentBuilder<?> builderFactory() {
         LiteralArgumentBuilder builder = LiteralArgumentBuilder.literal(null, this.literal);
         builder.byPlugins(this.getPluginIds());
+        builder.description(this.getDescription());
         return builder;
     }
 

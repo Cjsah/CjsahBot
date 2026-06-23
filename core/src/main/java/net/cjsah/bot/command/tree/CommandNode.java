@@ -25,11 +25,13 @@ public abstract class CommandNode {
     private final Set<String> pluginIds;
     @Nullable
     private Command command;
+    private final String description;
 
-    protected CommandNode(Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
+    protected CommandNode(Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement, String description) {
         this.pluginIds = new HashSet<>(pluginIds);
         this.command = command;
         this.requirement = requirement;
+        this.description = description;
     }
 
     public Command getCommand() {
@@ -38,6 +40,10 @@ public abstract class CommandNode {
 
     public Collection<CommandNode> getChildren() {
         return this.children.values();
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public CommandNode getChild(String name) {

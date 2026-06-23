@@ -14,7 +14,6 @@ import net.cjsah.bot.exception.CommandException;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class CommandDispatcher {
     public static final String ARGUMENT_SEPARATOR = " ";
@@ -205,7 +204,7 @@ public class CommandDispatcher {
         final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
         if (!deep) {
-            final Collection<CommandNode> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+            final Collection<CommandNode> children = node.getChildren().stream().filter(c -> c.canUse(source)).toList();
             if (children.size() == 1) {
                 final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                 if (usage != null) {
@@ -234,7 +233,7 @@ public class CommandDispatcher {
                     }
                     if (count > 0) {
                         builder.append(close);
-                        return self + ARGUMENT_SEPARATOR + builder.toString();
+                        return self + ARGUMENT_SEPARATOR + builder;
                     }
                 }
             }

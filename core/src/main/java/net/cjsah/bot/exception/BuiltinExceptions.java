@@ -25,7 +25,7 @@ public final class BuiltinExceptions {
     public static final CommandExceptionFactory READER_EXPECTED_SYMBOL = new CommandExceptionFactory("Expected '%s'");
     public static final CommandExceptionFactory NOT_EXPECTED = new CommandExceptionFactory("Expected '%s', but founded '%s'");
 
-    public static final CommandExceptionFactory DISPATCHER_UNKNOWN_COMMAND = new CommandExceptionFactory("未知指令");
+    public static final CommandExceptionFactory DISPATCHER_UNKNOWN_COMMAND = new CommandExceptionFactory("未知的命令或权限不足");
     public static final CommandExceptionFactory DISPATCHER_UNKNOWN_ARGUMENT = new CommandExceptionFactory("参数错误 / 没有权限");
     public static final CommandExceptionFactory DISPATCHER_PARSE_EXCEPTION = new CommandExceptionFactory("无法解析命令: '%s'");
     public static final CommandExceptionFactory DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new CommandExceptionFactory("Expected whitespace to end one argument, but found trailing data");

@@ -18,6 +18,7 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
     private Predicate<CommandSource<?>> requirement = Commands.passRequirement();
     private final Set<String> pluginIds = new HashSet<>();
     private Command command;
+    private String description;
 
     protected abstract T getThis();
 
@@ -53,6 +54,15 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
 
     public Predicate<CommandSource<?>> getRequirement() {
         return this.requirement;
+    }
+
+    public T description(String description) {
+        this.description = description;
+        return getThis();
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public T byPlugin(String pluginId) {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RootCommandNode extends CommandNode {
     public RootCommandNode() {
-        super(List.of(CorePlugin.INSTANCE.id()), null, Commands.passRequirement());
+        super(List.of(CorePlugin.INSTANCE.id()), null, Commands.passRequirement(), "root");
     }
 
     @Override

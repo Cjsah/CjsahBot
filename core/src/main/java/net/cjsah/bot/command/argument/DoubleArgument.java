@@ -1,7 +1,10 @@
 package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.command.StringReader;
+import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.exception.CommandException;
+
+import java.util.Optional;
 
 public record DoubleArgument(double min, double max) implements Argument<Double> {
 
@@ -26,6 +29,10 @@ public record DoubleArgument(double min, double max) implements Argument<Double>
 
     public static DoubleArgument doubleArg(double min, double max) {
         return new DoubleArgument(min, max);
+    }
+
+    public static Optional<Double> get(CommandContext context, String name) {
+        return context.getArgument(name, Double.class);
     }
 
     @Override

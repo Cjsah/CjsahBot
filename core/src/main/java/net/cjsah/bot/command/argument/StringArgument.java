@@ -1,7 +1,10 @@
 package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.command.StringReader;
+import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.exception.CommandException;
+
+import java.util.Optional;
 
 public record StringArgument(ArgType type) implements Argument<String> {
 
@@ -25,6 +28,10 @@ public record StringArgument(ArgType type) implements Argument<String> {
 
     public static StringArgument greedyString() {
         return new StringArgument(ArgType.GREEDY_PHRASE);
+    }
+
+    public static Optional<String> get(CommandContext context, String name) {
+        return context.getArgument(name, String.class);
     }
 
     @Override

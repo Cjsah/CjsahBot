@@ -18,8 +18,8 @@ public class ArgumentCommandNode<T> extends CommandNode {
     private final String name;
     private final Argument<T> argument;
 
-    public ArgumentCommandNode(String name, Argument<T> argument, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement) {
-        super(pluginIds, command, requirement);
+    public ArgumentCommandNode(String name, Argument<T> argument, Collection<String> pluginIds, @Nullable Command command, Predicate<CommandSource<?>> requirement, String description) {
+        super(pluginIds, command, requirement, description);
         this.name = name;
         this.argument = argument;
     }
@@ -64,6 +64,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
     protected ArgumentBuilder<?> builderFactory() {
         RequiredArgumentBuilder<T> builder = RequiredArgumentBuilder.argument(null, this.name, this.argument);
         builder.byPlugins(this.getPluginIds());
+        builder.description(this.getDescription());
         return builder;
     }
 
@@ -86,6 +87,6 @@ public class ArgumentCommandNode<T> extends CommandNode {
 
     @Override
     public String toString() {
-        return "<argument " + this.name + ":" + this.argument +">";
+        return "<argument " + this.name + ":" + this.argument + ">";
     }
 }

@@ -31,7 +31,8 @@ public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
             this.getLiteral(),
             this.getPluginIds(),
             this.getCommand(),
-            this.getRequirement()
+            this.getRequirement(),
+            this.getDescription()
         );
 
         for (final CommandNode argument : this.getArguments()) {

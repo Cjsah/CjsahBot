@@ -64,10 +64,11 @@ public final class CommandRegisterContext {
         }
         SimpleCommand annotation = method.getDeclaredAnnotation(SimpleCommand.class);
         String cmd = annotation.value();
+        String desc = annotation.description();
         UserRole permission = annotation.permission();
         SimpleCommandParser parser = new SimpleCommandParser(this, cmd);
         try {
-            LiteralArgumentBuilder root = parser.parse(method);
+            LiteralArgumentBuilder root = parser.parse(method, desc);
             root.requires(source -> source.hasPermission(permission, root.getPluginIds()));
             this.dispatcher.register(root);
             return true;

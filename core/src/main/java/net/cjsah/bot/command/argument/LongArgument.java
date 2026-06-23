@@ -1,7 +1,10 @@
 package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.command.StringReader;
+import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.exception.CommandException;
+
+import java.util.Optional;
 
 public record LongArgument(long min, long max) implements Argument<Long> {
 
@@ -26,6 +29,10 @@ public record LongArgument(long min, long max) implements Argument<Long> {
 
     public static LongArgument longArg(long min, long max) {
         return new LongArgument(min, max);
+    }
+
+    public static Optional<Long> get(CommandContext context, String name) {
+        return context.getArgument(name, Long.class);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.command.StringReader;
+import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.exception.CommandException;
+
+import java.util.Optional;
 
 public record ByteArgument(byte min, byte max) implements Argument<Byte> {
 
@@ -27,6 +30,10 @@ public record ByteArgument(byte min, byte max) implements Argument<Byte> {
     public static ByteArgument byteArg(byte min, byte max) {
         if (max < min) throw new IllegalArgumentException("The maximum value is less than the minimum");
         return new ByteArgument(min, max);
+    }
+
+    public static Optional<Byte> get(CommandContext context, String name) {
+        return context.getArgument(name, Byte.class);
     }
 
     @Override

@@ -9,7 +9,6 @@ public class AtMessageNode extends MessageNode {
         Codec.STRING.fieldOf("qq").forGetter(AtMessageNode::getQQ)
     ).apply(instance, AtMessageNode::new));
 
-
     private final String qq;
 
     /**
@@ -18,6 +17,11 @@ public class AtMessageNode extends MessageNode {
     public AtMessageNode(String qq) {
         super(MessageNodeType.AT);
         this.qq = qq;
+    }
+
+    public AtMessageNode(long qq) {
+        super(MessageNodeType.AT);
+        this.qq = String.valueOf(qq);
     }
 
     public String getQQ() {

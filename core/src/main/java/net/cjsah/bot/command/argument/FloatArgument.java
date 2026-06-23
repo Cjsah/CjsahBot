@@ -1,7 +1,10 @@
 package net.cjsah.bot.command.argument;
 
 import net.cjsah.bot.command.StringReader;
+import net.cjsah.bot.command.context.CommandContext;
 import net.cjsah.bot.exception.CommandException;
+
+import java.util.Optional;
 
 public record FloatArgument(float min, float max) implements Argument<Float> {
 
@@ -26,6 +29,10 @@ public record FloatArgument(float min, float max) implements Argument<Float> {
 
     public static FloatArgument floatArg(float min, float max) {
         return new FloatArgument(min, max);
+    }
+
+    public static Optional<Float> get(CommandContext context, String name) {
+        return context.getArgument(name, Float.class);
     }
 
     @Override

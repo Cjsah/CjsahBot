@@ -36,11 +36,11 @@ public class SimpleCommandParser {
         this.cursor = 1;
     }
 
-    public LiteralArgumentBuilder parse(Method method) throws CommandException {
+    public LiteralArgumentBuilder parse(Method method, String desc) throws CommandException {
         if (!this.canRead()) {
             throw BuiltinExceptions.PARSE_EMPTY_STRING.create();
         }
-        ArgumentBuilder<?> root = nextBuilder();
+        ArgumentBuilder<?> root = nextBuilder().description(desc);
         if (!(root instanceof LiteralArgumentBuilder)) {
             throw BuiltinExceptions.PARSE_ROOT_ARGUMENT.create();
         }
@@ -53,7 +53,7 @@ public class SimpleCommandParser {
                 current.then(next);
                 current = next;
             }
-            next = nextBuilder();
+            next = nextBuilder().description(desc);
 
             if (next instanceof RequiredArgumentBuilder<?> builder) {
                 try {
