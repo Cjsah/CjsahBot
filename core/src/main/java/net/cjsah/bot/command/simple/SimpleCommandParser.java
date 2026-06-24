@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.simple;
 
-import net.cjsah.bot.registry.PluginCommandRegistry;
+import net.cjsah.bot.plugin.registry.PluginCommandRegistry;
 import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.argument.ArgumentManager;

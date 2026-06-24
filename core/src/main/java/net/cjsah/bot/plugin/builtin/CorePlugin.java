@@ -24,7 +24,7 @@ import net.cjsah.bot.plugin.PluginContainer;
 import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.plugin.entry.BuiltinPluginEntryPointImpl;
-import net.cjsah.bot.registry.PluginRegistry;
+import net.cjsah.bot.plugin.registry.PluginRegistry;
 
 import java.nio.file.Paths;
 import java.util.List;

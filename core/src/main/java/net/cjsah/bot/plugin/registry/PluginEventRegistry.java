@@ -1,4 +1,4 @@
-package net.cjsah.bot.registry;
+package net.cjsah.bot.plugin.registry;
 
 import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.event.events.Event;

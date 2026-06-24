@@ -1,4 +1,4 @@
-package net.cjsah.bot.registry;
+package net.cjsah.bot.plugin.registry;
 
 public interface PluginRegistry {
 

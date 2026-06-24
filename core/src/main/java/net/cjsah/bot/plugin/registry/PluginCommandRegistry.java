@@ -1,4 +1,4 @@
-package net.cjsah.bot.registry;
+package net.cjsah.bot.plugin.registry;
 
 import lombok.RequiredArgsConstructor;
 import net.cjsah.bot.command.CommandDispatcher;

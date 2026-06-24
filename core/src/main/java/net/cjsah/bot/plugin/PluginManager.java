@@ -7,8 +7,8 @@ import net.cjsah.bot.event.EventManager;
 import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.loader.PluginClassLoader;
 import net.cjsah.bot.plugin.builtin.CorePlugin;
-import net.cjsah.bot.registry.PluginRegistry;
-import net.cjsah.bot.registry.PluginRegistryImpl;
+import net.cjsah.bot.plugin.registry.PluginRegistry;
+import net.cjsah.bot.plugin.registry.PluginRegistryImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

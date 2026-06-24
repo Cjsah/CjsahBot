@@ -10,7 +10,7 @@ import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
-import net.cjsah.bot.registry.PluginCommandRegistry;
+import net.cjsah.bot.plugin.registry.PluginCommandRegistry;
 
 import javax.annotation.Nullable;
 import java.util.List;

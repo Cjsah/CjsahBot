@@ -1,4 +1,4 @@
-package net.cjsah.bot.registry;
+package net.cjsah.bot.plugin.registry;
 
 import cn.hutool.core.lang.loader.LazyFunLoader;
 import cn.hutool.core.lang.loader.LazyLoader;
