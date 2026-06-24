@@ -106,10 +106,10 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
-    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
-    public static void test(CommandSource<?> source) {
-        source.sendFeedback("111");
-    }
+//    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
+//    public static void test(CommandSource<?> source) {
+//        source.sendFeedback("111");
+//    }
 
     @SubscribeEvent
     private static void heartbeat(HeartbeatEvent event) {
