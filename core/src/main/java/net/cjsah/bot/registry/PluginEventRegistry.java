@@ -5,7 +5,6 @@ import net.cjsah.bot.event.events.Event;
 import net.cjsah.bot.plugin.PluginMetadata;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PluginEventRegistry {
@@ -18,8 +17,7 @@ public class PluginEventRegistry {
     }
 
     public <T extends Event> long subscribe(Class<T> clazz, Consumer<T> handler) {
-        this.eventManager.subscribe(this.pluginInfo.id(), clazz, handler);
-        return 0;
+        return this.eventManager.subscribe(this.pluginInfo.id(), clazz, handler);
     }
 
     public List<Long> subscribe(Object object) {

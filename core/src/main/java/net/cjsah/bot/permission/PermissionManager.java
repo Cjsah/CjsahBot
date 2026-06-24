@@ -29,12 +29,13 @@ public class PermissionManager {
     public boolean registerPluginPermission(String pluginId, PermissionPlugin permission) {
         PluginManager.checkExist(pluginId);
         PermissionPlugin current = this.permissions.plugins().get(pluginId);
-        if (current != null) return false;
-        this.permissions.plugins().put(pluginId, permission);
-        Permissions.save(this.permissions);
-        return true;
-    }
-
-    public static void init() {
+        if (current == null) {
+            Permissions permissions = this.permissions.replacePlugin(pluginId, permission);
+            if (Permissions.save(this.permissions)) {
+                this.permissions = permissions;
+                return true;
+            }
+        }
+        return false;
     }
 }

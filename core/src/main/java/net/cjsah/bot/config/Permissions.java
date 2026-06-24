@@ -1,7 +1,9 @@
 package net.cjsah.bot.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.AppPaths;
 import net.cjsah.bot.config.permission.PermissionGlobal;
@@ -25,6 +27,24 @@ public record Permissions(int version, PermissionGlobal global, Map<String, Perm
 
     public static final Permissions EMPTY = new Permissions(1_00_00, PermissionGlobal.EMPTY, Map.of());
 
+    public Permissions replacePlugin(String pluginId, PermissionPlugin plugin) {
+        ImmutableMap.Builder<String, PermissionPlugin> builder = ImmutableMap.builder();
+        builder.putAll(this.plugins);
+        builder.put(pluginId, plugin);
+
+        return new Permissions(this.version(), this.global(), builder.buildKeepingLast());
+    }
+
+    public Permissions removePlugin(String pluginId) {
+        ImmutableMap.Builder<String, PermissionPlugin> builder = ImmutableMap.builder();
+        for (Map.Entry<String, PermissionPlugin> entry : this.plugins.entrySet()) {
+            if (entry.getKey().equals(pluginId)) continue;
+            builder.put(entry.getKey(), entry.getValue());
+        }
+
+        return new Permissions(this.version(), this.global(), builder.buildKeepingLast());
+    }
+
     public static Permissions loadOrCreate() {
         Path path = AppPaths.PERMISSIONS;
         try {
@@ -43,14 +63,16 @@ public record Permissions(int version, PermissionGlobal global, Map<String, Perm
         }
     }
 
-    public static void save(Permissions permissions) {
+    public static boolean save(Permissions permissions) {
         Path path = AppPaths.PERMISSIONS;
         try {
             Files.createDirectories(path.getParent());
             String json = CodecUtil.encode(CODEC, permissions, AppException::new).orThrow();
             Files.writeString(path, json, StandardCharsets.UTF_8);
+            return true;
         } catch (IOException e) {
             log.warn("Failed to save config file.", e);
+            return false;
         }
     }
 

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,25 +52,28 @@ public final class EventManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends Event> List<Long> register(String pluginId, @NotNull Object object) {
-        Method[] methods = object.getClass().getMethods();
+        Method[] methods = object.getClass().getDeclaredMethods();
         List<Long> ids = new ArrayList<>(methods.length);
         // 遍历对象的所有方法
         for (Method method : methods) {
-            // 忽略参数数量不为1的方法
-            if (method.getParameterCount() != 1) continue;
             // 获取方法上的SubscribeEvent注解
             SubscribeEvent annotation = method.getAnnotation(SubscribeEvent.class);
             // 忽略没有SubscribeEvent注解的方法
             if (null == annotation) continue;
+            // 忽略参数数量不为1的方法
+            if (method.getParameterCount() != 1) continue;
             // 获取方法的参数类型
             Class<?> eventType = method.getParameterTypes()[0];
             // 忽略参数类型不是Event或其子类的方法
             if (!Event.class.isAssignableFrom(eventType)) continue;
             // 创建一个事件触发器，用于在事件发生时调用相应的方法
-            Consumer<T> trigger = (obj) -> {
+            if (!Modifier.isPublic(method.getModifiers())) {
+                method.setAccessible(true);
+            }
+            Consumer<T> trigger = (event) -> {
                 try {
                     // 调用对象的方法，传递事件对象作为参数
-                    method.invoke(object, obj);
+                    method.invoke(object, event);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     // 在调用方法失败时记录错误日志
                     log.error(e.getMessage(), e);
