@@ -97,6 +97,15 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
+//    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
+//    public static void test(CommandSource<?> source) {
+//        File file = new File("icon.png");
+//        byte[] bytes = FileUtil.readBytes(file);
+//        String base64 = "data:image/png;base64," + ExtraCodecs.base64(bytes);
+//        MessageChain msg = MessageChain.of(new ImageMessageNode(base64, "", "[动画表情]", ImageType.FACE));
+//        source.sendFeedback(msg);
+//    }
+
     @SubscribeEvent
     private static void heartbeat(HeartbeatEvent event) {
         HeartBeatTimer.getInstance().heartbeatReceived(event.getWebSocketId(), event.getInterval());

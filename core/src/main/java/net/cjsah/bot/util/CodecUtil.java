@@ -9,8 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class CodecUtil {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -51,5 +54,12 @@ public final class CodecUtil {
             String msg = error.map(DataResult.Error::message).orElse("Unknown");
             return Either.right(failMapping.apply(msg));
         }
+    }
+
+    public static <T extends Enum<T>> Codec<T> fromEnum(Class<T> clazz) {
+        T[] enums = clazz.getEnumConstants();
+        Map<Integer, T> map = Arrays.stream(enums).collect(Collectors.toMap(Enum::ordinal, it -> it));
+        T last = enums[enums.length - 1];
+        return Codec.INT.xmap(it -> map.getOrDefault(it, last), Enum::ordinal);
     }
 }
