@@ -84,7 +84,7 @@ public final class WebSocketClientImpl extends WebSocketClient {
         log.debug("收到消息: {}", msg);
         try {
             JsonElement json = JsonParser.parseString(msg);
-            EventManager.parseWebSocketEvent(this.id, json);
+            EventManager.getInstance().parseWebSocketEvent(this.id, json);
         } catch (Throwable e) {
             log.error("出现错误!", e);
         }

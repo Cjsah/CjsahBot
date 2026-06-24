@@ -43,7 +43,7 @@ public class CommandDispatcher {
         this(new RootCommandNode());
     }
 
-    protected LiteralCommandNode register(final LiteralArgumentBuilder command) {
+    public LiteralCommandNode register(final LiteralArgumentBuilder command) {
         final LiteralCommandNode build = command.build();
         this.root.addChild(build);
         return build;
@@ -77,7 +77,7 @@ public class CommandDispatcher {
         }
 
         CommandEvent event = new CommandEvent(context);
-        EventManager.broadcast(event, true);
+        EventManager.getInstance().broadcast(event, true);
         if (event.isCanceled()) {
             return 0;
         }

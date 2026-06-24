@@ -1,6 +1,8 @@
-package net.cjsah.bot.command;
+package net.cjsah.bot.registry;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import net.cjsah.bot.command.CommandDispatcher;
+import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.builder.LiteralArgumentBuilder;
 import net.cjsah.bot.command.builder.RequiredArgumentBuilder;
@@ -14,14 +16,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-public final class CommandRegisterContext {
+@RequiredArgsConstructor
+public class PluginCommandRegistry {
     private final CommandDispatcher dispatcher;
     private final PluginMetadata pluginInfo;
-
-    public CommandRegisterContext(CommandDispatcher dispatcher, PluginMetadata pluginInfo) {
-        this.dispatcher = dispatcher;
-        this.pluginInfo = pluginInfo;
-    }
 
     public LiteralArgumentBuilder literal(String string) {
         return LiteralArgumentBuilder.literal(this.pluginInfo.id(), string);
@@ -36,7 +34,7 @@ public final class CommandRegisterContext {
         return literal;
     }
 
-    public LiteralArgumentBuilder register(Function<CommandRegisterContext, LiteralArgumentBuilder> factory) {
+    public LiteralArgumentBuilder register(Function<PluginCommandRegistry, LiteralArgumentBuilder> factory) {
         LiteralArgumentBuilder literal = factory.apply(this);
         this.dispatcher.register(literal);
         return literal;

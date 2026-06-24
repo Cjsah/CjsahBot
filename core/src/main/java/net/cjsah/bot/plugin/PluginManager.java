@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.AppPaths;
 import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.loader.PluginClassLoader;
 import net.cjsah.bot.plugin.builtin.CorePlugin;
+import net.cjsah.bot.registry.PluginRegistry;
+import net.cjsah.bot.registry.PluginRegistryImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -102,7 +105,7 @@ public class PluginManager {
             fallback.accept(null);
             return;
         }
-        EventManager.unsubscribe(pluginId);
+        EventManager.getInstance().unsubscribe(pluginId);
         Commands.deregisterPlugin(pluginId);
         execute(pluginId, invokePlugin(pluginId, Plugin::unload));
         PluginContainer plugin = PLUGINS.remove(pluginId);
@@ -131,13 +134,26 @@ public class PluginManager {
         return PLUGINS.values();
     }
 
+    public static void checkExist(String pluginId) {
+        if (!isPluginLoaded(pluginId)) {
+            throw BuiltinExceptions.PLUGIN_NOT_FOUND.create(pluginId);
+        }
+    }
+
     public static PluginContainer getCurrent() {
-        return CURRENT.get();
+        PluginContainer current = CURRENT.get();
+        if (current == null) {
+            throw BuiltinExceptions.NOT_IN_PLUGIN.create();
+        }
+        return current;
     }
 
     public static PluginMetadata getCurrentInfo() {
-        PluginContainer current = getCurrent();
-        return current == null ? null : current.metadata();
+        return getCurrent().metadata();
+    }
+
+    public static PluginRegistry getRegistry() {
+        return new PluginRegistryImpl(getCurrent().metadata());
     }
 
     private static Optional<Plugin> getPluginInstance(String pluginId) {

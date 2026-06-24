@@ -8,11 +8,12 @@ import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.argument.StringArgument;
 import net.cjsah.bot.command.simple.SimpleCommand;
 import net.cjsah.bot.command.source.CommandSource;
+import net.cjsah.bot.config.permission.PermissionPlugin;
 import net.cjsah.bot.config.permission.UserRole;
 import net.cjsah.bot.data.AuthorInfo;
 import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.BaseUserData;
-import net.cjsah.bot.event.EventManager;
+import net.cjsah.bot.event.SubscribeEvent;
 import net.cjsah.bot.event.events.FriendMessageEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
@@ -20,8 +21,10 @@ import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.loader.DummyClassLoader;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
+import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
 import net.cjsah.bot.plugin.entry.BuiltinPluginEntryPointImpl;
+import net.cjsah.bot.registry.PluginRegistry;
 
 import java.nio.file.Paths;
 import java.util.List;
@@ -48,33 +51,13 @@ public final class CorePlugin implements Plugin {
 
     @Override
     public void load() {
-        Commands.registerContext().register(CorePlugin.class);
+        PluginRegistry registry = PluginManager.getRegistry();
 
-        String pluginId = INSTANCE.id();
+        registry.permission().register(PermissionPlugin.EMPTY);
 
-        EventManager.subscribe(pluginId, MessageEvent.class, event -> {
-            String message = event.getMessage().toString().trim();
-            if (message.startsWith("/")) {
-                CommandSource<?> source = event.getCommandSource();
-                Commands.execute(source, message.substring(1));
-            }
-        });
+        registry.command().register(CorePlugin.class);
 
-        EventManager.subscribe(pluginId, HeartbeatEvent.class, event -> {
-            HeartBeatTimer.getInstance().heartbeatReceived(event.getWebSocketId(), event.getInterval());
-        });
-
-        EventManager.subscribe(pluginId, FriendMessageEvent.class, event -> {
-            BaseUserData sender = event.getSender();
-            MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getText(), sender.getNickname(), sender.getUserId(), event.getMessage());
-        });
-
-        EventManager.subscribe(pluginId, GroupMessageEvent.class, event -> {
-            GroupUserData sender = event.getSender();
-            MainApplication.log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
-        });
-
-        Commands.registerContext().register(it ->
+        registry.command().register(it ->
             it.literal("help")
                 .description("查看帮助")
                 .executes(context -> {
@@ -91,12 +74,8 @@ public final class CorePlugin implements Plugin {
                     })
                 )
         );
-    }
 
-    @SimpleCommand(value = "/botstop", description = "关闭机器人", permission = UserRole.ADMIN)
-    public static void botStop(CommandSource<?> source) {
-        source.sendFeedback("bot正在关闭...");
-        MainApplication.getInstance().halt();
+        registry.event().subscribe(this);
     }
 
     private static void feedbackHelp(CommandSource<?> source, List<Pair<String, String>> helps) {
@@ -110,5 +89,37 @@ public final class CorePlugin implements Plugin {
             return builder.toString();
         }).collect(Collectors.joining("\n"));
         source.sendFeedback(content);
+    }
+
+    @SimpleCommand(value = "/botstop", description = "关闭Bot", permission = UserRole.ADMIN)
+    public static void botStop(CommandSource<?> source) {
+        source.sendFeedback("bot正在关闭...");
+        MainApplication.getInstance().halt();
+    }
+
+    @SubscribeEvent
+    private static void heartbeat(HeartbeatEvent event) {
+        HeartBeatTimer.getInstance().heartbeatReceived(event.getWebSocketId(), event.getInterval());
+    }
+
+    @SubscribeEvent
+    private static void friendMessage(FriendMessageEvent event) {
+        BaseUserData sender = event.getSender();
+        MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getText(), sender.getNickname(), sender.getUserId(), event.getMessage());
+    }
+
+    @SubscribeEvent
+    private static void groupMessage(GroupMessageEvent event) {
+        GroupUserData sender = event.getSender();
+        MainApplication.log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
+    }
+
+    @SubscribeEvent
+    private static void commandTrigger(MessageEvent<?> event) {
+        String message = event.getMessage().toString().trim();
+        if (message.startsWith("/")) {
+            CommandSource<?> source = event.getCommandSource();
+            Commands.execute(source, message.substring(1));
+        }
     }
 }

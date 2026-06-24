@@ -18,6 +18,7 @@ public class PermissionPlugin {
     ).apply(instance, PermissionPlugin::new));
 
     public static final Codec<Map<String, PermissionPlugin>> PLUGINS_CODEC = Codec.unboundedMap(Codec.STRING, CODEC);
+    public static final PermissionPlugin EMPTY = new PermissionPlugin(true, List.of(), List.of(), List.of());
 
     private final boolean defaultEnabled;
     private final Map<Long, OverrideRoleUser> users;

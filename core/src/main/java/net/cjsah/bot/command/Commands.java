@@ -1,7 +1,6 @@
 package net.cjsah.bot.command;
 
 import cn.hutool.core.lang.Pair;
-import com.google.common.collect.Iterables;
 import lombok.AccessLevel;
 import lombok.extern.slf4j.Slf4j;
 import net.cjsah.bot.command.context.ParsedCommandNode;
@@ -11,9 +10,9 @@ import net.cjsah.bot.exception.BuiltinExceptions;
 import net.cjsah.bot.exception.CommandException;
 import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
+import net.cjsah.bot.registry.PluginCommandRegistry;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -22,12 +21,9 @@ import java.util.function.Predicate;
 public class Commands {
     private static final CommandDispatcher Dispatcher = new CommandDispatcher();
 
-    public static CommandRegisterContext registerContext() {
-        PluginMetadata info = PluginManager.getCurrentInfo();
-        if (info == null) {
-            throw BuiltinExceptions.NOT_IN_PLUGIN.create();
-        }
-        return new CommandRegisterContext(Dispatcher, info);
+    public static PluginCommandRegistry registerContext(PluginMetadata metadata) {
+        PluginManager.checkExist(metadata.id());
+        return new PluginCommandRegistry(Dispatcher, metadata);
     }
 
     public static void deregisterPlugin(String pluginId) {

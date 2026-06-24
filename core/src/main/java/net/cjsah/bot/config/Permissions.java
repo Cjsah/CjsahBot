@@ -43,4 +43,15 @@ public record Permissions(int version, PermissionGlobal global, Map<String, Perm
         }
     }
 
+    public static void save(Permissions permissions) {
+        Path path = AppPaths.PERMISSIONS;
+        try {
+            Files.createDirectories(path.getParent());
+            String json = CodecUtil.encode(CODEC, permissions, AppException::new).orThrow();
+            Files.writeString(path, json, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.warn("Failed to save config file.", e);
+        }
+    }
+
 }

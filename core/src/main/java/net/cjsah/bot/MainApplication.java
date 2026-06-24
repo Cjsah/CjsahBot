@@ -90,8 +90,7 @@ public final class MainApplication {
     }
 
     public void halt() {
-        AppStopEvent event = new AppStopEvent();
-        EventManager.broadcast(event, true);
+        AppStopEvent event = EventManager.getInstance().broadcast(new AppStopEvent());
         if (!event.isCanceled()) {
             this.stopLatch.countDown();
         }

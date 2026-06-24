@@ -44,8 +44,8 @@ public final class BuiltinExceptions {
     public static final CommandExceptionFactory REPEAT_COMMAND = new CommandExceptionFactory("此命令已注册");
 
     public static final CustomRuntimeExceptionFactory<?> NOT_IN_PLUGIN = CustomRuntimeExceptionFactory.runtime("请在插件线程上下文中注册", PluginException::new);
+    public static final CustomRuntimeExceptionFactory<?> PLUGIN_NOT_FOUND = CustomRuntimeExceptionFactory.runtime("没有找到插件: '%s'", PluginException::new);
 
-    public static final CommandExceptionFactory PLUGIN_NOT_FOUND = new CommandExceptionFactory("没有找到插件: '%s'");
     public static final CommandExceptionFactory REGISTER_IN_PLUGIN = new CommandExceptionFactory("请在插件中注册命令");
     public static final CommandExceptionFactory UNSUPPORTED_TYPE = new CommandExceptionFactory("不支持的类型: %s");
 

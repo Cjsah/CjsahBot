@@ -1,6 +1,6 @@
 package net.cjsah.bot.command.simple;
 
-import net.cjsah.bot.command.CommandRegisterContext;
+import net.cjsah.bot.registry.PluginCommandRegistry;
 import net.cjsah.bot.command.StringReader;
 import net.cjsah.bot.command.argument.Argument;
 import net.cjsah.bot.command.argument.ArgumentManager;
@@ -28,11 +28,11 @@ import java.util.regex.Pattern;
 public class SimpleCommandParser {
     private static final Pattern PATTERN_ARGUMENT = Pattern.compile("^<(\\w+):(\\w+)(?::(\\w+))?>$");
     private static final Pattern PATTERN_LITERAL = Pattern.compile("^\\w+$");
-    private final CommandRegisterContext context;
+    private final PluginCommandRegistry context;
     private final String cmd;
     private int cursor;
 
-    public SimpleCommandParser(CommandRegisterContext context, String cmd) {
+    public SimpleCommandParser(PluginCommandRegistry context, String cmd) {
         this.context = context;
         this.cmd = cmd;
         this.cursor = 1;
