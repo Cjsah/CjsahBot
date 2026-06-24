@@ -2,6 +2,7 @@ package net.cjsah.bot.plugin.builtin;
 
 import cn.hutool.core.lang.Pair;
 import com.google.gson.JsonNull;
+import com.mojang.datafixers.util.Either;
 import net.cjsah.bot.HeartBeatTimer;
 import net.cjsah.bot.MainApplication;
 import net.cjsah.bot.command.Commands;
@@ -15,10 +16,16 @@ import net.cjsah.bot.data.GroupUserData;
 import net.cjsah.bot.data.BaseUserData;
 import net.cjsah.bot.event.SubscribeEvent;
 import net.cjsah.bot.event.events.FriendMessageEvent;
+import net.cjsah.bot.event.events.FriendMessageSentEvent;
 import net.cjsah.bot.event.events.GroupMessageEvent;
+import net.cjsah.bot.event.events.GroupMessageSentEvent;
 import net.cjsah.bot.event.events.HeartbeatEvent;
 import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.loader.DummyClassLoader;
+import net.cjsah.bot.packet.PacketHandler;
+import net.cjsah.bot.packet.request.payload.GetFriendList;
+import net.cjsah.bot.packet.request.payload.RequestPacket;
+import net.cjsah.bot.packet.response.payload.FriendInfo;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
 import net.cjsah.bot.plugin.PluginManager;
@@ -27,9 +34,11 @@ import net.cjsah.bot.plugin.entry.BuiltinPluginEntryPointImpl;
 import net.cjsah.bot.plugin.registry.PluginRegistry;
 
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class CorePlugin implements Plugin {
     public static final PluginContainer INSTANCE;
@@ -97,14 +106,10 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
-//    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
-//    public static void test(CommandSource<?> source) {
-//        File file = new File("icon.png");
-//        byte[] bytes = FileUtil.readBytes(file);
-//        String base64 = "data:image/png;base64," + ExtraCodecs.base64(bytes);
-//        MessageChain msg = MessageChain.of(new ImageMessageNode(base64, "", "[动画表情]", ImageType.FACE));
-//        source.sendFeedback(msg);
-//    }
+    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
+    public static void test(CommandSource<?> source) {
+        source.sendFeedback("111");
+    }
 
     @SubscribeEvent
     private static void heartbeat(HeartbeatEvent event) {
@@ -114,13 +119,33 @@ public final class CorePlugin implements Plugin {
     @SubscribeEvent
     private static void friendMessage(FriendMessageEvent event) {
         BaseUserData sender = event.getSender();
-        MainApplication.log.info("[{}] [{}({})] => {}", event.getMode().getText(), sender.getNickname(), sender.getUserId(), event.getMessage());
+        MainApplication.log.info("[{}] [{}({})] ==> {}", event.getMode().getText(), sender.getNickname(), sender.getUserId(), event.getMessage());
     }
 
     @SubscribeEvent
     private static void groupMessage(GroupMessageEvent event) {
         GroupUserData sender = event.getSender();
-        MainApplication.log.info("[群聊] [{}({})] [{}({})] => {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
+        MainApplication.log.info("[群聊] [{}({})] [{}({})] ==> {}", event.getGroupName(), event.getGroupId(), sender.getCard(), sender.getUserId(), event.getMessage());
+    }
+
+    @SubscribeEvent
+    private static void friendMessageCallback(FriendMessageSentEvent event) {
+        long id = event.getTargetId();
+        RequestPacket packet = new GetFriendList();
+        Either<List<FriendInfo>, String> res = PacketHandler.getInstance().send(packet);
+        Stream<FriendInfo> stream = res.map(Collection::stream, it -> Stream.empty());
+        String name = stream
+            .filter(it -> it.userId() == id)
+            .findFirst()
+            .map(FriendInfo::getShowName)
+            .orElse("Unknown");
+
+        MainApplication.log.info("[{}] [{}({})] <== {}", event.getMode().getText(), name, id, event.getMessage());
+    }
+
+    @SubscribeEvent
+    private static void GroupMessageCallback(GroupMessageSentEvent event) {
+        MainApplication.log.info("[群聊] [{}({})] <== {}", event.getGroupName(), event.getGroupId(), event.getMessage());
     }
 
     @SubscribeEvent
