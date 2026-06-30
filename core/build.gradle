@@ -46,12 +46,6 @@ tasks.register('sourcesJar', Jar) {
     archiveClassifier = 'sources'
 }
 
-tasks.register('docJar', Jar) {
-    dependsOn javadoc
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 jar.dependsOn([copyJar])
 
 jar {
@@ -111,7 +105,6 @@ publishing {
             artifactId 'CjsahBot-core'
             from components.java
             artifact sourcesJar
-            artifact docJar
 
             pom {
                 name = 'CjsahBot-core'
