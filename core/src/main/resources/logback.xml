@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
-    <conversionRule conversionWord="colorLevel"  converterClass="net.cjsah.bot.resolver.LogLevelColorConverter" />
+    <conversionRule conversionWord="colorLevel"  converterClass="net.cjsah.bot.resolver.log.LogLevelColorConverter" />
     <property name="log.path" value="./logs"/>
     <property name="root.level" value="${root.level:-info}"/>
     <property name="console.log.pattern"
-              value="[%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})] [%cyan(%logger{36})] [%colorLevel] %msg%n"/>
+              value="[%magenta(%d{yyyy-MM-dd HH:mm:ss,GMT+8})] [%cyan(%logger{36})] [%colorLevel] $split$%msg"/>
     <property name="log.pattern" value="[%d{yyyy-MM-dd HH:mm:ss,GMT+8}] [%logger{36}] [%level] %msg%n"/>
 
     <!-- 控制台输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${console.log.pattern}</pattern>
-            <charset>utf-8</charset>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+           <layout class="net.cjsah.bot.resolver.log.MultilinePatternLayout">
+               <pattern>${console.log.pattern}</pattern>
+               <charset>utf-8</charset>`
+           </layout>
         </encoder>
     </appender>
 

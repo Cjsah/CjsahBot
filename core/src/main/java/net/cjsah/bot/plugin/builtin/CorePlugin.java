@@ -5,6 +5,7 @@ import com.google.gson.JsonNull;
 import com.mojang.datafixers.util.Either;
 import net.cjsah.bot.HeartBeatTimer;
 import net.cjsah.bot.MainApplication;
+import net.cjsah.bot.api.message.MessageChain;
 import net.cjsah.bot.command.Commands;
 import net.cjsah.bot.command.argument.StringArgument;
 import net.cjsah.bot.command.simple.SimpleCommand;
@@ -24,8 +25,13 @@ import net.cjsah.bot.event.events.MessageEvent;
 import net.cjsah.bot.loader.DummyClassLoader;
 import net.cjsah.bot.packet.PacketHandler;
 import net.cjsah.bot.packet.request.payload.GetFriendList;
+import net.cjsah.bot.packet.request.payload.GetGroupList;
 import net.cjsah.bot.packet.request.payload.RequestPacket;
+import net.cjsah.bot.packet.request.payload.SendGroupMsg;
 import net.cjsah.bot.packet.response.payload.FriendInfo;
+import net.cjsah.bot.packet.response.payload.GroupInfo;
+import net.cjsah.bot.permission.PermissionManager;
+import net.cjsah.bot.permission.context.SingleGroupPermissionContext;
 import net.cjsah.bot.plugin.Plugin;
 import net.cjsah.bot.plugin.PluginContainer;
 import net.cjsah.bot.plugin.PluginManager;
@@ -106,10 +112,39 @@ public final class CorePlugin implements Plugin {
         MainApplication.getInstance().halt();
     }
 
-//    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
-//    public static void test(CommandSource<?> source) {
-//        source.sendFeedback("111");
+    @SimpleCommand(value = "/test", description = "测试", permission = UserRole.ADMIN)
+    public static void test(CommandSource<?> source) {
+        source.sendFeedback("111");
+    }
+
+//    private static void broadcastNewVersion(String type, SimpleVersion.TimedVersion version) {
+//        String text = "发现新的%s版本: %s\n%s".formatted(type, version.version(), version.time());
+//        for (String s : text.split("\n")) {
+//            MCCrawlerPlugin.log.info(s);
+//        }
+//        MessageChain message = MessageChain.raw(text);
+//        RequestPacket packet = new GetGroupList();
+//        Either<List<GroupInfo>, String> res = PacketHandler.getInstance().send(packet);
+//        if (res.isRight()) {
+//            MCCrawlerPlugin.log.warn("获取群列表失败: {}", res.right().orElse("Unknown"));
+//            return;
+//        }
+//        String pluginId = PluginManager.getCurrent().id();
+//        List<Long> groupIds = res.left()
+//            .orElseGet(List::of)
+//            .stream()
+//            .parallel()
+//            .map(GroupInfo::groupId)
+//            .filter(groupId -> PermissionManager.getInstance().createContext(
+//                it -> new SingleGroupPermissionContext(it, groupId)
+//            ).hasPermission(pluginId))
+//            .toList();
+//
+//        for (long groupId : groupIds) {
+//            PacketHandler.getInstance().send(new SendGroupMsg(groupId, message));
+//        }
 //    }
+
 
     @SubscribeEvent
     private static void heartbeat(HeartbeatEvent event) {

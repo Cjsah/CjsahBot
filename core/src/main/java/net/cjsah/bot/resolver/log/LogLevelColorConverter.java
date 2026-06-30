@@ -1,4 +1,4 @@
-package net.cjsah.bot.resolver;
+package net.cjsah.bot.resolver.log;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ClassicConverter;
