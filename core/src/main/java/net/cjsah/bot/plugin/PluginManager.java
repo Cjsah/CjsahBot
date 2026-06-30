@@ -156,6 +156,10 @@ public class PluginManager {
         return new PluginRegistryImpl(getCurrent().metadata());
     }
 
+    public static PluginExecutor getExecutor(String pluginId) {
+        return EXECUTORS.get(pluginId);
+    }
+
     private static Optional<Plugin> getPluginInstance(String pluginId) {
         return Optional
             .ofNullable(PLUGINS.get(pluginId))

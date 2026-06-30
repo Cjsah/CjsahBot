@@ -1,5 +1,7 @@
 package net.cjsah.bot.data;
 
+import net.cjsah.bot.MainApplication;
+
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +30,7 @@ public class CachedValue<T> {
                         value = fetcher.fetch();
                         lastUpdateTime = System.currentTimeMillis();
                     } catch (Exception e) {
+                        MainApplication.log.warn("Failed to fetch value", e);
                         error = e.getMessage();
                     }
                 }

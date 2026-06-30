@@ -58,6 +58,10 @@ public class PluginExecutor {
         return true;
     }
 
+    public ScopedValue.Carrier getCarrier() {
+        return this.carrier;
+    }
+
     public void awaitTermination() throws InterruptedException {
         this.workerThread.join();
     }

@@ -7,4 +7,7 @@ public interface PluginRegistry {
     PluginEventRegistry event();
 
     PluginPermissionRegistry permission();
+
+    PluginExecutorRegistry executor();
+
 }
