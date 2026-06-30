@@ -29,7 +29,10 @@ public class ResponseBuilder {
 
     public <T> Either<T, String> build(Codec<T> codec) {
         if (this.status != ResponseStatus.OK || this.retcode != 0) {
-            return Either.right("status: %s, code: %s, message: %s".formatted(this.status, this.retcode, this.message));
+            String message = this.message.isEmpty() ?
+                "status: %s, code: %s".formatted(this.status, this.retcode) :
+                this.message;
+            return Either.right(message);
         }
         return CodecUtil.decode(codec, this.data);
     }
