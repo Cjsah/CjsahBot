@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class PluginManager {
     private static final Map<String, PluginContainer> PLUGINS = new ConcurrentHashMap<>();
     private static final Map<String, PluginExecutor> EXECUTORS = new ConcurrentHashMap<>();
-    private static final ScopedValue<PluginContainer> CURRENT = ScopedValue.newInstance();
+    protected static final ScopedValue<PluginContainer> THREAD_SCOPE = ScopedValue.newInstance();
 
     public static void registry() throws InterruptedException {
         List<Path> plugins = getPluginJars();
@@ -83,7 +83,7 @@ public class PluginManager {
             fallback.accept(null);
             return false;
         }
-        PluginExecutor executor = new PluginExecutor(CURRENT, plugin);
+        PluginExecutor executor = new PluginExecutor(plugin);
         PLUGINS.put(id, plugin);
         EXECUTORS.put(id, executor);
         execute(id, invokePluginFallback(id, Plugin::load, fallback));
@@ -141,7 +141,7 @@ public class PluginManager {
     }
 
     public static PluginContainer getCurrent() {
-        PluginContainer current = CURRENT.get();
+        PluginContainer current = THREAD_SCOPE.get();
         if (current == null) {
             throw BuiltinExceptions.NOT_IN_PLUGIN.create();
         }

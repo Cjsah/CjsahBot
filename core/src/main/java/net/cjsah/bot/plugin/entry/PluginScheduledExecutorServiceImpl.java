@@ -11,22 +11,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 public class PluginScheduledExecutorServiceImpl implements ScheduledExecutorService {
     private final ScheduledExecutorService delegate;
-    private final ScopedValue.Carrier carrier;
+    private final Supplier<ScopedValue.Carrier> carrierFactory;
 
-    public PluginScheduledExecutorServiceImpl(ScheduledExecutorService delegate, ScopedValue.Carrier carrier) {
+    public PluginScheduledExecutorServiceImpl(ScheduledExecutorService delegate, Supplier<ScopedValue.Carrier> carrierFactory) {
         this.delegate = delegate;
-        this.carrier = carrier;
+        this.carrierFactory = carrierFactory;
     }
 
     private Runnable wrap(Runnable runnable) {
-        return () -> this.carrier.run(runnable);
+        return () -> this.carrierFactory.get().run(runnable);
     }
 
     private <T> Callable<T> wrap(Callable<T> callable) {
-        return () -> this.carrier.call(callable::call);
+        return () -> this.carrierFactory.get().call(callable::call);
     }
 
     @Override

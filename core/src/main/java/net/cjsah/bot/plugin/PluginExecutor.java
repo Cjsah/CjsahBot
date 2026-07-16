@@ -19,9 +19,9 @@ public class PluginExecutor {
     private final AtomicBoolean shutdown = new AtomicBoolean(false);
     private final ScopedValue.Carrier carrier;
 
-    public PluginExecutor(ScopedValue<PluginContainer> context, PluginContainer plugin) {
+    public PluginExecutor(PluginContainer plugin) {
         this.plugin = plugin;
-        this.carrier = ScopedValue.where(context, plugin);
+        this.carrier = ScopedValue.where(PluginManager.THREAD_SCOPE, plugin);
         this.workerThread = Thread.ofPlatform()
             .daemon(false)
             .name("plugin-worker-" + plugin.id())
@@ -59,7 +59,7 @@ public class PluginExecutor {
     }
 
     public ScopedValue.Carrier getCarrier() {
-        return this.carrier;
+        return ScopedValue.where(PluginManager.THREAD_SCOPE, this.plugin);
     }
 
     public void awaitTermination() throws InterruptedException {
