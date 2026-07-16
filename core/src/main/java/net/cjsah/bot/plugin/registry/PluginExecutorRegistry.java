@@ -2,10 +2,10 @@ package net.cjsah.bot.plugin.registry;
 
 import net.cjsah.bot.plugin.PluginManager;
 import net.cjsah.bot.plugin.PluginMetadata;
+import net.cjsah.bot.plugin.entry.PluginScheduledExecutorServiceImpl;
 
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class PluginExecutorRegistry {
     private final ScopedValue.Carrier carrier;
@@ -14,11 +14,7 @@ public class PluginExecutorRegistry {
         this.carrier = PluginManager.getExecutor(pluginInfo.id()).getCarrier();
     }
 
-    public ScheduledExecutorService register(Function<ThreadFactory, ScheduledExecutorService> factory) {
-        ThreadFactory threadFactory = runnable -> {
-            Runnable wrapped = () -> this.carrier.run(runnable);
-            return Thread.ofVirtual().unstarted(wrapped);
-        };
-        return factory.apply(threadFactory);
+    public ScheduledExecutorService register(Supplier<ScheduledExecutorService> factory) {
+        return new PluginScheduledExecutorServiceImpl(factory.get(), this.carrier);
     }
 }
