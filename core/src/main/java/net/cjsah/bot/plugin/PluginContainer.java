@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.concurrent.ThreadFactory;
 
 @Data
 @Accessors(fluent = true)
@@ -29,4 +30,15 @@ public class PluginContainer {
     public String id() {
         return this.metadata.id();
     }
+
+    public ThreadFactory virtualThreadFactory(String prefix) {
+        PluginExecutor executor = PluginManager.getExecutor(this.id());
+        ScopedValue.Carrier carrier = executor.getCarrier();
+        return runnable -> {
+            Runnable wrapped = () -> carrier.run(runnable);
+            return Thread.ofVirtual().name(prefix, 0)
+                .unstarted(wrapped);
+        };
+    }
+
 }

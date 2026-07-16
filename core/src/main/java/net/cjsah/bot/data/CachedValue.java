@@ -1,6 +1,7 @@
 package net.cjsah.bot.data;
 
 import net.cjsah.bot.MainApplication;
+import net.cjsah.bot.plugin.PluginManager;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -8,7 +9,7 @@ import java.util.concurrent.Executors;
 
 public class CachedValue<T> {
     private static final ExecutorService EXECUTOR = Executors.newThreadPerTaskExecutor(
-            Thread.ofVirtual().name("cached-value-", 0).factory());
+        PluginManager.getCurrent().virtualThreadFactory("cached-value-"));
 
     private final Fetcher<T> fetcher;
     private final long timeout;

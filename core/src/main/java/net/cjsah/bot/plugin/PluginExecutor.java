@@ -59,7 +59,7 @@ public class PluginExecutor {
     }
 
     public ScopedValue.Carrier getCarrier() {
-        return ScopedValue.where(PluginManager.THREAD_SCOPE, this.plugin);
+        return this.carrier;
     }
 
     public void awaitTermination() throws InterruptedException {
