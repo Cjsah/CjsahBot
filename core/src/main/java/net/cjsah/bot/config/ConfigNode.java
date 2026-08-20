@@ -13,14 +13,12 @@ import java.util.function.Function;
 
 @Slf4j(topic = "ConfigManager")
 public class ConfigNode<T> {
-    private final String pluginId;
     private final Path path;
     private final Codec<T> codec;
     private final T defaultValue;
     private T value;
 
-    public ConfigNode(String pluginId, Path path, Codec<T> codec, T defaultValue) {
-        this.pluginId = pluginId;
+    public ConfigNode(Path path, Codec<T> codec, T defaultValue) {
         this.path = path.toAbsolutePath().normalize();
         this.codec = codec;
         this.defaultValue = defaultValue;
@@ -33,6 +31,7 @@ public class ConfigNode<T> {
 
     public void set(T value) {
         this.value = value;
+        this.save();
     }
 
     public T loadOrCreate() {
