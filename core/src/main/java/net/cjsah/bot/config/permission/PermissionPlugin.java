@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public class PermissionPlugin {
     public static final Codec<PermissionPlugin> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-        Codec.BOOL.fieldOf("defaultEnabled").forGetter(PermissionPlugin::defaultEnabled),
-        OverrideRoleUser.CODEC.listOf().fieldOf("users").forGetter(PermissionPlugin::users),
-        RoledGroup.CODEC.listOf().fieldOf("groups").forGetter(PermissionPlugin::groups),
-        OverrideUserInGroup.CODEC.listOf().fieldOf("userInGroups").forGetter(PermissionPlugin::userInGroups)
+        Codec.BOOL.optionalFieldOf("defaultEnabled", true).forGetter(PermissionPlugin::defaultEnabled),
+        OverrideRoleUser.CODEC.listOf().optionalFieldOf("users", List.of()).forGetter(PermissionPlugin::users),
+        RoledGroup.CODEC.listOf().optionalFieldOf("groups", List.of()).forGetter(PermissionPlugin::groups),
+        OverrideUserInGroup.CODEC.listOf().optionalFieldOf("userInGroups", List.of()).forGetter(PermissionPlugin::userInGroups)
     ).apply(instance, PermissionPlugin::new));
 
     public static final Codec<Map<String, PermissionPlugin>> PLUGINS_CODEC = Codec.unboundedMap(Codec.STRING, CODEC);

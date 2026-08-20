@@ -84,6 +84,8 @@ public final class CorePlugin implements Plugin {
                 )
         );
 
+//        registry.command().register(PermissionOperate::register);
+
         registry.event().subscribe(this);
     }
 
