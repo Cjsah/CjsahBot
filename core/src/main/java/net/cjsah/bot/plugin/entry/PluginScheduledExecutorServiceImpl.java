@@ -1,5 +1,6 @@
 package net.cjsah.bot.plugin.entry;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j(topic = "PluginScheduledExecutor")
 public class PluginScheduledExecutorServiceImpl implements ScheduledExecutorService {
     private final ScheduledExecutorService delegate;
     private final ScopedValue.Carrier carrier;
@@ -22,11 +24,35 @@ public class PluginScheduledExecutorServiceImpl implements ScheduledExecutorServ
     }
 
     private Runnable wrap(Runnable runnable) {
-        return () -> this.carrier.run(runnable);
+        return wrap(runnable, false);
+    }
+
+    private Runnable wrapPeriodic(Runnable runnable) {
+        return wrap(runnable, true);
+    }
+
+    private Runnable wrap(Runnable runnable, boolean continueOnException) {
+        return () -> this.carrier.run(() -> {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                log.error("Plugin scheduled task execution failed", e);
+                if (!continueOnException) {
+                    throw e;
+                }
+            }
+        });
     }
 
     private <T> Callable<T> wrap(Callable<T> callable) {
-        return () -> this.carrier.call(callable::call);
+        return () -> this.carrier.call(() -> {
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                log.error("Plugin scheduled task execution failed", e);
+                throw e;
+            }
+        });
     }
 
     @Override
@@ -41,12 +67,12 @@ public class PluginScheduledExecutorServiceImpl implements ScheduledExecutorServ
 
     @Override
     public @NotNull ScheduledFuture<?> scheduleAtFixedRate(@NotNull Runnable command, long initialDelay, long period, @NotNull TimeUnit unit) {
-        return this.delegate.scheduleAtFixedRate(wrap(command), initialDelay, period, unit);
+        return this.delegate.scheduleAtFixedRate(wrapPeriodic(command), initialDelay, period, unit);
     }
 
     @Override
     public @NotNull ScheduledFuture<?> scheduleWithFixedDelay(@NotNull Runnable command, long initialDelay, long delay, @NotNull TimeUnit unit) {
-        return this.delegate.scheduleWithFixedDelay(wrap(command), initialDelay, delay, unit);
+        return this.delegate.scheduleWithFixedDelay(wrapPeriodic(command), initialDelay, delay, unit);
     }
 
     @Override
