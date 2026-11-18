@@ -4,12 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
+import net.cjsah.bot.util.ExtraCodecs;
 
 @Getter
 public class RecordMessageNode extends MessageNode {
     public static final Codec<RecordMessageNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
         Codec.STRING.fieldOf("file").forGetter(RecordMessageNode::getFile),
-        Codec.INT.optionalFieldOf("file_size", 0).forGetter(RecordMessageNode::getFileSize),
+        ExtraCodecs.INT_OR_STR.optionalFieldOf("file_size", 0).forGetter(RecordMessageNode::getFileSize),
         Codec.STRING.optionalFieldOf("path", "").forGetter(RecordMessageNode::getPath)
     ).apply(instance, RecordMessageNode::new));
 

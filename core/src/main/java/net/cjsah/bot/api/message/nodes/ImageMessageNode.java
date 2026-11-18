@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.Getter;
 import net.cjsah.bot.api.message.MessageNodeType;
 import net.cjsah.bot.data.enums.ImageType;
+import net.cjsah.bot.util.ExtraCodecs;
 
 @Getter
 public class ImageMessageNode extends MessageNode {
@@ -13,24 +14,24 @@ public class ImageMessageNode extends MessageNode {
         Codec.STRING.optionalFieldOf("url", "").forGetter(ImageMessageNode::getUrl),
         Codec.STRING.optionalFieldOf("summary", "").forGetter(ImageMessageNode::getSummary),
         ImageType.CODEC.optionalFieldOf("sub_type", ImageType.IMAGE).forGetter(ImageMessageNode::getSubType),
-        Codec.STRING.optionalFieldOf("file_size", "0").forGetter(ImageMessageNode::getFileSize)
+        ExtraCodecs.INT_OR_STR.optionalFieldOf("file_size", 0).forGetter(ImageMessageNode::getFileSize)
     ).apply(instance, ImageMessageNode::new));
 
     private final String file;
     private final String url;
     private final String summary;
-    private final String fileSize;
+    private final int fileSize;
     private final ImageType subType;
 
     public ImageMessageNode(String file) {
-        this(file, "", "", ImageType.IMAGE, "0");
+        this(file, "", "", ImageType.IMAGE, 0);
     }
 
     public ImageMessageNode(String file, String url, String summary, ImageType subType) {
-        this(file, url, summary, subType, "0");
+        this(file, url, summary, subType, 0);
     }
 
-    private ImageMessageNode(String file, String url, String summary, ImageType subType, String fileSize) {
+    private ImageMessageNode(String file, String url, String summary, ImageType subType, int fileSize) {
         super(MessageNodeType.IMAGE);
         this.file = file;
         this.url = url;

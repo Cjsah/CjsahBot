@@ -3,6 +3,7 @@ package net.cjsah.bot.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Base64;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Slf4j(topic = "Codecs")
@@ -49,6 +51,15 @@ public class ExtraCodecs {
     );
 
     public static final Codec<Instant> TIMESTAMP = Codec.LONG.xmap(Instant::ofEpochSecond, Instant::getEpochSecond);
+
+    public static final Codec<Integer> INT_OR_STR = Codec.either(Codec.INT, Codec.STRING)
+        .comapFlatMap(either -> {
+            try {
+                return DataResult.success(either.map(Function.identity(), Integer::parseInt));
+            } catch (NumberFormatException e) {
+                return DataResult.error(e::getMessage);
+            }
+        }, Either::left);
 
     public static final Codec<Instant> ISO8601 = Codec.STRING.xmap(
         it -> OffsetDateTime.parse(it).toInstant(),
